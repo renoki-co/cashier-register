@@ -5,11 +5,11 @@ namespace RenokiCo\Fuel\Test;
 use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RenokiCo\Fuel\Saas;
+use Stripe\ApiResource;
+use Stripe\Exception\InvalidRequestException;
 use Stripe\Plan;
 use Stripe\Product;
 use Stripe\Stripe;
-use Stripe\ApiResource;
-use Stripe\Exception\InvalidRequestException;
 
 abstract class TestCase extends Orchestra
 {
