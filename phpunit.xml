@@ -21,5 +21,6 @@
     </filter>
     <php>
         <server name="APP_ENV" value="testing" />
+        <server name="CASHIER_MODEL" value="RenokiCo\Fuel\Test\Models\User" />
     </php>
 </phpunit>

@@ -3,6 +3,7 @@
 namespace RenokiCo\Fuel;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
 
 class FuelServiceProvider extends ServiceProvider
 {
@@ -37,6 +38,6 @@ class FuelServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        Cashier::ignoreMigrations();
     }
 }

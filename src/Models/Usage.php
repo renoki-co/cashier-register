@@ -9,11 +9,6 @@ class Usage extends Model
     /**
      * {@inheritdoc}
      */
-    protected $table = 'saas_subscription_usages';
-
-    /**
-     * {@inheritdoc}
-     */
     protected $fillable = [
         'subscription_id', 'feature_id',
         'used', 'valid_until',
@@ -43,7 +38,7 @@ class Usage extends Model
      */
     public function subscription()
     {
-        return $this->belongsTo(config('saas.models.subscription'));
+        return $this->belongsTo(config('saas.cashier.models.subscription'));
     }
 
     /**

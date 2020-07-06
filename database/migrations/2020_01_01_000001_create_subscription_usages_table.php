@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateSaasSubscriptionUsagesTable extends Migration
+class CreateSubscriptionUsagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateSaasSubscriptionUsagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('saas_subscription_usages', function (Blueprint $table) {
+        Schema::create('subscription_usages', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('subscription_id');
             $table->string('feature_id');
@@ -26,7 +26,7 @@ class CreateSaasSubscriptionUsagesTable extends Migration
 
             $table->foreign('subscription_id')
                 ->references('id')
-                ->on('saas_subscriptions')
+                ->on('subscriptions')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
         });
@@ -39,6 +39,6 @@ class CreateSaasSubscriptionUsagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('saas_subscription_usages');
+        Schema::dropIfExists('subscription_usages');
     }
 }

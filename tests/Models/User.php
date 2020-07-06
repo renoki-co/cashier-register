@@ -3,11 +3,11 @@
 namespace RenokiCo\Fuel\Test\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use RenokiCo\Fuel\Traits\HasSubscriptions;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
-    use HasSubscriptions;
+    use Billable;
 
     protected $fillable = [
         'name', 'email', 'password',
