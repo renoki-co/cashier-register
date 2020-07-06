@@ -99,6 +99,12 @@ class Team extends Model
 
 Now you can manage the subscriptions using the model itself.
 
+## Working with Cashier
+
+It's highly recommended to use this package as a good storage for plans and usages only, mirroring the plan names in Stripe or Braintree. This way, you can track the usage for various features.
+
+In case you want a full SaaS experience, you can still use the internal subscription tracking of this package.
+
 ## Attaching plans
 
 ```php
