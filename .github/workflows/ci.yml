@@ -31,6 +31,8 @@ jobs:
     - name: Run tests
       run: |
         phpunit --coverage-text --coverage-clover=coverage.xml
+      env:
+        STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
     - uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: false

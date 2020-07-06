@@ -3,7 +3,7 @@
 namespace RenokiCo\Fuel\Test\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Cashier\Billable;
+use RenokiCo\Fuel\Billable;
 
 class User extends Authenticatable
 {

@@ -65,6 +65,23 @@ $user->subscription('main')
     ->recordFeatureUsage('build.minutes', 30);
 ```
 
+## Preparing the model
+
+Instead of using Cashier's Billing trait, you should use the trait that comes with this package.
+
+The trait already uses the original cashier trait, with small modifications so that you can benefit of Fuel's features.
+
+```php
+use RenokiCo\Fuel\Billable;
+
+class User extends Model
+{
+    use Billable;
+
+    //
+}
+```
+
 ## Preparing the plans
 
 You can define the plans at the app service provider level and it will stick throughout the request cycle.

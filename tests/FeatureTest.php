@@ -13,13 +13,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -36,13 +32,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -61,13 +53,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->reduceFeatureUsage('build.minutes', 55);
 
@@ -76,77 +64,13 @@ class FeatureTest extends TestCase
         );
     }
 
-    public function test_feature_usage_on_plan_change()
-    {
-        $user = factory(User::class)->create();
-
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
-
-        $newPlan = Saas::plan('Plan', 'new-plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
-
-        $subscription = $user->newSaasSubscription('main', $plan);
-
-        $subscription->recordFeatureUsage('build.minutes', 50);
-
-        $this->assertEquals(
-            50, $subscription->getFeatureUsage('build.minutes')
-        );
-
-        $subscription->changePlan($newPlan);
-
-        $this->assertEquals(
-            3000, $subscription->getFeatureRemainings('build.minutes')
-        );
-    }
-
-    public function test_feature_usage_on_plan_renew()
-    {
-        $user = factory(User::class)->create();
-
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
-
-        $subscription = $user->newSaasSubscription('main', $plan);
-
-        $subscription->recordFeatureUsage('build.minutes', 50);
-
-        $this->assertEquals(
-            50, $subscription->getFeatureUsage('build.minutes')
-        );
-
-        $subscription->renew();
-
-        $this->assertEquals(
-            0, $subscription->getFeatureUsage('build.minutes')
-        );
-
-        $this->assertEquals(
-            3000, $subscription->getFeatureValue('build.minutes')
-        );
-    }
-
     public function test_feature_usage_on_reset()
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -169,11 +93,10 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
+        $plan = Saas::getPlan(static::$planId)
             ->features([]);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -190,11 +113,7 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
         $this->assertTrue(
             is_array($plan->toArray())
@@ -209,13 +128,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Team Members', 'teams', 10)->notResettable(),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 5);
 
@@ -238,13 +153,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
-            ->features([
-                Saas::feature('Team Members', 'teams', 10)->notResettable(),
-            ]);
+        $plan = Saas::getPlan(static::$planId);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $this->expectException(FeatureUsageOverflowException::class);
 
@@ -255,13 +166,12 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::plan('Plan', 'plan')
-            ->monthly()
+        $plan = Saas::getPlan(static::$planId)
             ->features([
-                Saas::feature('Team Members', 'teams')->notResettable()->unlimited(),
+                Saas::feature('Seats', 'teams')->unlimited()->notResettable(),
             ]);
 
-        $subscription = $user->newSaasSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 100);
 

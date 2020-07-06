@@ -9,6 +9,11 @@ class Usage extends Model
     /**
      * {@inheritdoc}
      */
+    protected $table = 'subscription_usages';
+
+    /**
+     * {@inheritdoc}
+     */
     protected $fillable = [
         'subscription_id', 'feature_id',
         'used', 'valid_until',

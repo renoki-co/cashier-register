@@ -30,8 +30,9 @@
         "test": "vendor/bin/phpunit"
     },
     "require-dev": {
-        "orchestra/testbench": "^5.0",
-        "orchestra/database": "^5.0"
+        "doctrine/dbal": "^2.0",
+        "orchestra/database": "^5.0",
+        "orchestra/testbench": "^5.0"
     },
     "config": {
         "sort-packages": true

@@ -8,14 +8,13 @@ class PlanTest extends TestCase
 {
     public function test_build_plans()
     {
+        Saas::clearPlans();
+
         Saas::plan('Active Plan', 'plan')
-            ->monthly()
-            ->grace(3, 'day')
             ->price(10, 'USD')
             ->description('Some plan...');
 
         Saas::plan('Archived Plan', 'archived-plan')
-            ->monthly()
             ->price(15, 'USD')
             ->archive();
 
@@ -26,9 +25,9 @@ class PlanTest extends TestCase
 
     public function test_build_plans_with_features()
     {
+        Saas::clearPlans();
+
         $plan = Saas::plan('Active Plan', 'plan')
-            ->monthly()
-            ->grace()
             ->description('Some plan...')
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes')
