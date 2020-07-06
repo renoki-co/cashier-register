@@ -22,7 +22,7 @@ class LaravelSaasServiceProvider extends ServiceProvider
         ], 'migrations');
 
         $this->publishes([
-            __DIR__.'/LaravelSaasServiceProvider.php' => app_path('Providers/LaravelSaasServiceProvider.php'),
+            __DIR__.'/../stubsLaravelSaasServiceProvider.stub' => app_path('Providers/LaravelSaasServiceProvider.php'),
         ], 'horizon-provider');
 
         $this->mergeConfigFrom(
