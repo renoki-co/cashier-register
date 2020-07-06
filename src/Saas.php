@@ -1,6 +1,6 @@
 <?php
 
-namespace RenokiCo\LaravelSaas;
+namespace RenokiCo\Fuel;
 
 class Saas
 {
@@ -16,7 +16,7 @@ class Saas
      *
      * @param  string  $name
      * @param  string  $id
-     * @return \RenokiCo\LaravelSaas\Plan
+     * @return \RenokiCo\Fuel\Plan
      */
     public static function plan(string $name, string $id)
     {
@@ -33,7 +33,7 @@ class Saas
      * @param  string  $name
      * @param  string  $id
      * @param  int  $value
-     * @return \RenokiCo\LaravelSaas\Feature
+     * @return \RenokiCo\Fuel\Feature
      */
     public static function feature(string $name, string $id, int $value = 0)
     {

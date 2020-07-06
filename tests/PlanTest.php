@@ -1,8 +1,8 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Test;
+namespace RenokiCo\Fuel\Test;
 
-use RenokiCo\LaravelSaas\Saas;
+use RenokiCo\Fuel\Saas;
 
 class PlanTest extends TestCase
 {

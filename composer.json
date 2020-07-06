@@ -1,9 +1,9 @@
 {
-    "name": "renoki-co/laravel-saas",
-    "description": "Laravel SaaS is an easy and fast way of processing your subscriptions at the app level.",
+    "name": "renoki-co/fuel",
+    "description": "Fuel is an easy and fast way of processing your subscriptions at the app level in Laravel.",
     "keywords": ["laravel", "php", "saas"," subscription", "plans"],
     "license": "MIT",
-    "homepage": "https://github.com/renoki-co/laravel-saas",
+    "homepage": "https://github.com/renoki-co/fuel",
     "authors": [
         {
             "name": "Alex Renoki",
@@ -17,12 +17,12 @@
     },
     "autoload": {
         "psr-4": {
-            "RenokiCo\\LaravelSaas\\": "src/"
+            "RenokiCo\\Fuel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "RenokiCo\\LaravelSaas\\Test\\": "tests"
+            "RenokiCo\\Fuel\\Test\\": "tests"
         }
     },
     "scripts": {
@@ -39,7 +39,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "RenokiCo\\LaravelSaas\\LaravelSaasServiceProvider"
+                "RenokiCo\\Fuel\\FuelServiceProvider"
             ]
         }
     }

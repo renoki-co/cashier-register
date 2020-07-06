@@ -1,6 +1,6 @@
 <?php
 
-namespace RenokiCo\LaravelSaas;
+namespace RenokiCo\Fuel;
 
 use Illuminate\Contracts\Support\{ Arrayable };
 

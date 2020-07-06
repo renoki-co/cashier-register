@@ -1,9 +1,9 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Test;
+namespace RenokiCo\Fuel\Test;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use RenokiCo\LaravelSaas\Saas;
+use RenokiCo\Fuel\Saas;
 
 abstract class TestCase extends Orchestra
 {
@@ -35,7 +35,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            \RenokiCo\LaravelSaas\LaravelSaasServiceProvider::class,
+            \RenokiCo\Fuel\FuelServiceProvider::class,
         ];
     }
 

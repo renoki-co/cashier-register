@@ -1,9 +1,9 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Traits;
+namespace RenokiCo\Fuel\Traits;
 
-use RenokiCo\LaravelSaas\Exceptions\PlanArchivedException;
-use RenokiCo\LaravelSaas\Plan;
+use RenokiCo\Fuel\Exceptions\PlanArchivedException;
+use RenokiCo\Fuel\Plan;
 
 trait HasSubscriptions
 {
@@ -32,9 +32,9 @@ trait HasSubscriptions
      * Subscribe user to a new plan.
      *
      * @param  string  $subscription
-     * @param  \RenokiCo\LaravelSaas\Plan  $plan
-     * @return \RenokiCo\LaravelSaas\Subscription
-     * @throws \RenokiCo\LaravelSaas\Exceptions\PlanArchivedException
+     * @param  \RenokiCo\Fuel\Plan  $plan
+     * @return \RenokiCo\Fuel\Subscription
+     * @throws \RenokiCo\Fuel\Exceptions\PlanArchivedException
      */
     public function newSaasSubscription($subscription, Plan $plan)
     {
@@ -67,7 +67,7 @@ trait HasSubscriptions
     /**
      * Check if the model subscribed to the given plan.
      *
-     * @param  \RenokiCo\LaravelSaas\Plan  $plan
+     * @param  \RenokiCo\Fuel\Plan  $plan
      * @return bool
      */
     public function subscribedToSaasPlan(Plan $plan): bool
@@ -80,7 +80,7 @@ trait HasSubscriptions
     /**
      * Check if the user had a trial so far.
      *
-     * @param  \RenokiCo\LaravelSaas\Plan  $plan
+     * @param  \RenokiCo\Fuel\Plan  $plan
      * @return bool
      */
     public function hadTrialFor(Plan $plan): bool
@@ -94,7 +94,7 @@ trait HasSubscriptions
      * Get the active subscription by name.
      *
      * @param  string  $name
-     * @return \RenokiCo\LaravelSaas\Subscription|null
+     * @return \RenokiCo\Fuel\Subscription|null
      */
     public function activeSaasSubscription(string $name)
     {

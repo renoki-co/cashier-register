@@ -4,9 +4,9 @@ return [
 
     'models' => [
 
-        'subscription' => \RenokiCo\LaravelSaas\Models\Subscription::class,
+        'subscription' => \RenokiCo\Fuel\Models\Subscription::class,
 
-        'usage' => \RenokiCo\LaravelSaas\Models\Usage::class,
+        'usage' => \RenokiCo\Fuel\Models\Usage::class,
 
     ],
 

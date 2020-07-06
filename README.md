@@ -1,24 +1,24 @@
-Laravel SaaS
-============
+Fuel - Laravel Spark alternative
+================================
 
-![CI](https://github.com/renoki-co/laravel-saas/workflows/CI/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/renoki-co/laravel-saas/branch/master/graph/badge.svg)](https://codecov.io/gh/renoki-co/laravel-saas/branch/master)
+![CI](https://github.com/renoki-co/fuel/workflows/CI/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/renoki-co/fuel/branch/master/graph/badge.svg)](https://codecov.io/gh/renoki-co/fuel/branch/master)
 [![StyleCI](https://github.styleci.io/repos/277109456/shield?branch=master)](https://github.styleci.io/repos/277109456)
-[![Latest Stable Version](https://poser.pugx.org/renoki-co/laravel-saas/v/stable)](https://packagist.org/packages/renoki-co/laravel-saas)
-[![Total Downloads](https://poser.pugx.org/renoki-co/laravel-saas/downloads)](https://packagist.org/packages/renoki-co/laravel-saas)
-[![Monthly Downloads](https://poser.pugx.org/renoki-co/laravel-saas/d/monthly)](https://packagist.org/packages/renoki-co/laravel-saas)
-[![License](https://poser.pugx.org/renoki-co/laravel-saas/license)](https://packagist.org/packages/renoki-co/laravel-saas)
+[![Latest Stable Version](https://poser.pugx.org/renoki-co/fuel/v/stable)](https://packagist.org/packages/renoki-co/fuel)
+[![Total Downloads](https://poser.pugx.org/renoki-co/fuel/downloads)](https://packagist.org/packages/renoki-co/fuel)
+[![Monthly Downloads](https://poser.pugx.org/renoki-co/fuel/d/monthly)](https://packagist.org/packages/renoki-co/fuel)
+[![License](https://poser.pugx.org/renoki-co/fuel/license)](https://packagist.org/packages/renoki-co/fuel)
 
-Laravel SaaS is a simple method of managing the SaaS subscriptions at your application level.
+Fuel is a simple method of managing the SaaS subscriptions at your application level in Laravel.
 
-It is fully compatible to be used with any version of Cashier.
+It is ready to be used with any version of Laravel Cashier.
 
 ## 🚀 Installation
 
 You can install the package via composer:
 
 ```bash
-composer require renoki-co/laravel-saas
+composer require renoki-co/fuel
 ```
 
 After installing the package, run the publishing command for migrations & configs:
@@ -30,9 +30,9 @@ $ php artisan vendor:publish
 ## 🙌 Usage
 
 ``` php
-// app/Providers/LaravelSaasServiceProvider.php
+// app/Providers/FuelServiceProvider.php
 
-use RenokiCo\LaravelSaas\Saas;
+use RenokiCo\Fuel\Saas;
 
 public function boot()
 {
@@ -57,19 +57,19 @@ $subscription = $user->newSaasSubscription('main', $plan);
 
 You can define the plans at the app service provider level and it will stick throughout the request cycle.
 
-First of all, make sure that you published the files with `vendor:publish` and import the created `app/Providers/LaravelSaasServiceProvider` class into your `app.php`:
+First of all, make sure that you published the files with `vendor:publish` and import the created `app/Providers/FuelServiceProvider` class into your `app.php`:
 
 ```php
 $providers = [
     // ...
-    \App\Providers\LaravelSaasServiceProvider::class,
+    \App\Providers\FuelServiceProvider::class,
 ];
 ```
 
-In `LaravelSaasServiceProvider`'s `boot` method you may define the plans you need:
+In `FuelServiceProvider`'s `boot` method you may define the plans you need:
 
 ```php
-use RenokiCo\LaravelSaas\Saas;
+use RenokiCo\Fuel\Saas;
 
 public function boot()
 {
@@ -89,7 +89,7 @@ public function boot()
 Just like in Cashier, all the models that will make use of the subscriptions should use a trait:
 
 ```php
-class RenokiCo\LaravelSaas\Traits\HasSubscriptions;
+class RenokiCo\Fuel\Traits\HasSubscriptions;
 
 class Team extends Model
 {
@@ -164,10 +164,10 @@ $subscription->cancel();
 You can attach features to the plans:
 
 ```php
-use RenokiCo\LaravelSaas\LaravelSaasServiceProvider as BaseServiceProvider;
-use RenokiCo\LaravelSaas\Saas;
+use RenokiCo\Fuel\FuelServiceProvider as BaseServiceProvider;
+use RenokiCo\Fuel\Saas;
 
-class LaravelSaasServiceProvider extends BaseServiceProvider
+class FuelServiceProvider extends BaseServiceProvider
 {
     /**
      * Boot the service provider.

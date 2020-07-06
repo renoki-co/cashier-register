@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use RenokiCo\LaravelSaas\LaravelSaasServiceProvider as BaseServiceProvider;
+use RenokiCo\Fuel\FuelServiceProvider as BaseServiceProvider;
 
-class LaravelSaasServiceProvider extends BaseServiceProvider
+class FuelServiceProvider extends BaseServiceProvider
 {
     /**
      * Boot the service provider.

@@ -1,6 +1,6 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Exceptions;
+namespace RenokiCo\Fuel\Exceptions;
 
 use Exception;
 

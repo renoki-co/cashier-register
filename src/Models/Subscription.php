@@ -1,11 +1,11 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Models;
+namespace RenokiCo\Fuel\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use RenokiCo\LaravelSaas\Exceptions\FeatureUsageOverflowException;
-use RenokiCo\LaravelSaas\Plan;
-use RenokiCo\LaravelSaas\Saas;
+use RenokiCo\Fuel\Exceptions\FeatureUsageOverflowException;
+use RenokiCo\Fuel\Plan;
+use RenokiCo\Fuel\Saas;
 
 class Subscription extends Model
 {
@@ -81,7 +81,7 @@ class Subscription extends Model
     /**
      * Get the plan this subscription belongs to.
      *
-     * @return \RenokiCo\LaravelSaas\Plan
+     * @return \RenokiCo\Fuel\Plan
      */
     public function getPlan()
     {
@@ -159,7 +159,7 @@ class Subscription extends Model
     /**
      * Change subscription plan.
      *
-     * @param  \RenokiCo\LaravelSaas\Plan  $plan
+     * @param  \RenokiCo\Fuel\Plan  $plan
      * @return $this
      */
     public function changePlan(Plan $plan)
@@ -234,8 +234,8 @@ class Subscription extends Model
      * @param  string  $id
      * @param  int  $value
      * @param  bool  $incremental
-     * @return \RenokiCo\LaravelSaas\Models\Usage|null
-     * @throws \RenokiCo\LaravelSaas\Exceptions\FeatureUsageOverflowException
+     * @return \RenokiCo\Fuel\Models\Usage|null
+     * @throws \RenokiCo\Fuel\Exceptions\FeatureUsageOverflowException
      */
     public function recordFeatureUsage(string $id, int $value = 1, bool $incremental = true)
     {
@@ -277,7 +277,7 @@ class Subscription extends Model
      *
      * @param  string  $id
      * @param  int  $uses
-     * @return null|\RenokiCo\LaravelSaas\Models\Usage
+     * @return null|\RenokiCo\Fuel\Models\Usage
      */
     public function reduceFeatureUsage(string $id, int $uses = 1, bool $incremental = true)
     {

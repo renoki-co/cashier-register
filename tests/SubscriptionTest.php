@@ -1,11 +1,11 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Test;
+namespace RenokiCo\Fuel\Test;
 
 use Carbon\Carbon;
-use RenokiCo\LaravelSaas\Exceptions\PlanArchivedException;
-use RenokiCo\LaravelSaas\Saas;
-use RenokiCo\LaravelSaas\Test\Models\User;
+use RenokiCo\Fuel\Exceptions\PlanArchivedException;
+use RenokiCo\Fuel\Saas;
+use RenokiCo\Fuel\Test\Models\User;
 
 class SubscriptionTest extends TestCase
 {

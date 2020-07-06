@@ -1,9 +1,9 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Test\Models;
+namespace RenokiCo\Fuel\Test\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use RenokiCo\LaravelSaas\Traits\HasSubscriptions;
+use RenokiCo\Fuel\Traits\HasSubscriptions;
 
 class User extends Authenticatable
 {

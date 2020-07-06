@@ -1,10 +1,10 @@
 <?php
 
-namespace RenokiCo\LaravelSaas;
+namespace RenokiCo\Fuel;
 
 use Illuminate\Support\ServiceProvider;
 
-class LaravelSaasServiceProvider extends ServiceProvider
+class FuelServiceProvider extends ServiceProvider
 {
     /**
      * Boot the service provider.
@@ -22,7 +22,7 @@ class LaravelSaasServiceProvider extends ServiceProvider
         ], 'migrations');
 
         $this->publishes([
-            __DIR__.'/../stubs/LaravelSaasServiceProvider.stub' => app_path('Providers/LaravelSaasServiceProvider.php'),
+            __DIR__.'/../stubs/FuelServiceProvider.stub' => app_path('Providers/FuelServiceProvider.php'),
         ], 'horizon-provider');
 
         $this->mergeConfigFrom(

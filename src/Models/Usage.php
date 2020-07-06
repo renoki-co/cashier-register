@@ -1,6 +1,6 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Models;
+namespace RenokiCo\Fuel\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

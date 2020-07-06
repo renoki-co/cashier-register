@@ -1,11 +1,11 @@
 <?php
 
-namespace RenokiCo\LaravelSaas\Test;
+namespace RenokiCo\Fuel\Test;
 
 use Carbon\Carbon;
-use RenokiCo\LaravelSaas\Exceptions\FeatureUsageOverflowException;
-use RenokiCo\LaravelSaas\Saas;
-use RenokiCo\LaravelSaas\Test\Models\User;
+use RenokiCo\Fuel\Exceptions\FeatureUsageOverflowException;
+use RenokiCo\Fuel\Saas;
+use RenokiCo\Fuel\Test\Models\User;
 
 class FeatureTest extends TestCase
 {
