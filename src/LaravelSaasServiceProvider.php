@@ -21,6 +21,10 @@ class LaravelSaasServiceProvider extends ServiceProvider
             __DIR__.'/../database/migrations/' => database_path('migrations'),
         ], 'migrations');
 
+        $this->publishes([
+            __DIR__.'/LaravelSaasServiceProvider.php' => app_path('Providers/LaravelSaasServiceProvider.php'),
+        ], 'horizon-provider');
+
         $this->mergeConfigFrom(
             __DIR__.'/../config/saas.php', 'saas'
         );
