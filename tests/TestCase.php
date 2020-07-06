@@ -2,8 +2,8 @@
 
 namespace RenokiCo\LaravelSaas\Test;
 
-use RenokiCo\LaravelSaas\Saas;
 use Orchestra\Testbench\TestCase as Orchestra;
+use RenokiCo\LaravelSaas\Saas;
 
 abstract class TestCase extends Orchestra
 {
