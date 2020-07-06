@@ -164,17 +164,36 @@ $subscription->cancel();
 You can attach features to the plans:
 
 ```php
+use RenokiCo\LaravelSaas\LaravelSaasServiceProvider as BaseServiceProvider;
 use RenokiCo\LaravelSaas\Saas;
 
-public function boot()
+class LaravelSaasServiceProvider extends BaseServiceProvider
 {
-    parent::boot();
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        parent::boot();
 
-    Saas::plan('Gold Plan', 'gold-plan')
-        ->features([
-            Saas::feature('Build Minutes', 'build.minutes', 3000)
-                ->description('3000 build minutes for an entire month'),
-        ]);
+        Saas::plan('Gold Plan', 'gold-plan')
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 3000)
+                    ->description('3000 build minutes for an entire month!'),
+            ]);
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        parent::register();
+    }
 }
 ```
 
@@ -207,9 +226,16 @@ To avoid resetting, like counting the seats for a subscription, you should call 
 Saas::plan('Gold Plan', 'gold-plan')
     ->invoice(30, 'day')
     ->features([
-        Saas::feature('Build Minutes', 'build.minutes', 3000)
-            ->description('3000 build minutes for an entire month')
-            ->notResettable(),
+        Saas::feature('Seats', 'seats', 5)->notResettable(),
+    ]);
+```
+
+To set an infinite amount of usage, use the `unlimited()` method:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->features([
+        Saas::feature('Seats', 'seats')->unlimited(),
     ]);
 ```
 

@@ -3,6 +3,7 @@
 namespace RenokiCo\LaravelSaas\Test;
 
 use Carbon\Carbon;
+use RenokiCo\LaravelSaas\Exceptions\FeatureUsageOverflowException;
 use RenokiCo\LaravelSaas\Saas;
 use RenokiCo\LaravelSaas\Test\Models\User;
 
@@ -230,6 +231,52 @@ class FeatureTest extends TestCase
 
         $this->assertEquals(
             5, $subscription->getFeatureRemainings('teams')
+        );
+    }
+
+    public function test_feature_usage_over_the_amount()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::plan('Plan', 'plan')
+            ->monthly()
+            ->features([
+                Saas::feature('Team Members', 'teams', 10)->notResettable(),
+            ]);
+
+        $subscription = $user->newSaasSubscription('main', $plan);
+
+        $this->expectException(FeatureUsageOverflowException::class);
+
+        $subscription->recordFeatureUsage('teams', 11);
+    }
+
+    public function test_feature_usage_on_unlimited()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::plan('Plan', 'plan')
+            ->monthly()
+            ->features([
+                Saas::feature('Team Members', 'teams')->notResettable()->unlimited(),
+            ]);
+
+        $subscription = $user->newSaasSubscription('main', $plan);
+
+        $subscription->recordFeatureUsage('teams', 100);
+
+        $this->assertEquals(
+            100, $subscription->getFeatureUsage('teams')
+        );
+
+        Carbon::setTestNow(now()->addMonths(1));
+
+        $this->assertEquals(
+            100, $subscription->getFeatureUsage('teams')
+        );
+
+        $this->assertEquals(
+            -1, $subscription->getFeatureRemainings('teams')
         );
     }
 }

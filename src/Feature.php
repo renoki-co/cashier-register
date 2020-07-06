@@ -98,6 +98,19 @@ class Feature implements Arrayable
     }
 
     /**
+     * Set the feature as unlimited value.
+     *
+     * @param  int  $value
+     * @return $this
+     */
+    public function unlimited()
+    {
+        $this->value = -1;
+
+        return $this;
+    }
+
+    /**
      * Set the reset interval for the usability
      * of this feature.
      *

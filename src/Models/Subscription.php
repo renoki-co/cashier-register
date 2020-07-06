@@ -3,6 +3,7 @@
 namespace RenokiCo\LaravelSaas\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use RenokiCo\LaravelSaas\Exceptions\FeatureUsageOverflowException;
 use RenokiCo\LaravelSaas\Plan;
 use RenokiCo\LaravelSaas\Saas;
 
@@ -234,6 +235,7 @@ class Subscription extends Model
      * @param  int  $value
      * @param  bool  $incremental
      * @return \RenokiCo\LaravelSaas\Models\Usage|null
+     * @throws \RenokiCo\LaravelSaas\Exceptions\FeatureUsageOverflowException
      */
     public function recordFeatureUsage(string $id, int $value = 1, bool $incremental = true)
     {
@@ -257,8 +259,14 @@ class Subscription extends Model
             ]);
         }
 
+        $newValue = $incremental ? $usage->used + $value : $value;
+
+        if ($feature->getValue() > 0 && $newValue > $feature->getValue()) {
+            throw new FeatureUsageOverflowException('The feature usage is beyond the limit of the feature value.');
+        }
+
         $usage->fill([
-            'used' => $incremental ? $usage->used + $value : $value,
+            'used' => $newValue,
         ]);
 
         return tap($usage)->save();
@@ -318,7 +326,13 @@ class Subscription extends Model
      */
     public function getFeatureRemainings(string $id): int
     {
-        return $this->getFeatureValue($id) - $this->getFeatureUsage($id);
+        $featureValue = $this->getFeatureValue($id);
+
+        if ($featureValue < 0) {
+            return -1;
+        }
+
+        return $featureValue - $this->getFeatureUsage($id);
     }
 
     /**
