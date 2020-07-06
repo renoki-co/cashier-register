@@ -1,6 +1,6 @@
 <?php
 
-namespace RenokiCo\LaravelSaas;
+namespace App\Providers;
 
 use RenokiCo\LaravelSaas\LaravelSaasServiceProvider as BaseServiceProvider;
 
