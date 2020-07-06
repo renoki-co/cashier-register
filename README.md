@@ -200,7 +200,7 @@ Saas::plan('Gold Plan', 'gold-plan')
             ->reset(30, 'day'),
 ```
 
-To avoid resetting, like counting the seats for a subscription, you should call `reset()` on feature, ideally with the plan period:
+To avoid resetting, like counting the seats for a subscription, you should call `notResettable()` on the feature:
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')
