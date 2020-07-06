@@ -160,7 +160,7 @@ class FeatureTest extends TestCase
         );
 
         $this->assertEquals(
-            3000, $subscription->getFeatureValue('build.minutes')
+            3000, $subscription->getFeatureRemainings('build.minutes')
         );
     }
 
@@ -201,6 +201,35 @@ class FeatureTest extends TestCase
 
         $this->assertTrue(
             is_array($plan->toArray()['features'])
+        );
+    }
+
+    public function test_feature_usage_not_resettable()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::plan('Plan', 'plan')
+            ->monthly()
+            ->features([
+                Saas::feature('Team Members', 'teams', 10)->notResettable(),
+            ]);
+
+        $subscription = $user->newSaasSubscription('main', $plan);
+
+        $subscription->recordFeatureUsage('teams', 5);
+
+        $this->assertEquals(
+            5, $subscription->getFeatureUsage('teams')
+        );
+
+        Carbon::setTestNow(now()->addMonths(1));
+
+        $this->assertEquals(
+            5, $subscription->getFeatureUsage('teams')
+        );
+
+        $this->assertEquals(
+            5, $subscription->getFeatureRemainings('teams')
         );
     }
 }
