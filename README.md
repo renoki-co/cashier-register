@@ -189,6 +189,17 @@ $subscription->getFeatureRemainings('build.minutes') // 2950
 
 By default, each created feature is resettable - each time the billing cycle ends, it resets to the starting value (3000 in the previous example).
 
+Make sure to set the reset time exactly how long the invoice period is for the plan:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->invoice(30, 'day')
+    ->features([
+        Saas::feature('Build Minutes', 'build.minutes', 3000)
+            ->description('3000 build minutes for an entire month')
+            ->reset(30, 'day'),
+```
+
 To avoid resetting, like counting the seats for a subscription, you should call `reset()` on feature, ideally with the plan period:
 
 ```php
@@ -197,7 +208,7 @@ Saas::plan('Gold Plan', 'gold-plan')
     ->features([
         Saas::feature('Build Minutes', 'build.minutes', 3000)
             ->description('3000 build minutes for an entire month')
-            ->reset(30, 'day'), // matching the invoice period
+            ->notResettable(),
     ]);
 ```
 

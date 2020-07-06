@@ -114,6 +114,19 @@ class Feature implements Arrayable
     }
 
     /**
+     * Mark the feature as not resettable.
+     *
+     * @return $this
+     */
+    public function notResettable()
+    {
+        $this->resetPeriod = 0;
+        $this->resetInterval = 'day';
+
+        return $this;
+    }
+
+    /**
      * Get the id of the feature.
      *
      * @return string
