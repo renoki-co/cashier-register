@@ -53,12 +53,16 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->canceled());
         $this->assertFalse($subscription->ended());
 
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
+
         Carbon::setTestNow(now()->addDays(7));
 
         $this->assertTrue($subscription->active());
         $this->assertFalse($subscription->onTrial());
         $this->assertFalse($subscription->canceled());
         $this->assertFalse($subscription->ended());
+
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
 
         $this->assertTrue(
             $user->subscribedToSaasPlan($plan)
@@ -76,6 +80,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertFalse($subscription->canceled());
         $this->assertTrue($subscription->ended());
+
+        $this->assertEquals(0, $user->activeSaasSubscriptions()->count());
 
         $this->assertFalse(
             $user->subscribedToSaasPlan($plan)
@@ -104,6 +110,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->canceled());
         $this->assertFalse($subscription->ended());
 
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
+
         Carbon::setTestNow(now()->addMonths(1)->subDays(1));
 
         $this->assertTrue(
@@ -116,6 +124,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertFalse($subscription->canceled());
         $this->assertTrue($subscription->ended());
+
+        $this->assertEquals(0, $user->activeSaasSubscriptions()->count());
 
         $this->assertFalse(
             $user->subscribedToSaasPlan($plan)
@@ -144,6 +154,8 @@ class SubscriptionTest extends TestCase
         $this->assertTrue($subscription->canceled());
         $this->assertTrue($subscription->ended());
 
+        $this->assertEquals(0, $user->activeSaasSubscriptions()->count());
+
         $this->assertFalse(
             $user->subscribedToSaasPlan($plan)
         );
@@ -170,6 +182,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertTrue($subscription->canceled());
         $this->assertTrue($subscription->ended());
+
+        $this->assertEquals(0, $user->activeSaasSubscriptions()->count());
 
         $this->assertFalse(
             $user->subscribedToSaasPlan($plan)
@@ -223,6 +237,8 @@ class SubscriptionTest extends TestCase
         $this->assertTrue($subscription->canceled());
         $this->assertFalse($subscription->ended());
 
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
+
         $this->assertTrue(
             $user->subscribedToSaasPlan($plan)
         );
@@ -250,6 +266,8 @@ class SubscriptionTest extends TestCase
         $this->assertTrue($subscription->onTrial());
         $this->assertTrue($subscription->canceled());
         $this->assertFalse($subscription->ended());
+
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
 
         $this->assertTrue(
             $user->subscribedToSaasPlan($plan)
@@ -280,6 +298,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertFalse($subscription->canceled());
         $this->assertFalse($subscription->ended());
+
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
     }
 
     public function test_change_plan()
@@ -304,6 +324,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertFalse($subscription->canceled());
         $this->assertFalse($subscription->ended());
+
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
 
         $this->assertFalse(
             $user->subscribedToSaasPlan($plan)
@@ -341,6 +363,8 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertFalse($subscription->canceled());
         $this->assertFalse($subscription->ended());
+
+        $this->assertEquals(1, $user->activeSaasSubscriptions()->count());
     }
 
     public function test_dont_renew_plan_if_ended()
@@ -360,5 +384,7 @@ class SubscriptionTest extends TestCase
         $this->assertFalse($subscription->onTrial());
         $this->assertTrue($subscription->canceled());
         $this->assertTrue($subscription->ended());
+
+        $this->assertEquals(0, $user->activeSaasSubscriptions()->count());
     }
 }
