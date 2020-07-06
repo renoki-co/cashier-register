@@ -68,15 +68,15 @@ class Subscription extends Model
                     return $query->where('cancels_at', '>', now())
                         ->orWhere('cancels_at', null);
                 });
-            })
-            ->orWhere(function ($query) {
-                return $query->where('starts_at', '<', now())
-                    ->where('ends_at', '>', now())
-                    ->where(function ($query) {
-                        return $query->where('cancels_at', '>', now())
-                            ->orWhere('cancels_at', null);
-                    });
-            });
+        })
+        ->orWhere(function ($query) {
+            return $query->where('starts_at', '<', now())
+                ->where('ends_at', '>', now())
+                ->where(function ($query) {
+                    return $query->where('cancels_at', '>', now())
+                        ->orWhere('cancels_at', null);
+                });
+        });
     }
 
     /**
