@@ -1,0 +1,48 @@
+{
+    "name": "renoki-co/cashier-register",
+    "description": "CashierRegister is an easy and fast way of processing your subscriptions at the app level in Laravel.",
+    "keywords": ["laravel", "php", "saas"," subscription", "plans"],
+    "license": "MIT",
+    "homepage": "https://github.com/renoki-co/cashier-register",
+    "authors": [
+        {
+            "name": "Alex Renoki",
+            "homepage": "https://github.com/rennokki",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "laravel/cashier": "^12.1",
+        "laravel/framework": "^6.2|^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RenokiCo\\CashierRegister\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RenokiCo\\CashierRegister\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "require-dev": {
+        "doctrine/dbal": "^2.0",
+        "orchestra/database": "^5.0",
+        "orchestra/testbench": "^5.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RenokiCo\\CashierRegister\\CashierRegisterServiceProvider"
+            ]
+        }
+    }
+}

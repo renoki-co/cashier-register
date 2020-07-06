@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Providers;
+
+use RenokiCo\CashierRegister\CashierRegisterServiceProvider as BaseServiceProvider;
+
+class CashierRegisterServiceProvider extends BaseServiceProvider
+{
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        parent::boot();
+
+        //
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        parent::register();
+    }
+}
