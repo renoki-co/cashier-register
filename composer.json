@@ -1,6 +1,6 @@
 {
     "name": "renoki-co/cashier-register",
-    "description": "CashierRegister is an easy and fast way of processing your subscriptions at the app level in Laravel.",
+    "description": "Cashier Register is an easy and fast way of processing your subscription features at the app level in Laravel.",
     "keywords": ["laravel", "php", "saas"," subscription", "plans"],
     "license": "MIT",
     "homepage": "https://github.com/renoki-co/cashier-register",

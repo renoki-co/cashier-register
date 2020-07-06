@@ -1,4 +1,4 @@
-CashierRegister - Laravel Cashier tracker for features
+Cashier Register - Laravel Cashier tracker for features
 ===========================================
 
 ![CI](https://github.com/renoki-co/cashier-register/workflows/CI/badge.svg?branch=master)
@@ -9,7 +9,7 @@ CashierRegister - Laravel Cashier tracker for features
 [![Monthly Downloads](https://poser.pugx.org/renoki-co/cashier-register/d/monthly)](https://packagist.org/packages/renoki-co/cashier-register)
 [![License](https://poser.pugx.org/renoki-co/cashier-register/license)](https://packagist.org/packages/renoki-co/cashier-register)
 
-CashierRegister is a simple feature usage tracker for Laravel Cashier.
+Cashier Register is a simple feature usage tracker for Laravel Cashier.
 
 It helps you define static, project-level plans, and attach them features that can be tracked and limited throughout the app.
 
