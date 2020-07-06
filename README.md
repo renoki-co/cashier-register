@@ -114,6 +114,8 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 }
 ```
 
+**When setting an unique indentifier for the plan (second parameter), make sure to use it from Stripe's plan ID.**
+
 ## Feature Usage Tracking
 
 You can attach features to the plans:
@@ -157,7 +159,6 @@ Make sure to set the reset time exactly how long the invoice period is for the p
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')
-    ->invoice(30, 'day')
     ->features([
         Saas::feature('Build Minutes', 'build.minutes', 3000)
             ->description('3000 build minutes for an entire month')
@@ -169,7 +170,6 @@ To avoid resetting, like counting the seats for a subscription, you should call 
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')
-    ->invoice(30, 'day')
     ->features([
         Saas::feature('Seats', 'seats', 5)->notResettable(),
     ]);
