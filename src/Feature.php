@@ -3,8 +3,6 @@
 namespace RenokiCo\LaravelSaas;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Contracts\Support\{ Arrayable };
 
 class Feature implements Arrayable

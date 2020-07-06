@@ -228,7 +228,7 @@ class Plan implements Arrayable
     {
         $this->features = collect($features)
             ->filter(function (Feature $feature) {
-                return $feature instanceOf Feature;
+                return $feature instanceof Feature;
             })
             ->unique(function (Feature $feature) {
                 return $feature->getId();

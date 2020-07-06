@@ -2,9 +2,7 @@
 
 namespace RenokiCo\LaravelSaas\Test;
 
-use Carbon\Carbon;
 use RenokiCo\LaravelSaas\Saas;
-use RenokiCo\LaravelSaas\Test\Models\User;
 
 class PlanTest extends TestCase
 {
@@ -35,7 +33,7 @@ class PlanTest extends TestCase
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes')
                     ->description('Build minutes for all your projects.')
-                    ->value(100)
+                    ->value(100),
             ]);
 
         $this->assertCount(1, $plan->getFeatures());
