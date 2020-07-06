@@ -198,6 +198,7 @@ Saas::plan('Gold Plan', 'gold-plan')
         Saas::feature('Build Minutes', 'build.minutes', 3000)
             ->description('3000 build minutes for an entire month')
             ->reset(30, 'day'),
+    ]);
 ```
 
 To avoid resetting, like counting the seats for a subscription, you should call `notResettable()` on the feature:
