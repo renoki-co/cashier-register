@@ -232,9 +232,6 @@ class Plan implements Arrayable
             })
             ->unique(function (Feature $feature) {
                 return $feature->getId();
-            })
-            ->map(function (Feature $feature) {
-                return $feature->reset($this->invoicePeriod, $this->invoiceInterval);
             });
 
         return $this;

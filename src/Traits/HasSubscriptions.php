@@ -91,12 +91,12 @@ trait HasSubscriptions
     }
 
     /**
-     * Get a subscription by name.
+     * Get the active subscription by name.
      *
      * @param  string  $name
      * @return \RenokiCo\LaravelSaas\Subscription|null
      */
-    public function saasSubscription(string $name)
+    public function activeSaasSubscription(string $name)
     {
         return $this->activeSaasSubscriptions()
             ->whereName($name)
