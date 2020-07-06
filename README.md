@@ -49,9 +49,6 @@ class FuelServiceProvider extends BaseServiceProvider
         Saas::plan('Gold Plan', 'gold-plan')
             ->description('The gold plan.')
             ->price(30, 'EUR')
-            ->trial(7, 'day') // 7 days trial
-            ->invoice(1, 'month') // monthly subscription
-            ->grace(1, 'day') // grace period
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 3000)
                     ->description('3000 build minutes for an entire month!'),
