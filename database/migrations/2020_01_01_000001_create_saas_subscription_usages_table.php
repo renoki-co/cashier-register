@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateSaasSubscriptionUsagesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('saas_subscription_usages', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('subscription_id');
+            $table->string('feature_id');
+
+            $table->unsignedSmallInteger('used');
+            $table->timestamp('valid_until')->nullable();
+
+            $table->timestamps();
+
+            $table->unique(['subscription_id', 'feature_id']);
+
+            $table->foreign('subscription_id')
+                ->references('id')
+                ->on('saas_subscriptions')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('saas_subscription_usages');
+    }
+}

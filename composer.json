@@ -1,0 +1,46 @@
+{
+    "name": "renoki-co/laravel-saas",
+    "description": "Laravel SaaS is an easy and fast way of processing your subscriptions at the app level.",
+    "keywords": ["laravel", "php", "saas"," subscription", "plans"],
+    "license": "MIT",
+    "homepage": "https://github.com/renoki-co/laravel-saas",
+    "authors": [
+        {
+            "name": "Alex Renoki",
+            "homepage": "https://github.com/rennokki",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "laravel/framework": "^6.2|^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RenokiCo\\LaravelSaas\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RenokiCo\\LaravelSaas\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^5.0",
+        "orchestra/database": "^5.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RenokiCo\\LaravelSaas\\LaravelSaasServiceProvider"
+            ]
+        }
+    }
+}
