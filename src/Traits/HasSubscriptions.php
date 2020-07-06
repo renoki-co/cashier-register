@@ -2,9 +2,8 @@
 
 namespace RenokiCo\LaravelSaas\Traits;
 
-use Carbon\Carbon;
-use RenokiCo\LaravelSaas\Plan;
 use RenokiCo\LaravelSaas\Exceptions\PlanArchivedException;
+use RenokiCo\LaravelSaas\Plan;
 
 trait HasSubscriptions
 {

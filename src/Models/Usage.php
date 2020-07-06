@@ -26,7 +26,7 @@ class Usage extends Model
         'valid_until',
     ];
 
-   /**
+    /**
      * The feature this usage belongs to.
      *
      * @return mixed

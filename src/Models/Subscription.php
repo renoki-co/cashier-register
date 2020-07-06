@@ -2,11 +2,9 @@
 
 namespace RenokiCo\LaravelSaas\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use RenokiCo\LaravelSaas\Saas;
 use RenokiCo\LaravelSaas\Plan;
+use RenokiCo\LaravelSaas\Saas;
 
 class Subscription extends Model
 {
@@ -89,7 +87,7 @@ class Subscription extends Model
         return Saas::getPlan($this->plan_id);
     }
 
-     /**
+    /**
      * Check if subscription is still active.
      *
      * @return bool
@@ -243,7 +241,7 @@ class Subscription extends Model
             ->getFeature($id);
 
         if (! $feature) {
-            return null;
+            return;
         }
 
         $usage = $this->usage()->firstOrNew([
@@ -280,7 +278,7 @@ class Subscription extends Model
             ->first();
 
         if (is_null($usage)) {
-            return null;
+            return;
         }
 
         $usage->fill([
