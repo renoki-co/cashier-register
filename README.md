@@ -46,7 +46,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'gold-plan')
+        Saas::plan('Gold Plan', 'stripe-gold-plan-id')
             ->description('The gold plan.')
             ->price(30, 'EUR')
             ->features([
@@ -115,6 +115,53 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 ```
 
 **When setting an unique indentifier for the plan (second parameter), make sure to use it from Stripe's plan ID.**
+
+Defining plans can also help you retrieving them when showing them in the frontend:
+
+```php
+use RenokiCo\CashierRegister\Saas;
+
+$allPlans = Saas::getPlans();
+
+foreach ($allPlans as $plan) {
+    $features = $plan->getFeatures();
+
+    //
+}
+```
+
+Or retrieving a specific plan by Stripe Plan ID:
+
+```php
+use RenokiCo\CashierRegister\Saas;
+
+$plan = Saas::getPlan('stripe-plan-id');
+```
+
+Deprecating plans can occur anytime. In order to do so, just call `deprecated()` when defining the plan:
+
+```php
+/**
+ * Boot the service provider.
+ *
+ * @return void
+ */
+public function boot()
+{
+    parent::boot();
+
+    Saas::plan('Silver Plan', 'stripe-silver-plan-id')
+        ->deprecated();
+}
+```
+
+As an alternative, you can anytime retrieve the available plans only:
+
+```php
+use RenokiCo\CashierRegister\Saas;
+
+$plans = Saas::getAvailablePlans();
+```
 
 ## Feature Usage Tracking
 
