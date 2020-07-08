@@ -44,7 +44,7 @@ abstract class TestCase extends Orchestra
 
         Saas::plan('Monthly $10', static::$planId)
             ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000)->reset(30, 'day'),
+                Saas::feature('Build Minutes', 'build.minutes', 3000)->resetEvery(30, 'day'),
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
             ]);
     }

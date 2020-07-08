@@ -127,6 +127,18 @@ class Feature implements Arrayable
     }
 
     /**
+     * Alias for reset().
+     *
+     * @param  int  $period
+     * @param  string  $interval
+     * @return $this
+     */
+    public function resetEvery($period = 0, $interval = 'day')
+    {
+        return $this->reset($period, $interval);
+    }
+
+    /**
      * Mark the feature as not resettable.
      *
      * @return $this

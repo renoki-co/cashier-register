@@ -162,7 +162,7 @@ Saas::plan('Gold Plan', 'gold-plan')
     ->features([
         Saas::feature('Build Minutes', 'build.minutes', 3000)
             ->description('3000 build minutes for an entire month')
-            ->reset(30, 'day'),
+            ->resetEvery(30, 'day'),
     ]);
 ```
 
