@@ -98,7 +98,7 @@ class Plan implements Arrayable
     }
 
     /**
-     * Deprecate the plan.
+     * Mark the plan as deprecated.
      *
      * @return $this
      */
@@ -107,6 +107,16 @@ class Plan implements Arrayable
         $this->active = false;
 
         return $this;
+    }
+
+    /**
+     * Alias for archive().
+     *
+     * @return $this
+     */
+    public function deprecated()
+    {
+        return $this->archive();
     }
 
     /**
