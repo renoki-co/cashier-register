@@ -162,6 +162,26 @@ class Feature implements Arrayable
     }
 
     /**
+     * Get the name of the feature.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the description of the feature.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
      * Get the feature value.
      *
      * @return int
@@ -172,6 +192,26 @@ class Feature implements Arrayable
     }
 
     /**
+     * Get the reset period value.
+     *
+     * @return int
+     */
+    public function getResetPeriod(): int
+    {
+        return $this->resetPeriod;
+    }
+
+    /**
+     * Get the reset interval value.
+     *
+     * @return int
+     */
+    public function getResetInterval(): string
+    {
+        return $this->resetInterval;
+    }
+
+    /**
      * Check if this feature is resettable after each billing cycle.
      *
      * @return bool
@@ -179,6 +219,16 @@ class Feature implements Arrayable
     public function isResettable(): bool
     {
         return $this->resetPeriod && $this->resetInterval;
+    }
+
+    /**
+     * Check if the feature has unlimited uses.
+     *
+     * @return int
+     */
+    public function isUnlimited(): bool
+    {
+        return $this->getValue() < 0;
     }
 
     /**
@@ -201,12 +251,14 @@ class Feature implements Arrayable
     public function toArray()
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'value' => $this->value,
-            'reset_period' => $this->resetPeriod,
-            'reset_interval' => $this->resetInterval,
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'value' => $this->getValue(),
+            'reset_period' => $this->getResetPeriod(),
+            'reset_interval' => $this->getResetInterval(),
+            'unlimited' => $this->isUnlimited(),
+            'resettable' => $this->isResettable(),
         ];
     }
 
