@@ -174,9 +174,9 @@ class Feature implements Arrayable
     /**
      * Get the description of the feature.
      *
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription()
     {
         return $this->description;
     }
@@ -224,7 +224,7 @@ class Feature implements Arrayable
     /**
      * Check if the feature has unlimited uses.
      *
-     * @return int
+     * @return bool
      */
     public function isUnlimited(): bool
     {

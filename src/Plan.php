@@ -161,9 +161,9 @@ class Plan implements Arrayable
     /**
      * Get the description of the plan.
      *
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription()
     {
         return $this->description;
     }
@@ -171,9 +171,9 @@ class Plan implements Arrayable
     /**
      * Get the price of the plan.
      *
-     * @return string
+     * @return float
      */
-    public function getPrice(): string
+    public function getPrice(): float
     {
         return $this->price;
     }
