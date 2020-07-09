@@ -149,6 +149,46 @@ class Plan implements Arrayable
     }
 
     /**
+     * Get the name of the plan.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the description of the plan.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Get the price of the plan.
+     *
+     * @return string
+     */
+    public function getPrice(): string
+    {
+        return $this->price;
+    }
+
+    /**
+     * Get the currency of the plan.
+     *
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
      * Check if the plan is active.
      *
      * @return bool
@@ -189,12 +229,12 @@ class Plan implements Arrayable
     public function toArray()
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'price' => $this->price,
-            'currency' => $this->currency,
-            'active' => $this->active,
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'price' => $this->getPrice(),
+            'currency' => $this->getCurrency(),
+            'active' => $this->isActive(),
             'features' => $this->getFeatures()->toArray(),
         ];
     }
