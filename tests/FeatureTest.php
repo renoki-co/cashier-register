@@ -3,7 +3,6 @@
 namespace RenokiCo\CashierRegister\Test;
 
 use Carbon\Carbon;
-use RenokiCo\CashierRegister\Exceptions\FeatureUsageOverflowException;
 use RenokiCo\CashierRegister\Saas;
 use RenokiCo\CashierRegister\Test\Models\User;
 
@@ -157,9 +156,9 @@ class FeatureTest extends TestCase
 
         $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
-        $this->expectException(FeatureUsageOverflowException::class);
-
         $subscription->recordFeatureUsage('teams', 11);
+
+        $this->assertTrue($subscription->featureOverflown('teams'));
     }
 
     public function test_feature_usage_on_unlimited()

@@ -3,7 +3,6 @@
 namespace RenokiCo\CashierRegister\Models;
 
 use Laravel\Cashier\Subscription as CashierSubscription;
-use RenokiCo\CashierRegister\Exceptions\FeatureUsageOverflowException;
 use RenokiCo\CashierRegister\Saas;
 
 class Subscription extends CashierSubscription
@@ -35,12 +34,10 @@ class Subscription extends CashierSubscription
      * @param  int  $value
      * @param  bool  $incremental
      * @return \RenokiCo\CashierRegister\Models\Usage|null
-     * @throws \RenokiCo\CashierRegister\Exceptions\FeatureUsageOverflowException
      */
     public function recordFeatureUsage(string $id, int $value = 1, bool $incremental = true)
     {
-        $feature = $this->getPlan()
-            ->getFeature($id);
+        $feature = $this->getPlan()->getFeature($id);
 
         if (! $feature) {
             return;
@@ -59,14 +56,8 @@ class Subscription extends CashierSubscription
             ]);
         }
 
-        $newValue = $incremental ? $usage->used + $value : $value;
-
-        if ($feature->getValue() > 0 && $newValue > $feature->getValue()) {
-            throw new FeatureUsageOverflowException('The feature usage is beyond the limit of the feature value.');
-        }
-
         $usage->fill([
-            'used' => $newValue,
+            'used' => $incremental ? $usage->used + $value : $value,
         ]);
 
         return tap($usage)->save();
@@ -167,13 +158,29 @@ class Subscription extends CashierSubscription
      */
     public function getFeatureValue(string $id): int
     {
-        $feature = $this->getPlan()
-            ->getFeature($id);
+        $feature = $this->getPlan()->getFeature($id);
 
         if (! $feature) {
             return 0;
         }
 
         return $feature->getValue();
+    }
+
+    /**
+     * Check if the feature got overflown.
+     *
+     * @param  string  $id
+     * @return bool
+     */
+    public function featureOverflown(string $id): bool
+    {
+        $feature = $this->getPlan()->getFeature($id);
+
+        if ($feature->isUnlimited()) {
+            return false;
+        }
+
+        return $this->getFeatureRemainings($id) < 0;
     }
 }
