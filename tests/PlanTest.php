@@ -16,7 +16,7 @@ class PlanTest extends TestCase
 
         Saas::plan('Archived Plan', 'archived-plan')
             ->price(15, 'USD')
-            ->archive();
+            ->deprecated();
 
         $this->assertCount(1, Saas::getAvailablePlans());
 

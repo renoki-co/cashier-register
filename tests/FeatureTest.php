@@ -27,6 +27,27 @@ class FeatureTest extends TestCase
         );
     }
 
+    public function test_set_feature_usage()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$planId);
+
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+
+        $subscription->recordFeatureUsage('build.minutes', 50);
+
+        $subscription->setFeatureUsage('build.minutes', 20);
+
+        $this->assertEquals(
+            20, $subscription->getFeatureUsage('build.minutes')
+        );
+
+        $this->assertEquals(
+            2980, $subscription->getFeatureRemainings('build.minutes')
+        );
+    }
+
     public function test_reduce_feature_usage()
     {
         $user = factory(User::class)->create();
@@ -41,7 +62,7 @@ class FeatureTest extends TestCase
             50, $subscription->getFeatureUsage('build.minutes')
         );
 
-        $subscription->reduceFeatureUsage('build.minutes', 55);
+        $subscription->decrementFeatureUsage('build.minutes', 55);
 
         $this->assertEquals(
             3000, $subscription->getFeatureRemainings('build.minutes')
@@ -56,7 +77,7 @@ class FeatureTest extends TestCase
 
         $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
 
-        $subscription->reduceFeatureUsage('build.minutes', 55);
+        $subscription->decrementFeatureUsage('build.minutes', 55);
 
         $this->assertEquals(
             3000, $subscription->getFeatureRemainings('build.minutes')
