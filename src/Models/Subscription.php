@@ -100,6 +100,30 @@ class Subscription extends CashierSubscription
     }
 
     /**
+     * Reduce the usage amount.
+     *
+     * @param  string  $id
+     * @param  int  $uses
+     * @return null|\RenokiCo\CashierRegister\Models\Usage
+     */
+    public function decrementFeatureUsage(string $id, int $uses = 1, bool $incremental = true)
+    {
+        return $this->reduceFeatureUsage($id, $uses, $incremental);
+    }
+
+    /**
+     * Set the feature usage to a specific value.
+     *
+     * @param  string  $id
+     * @param  int  $value
+     * @return \RenokiCo\CashierRegister\Models\Usage|null
+     */
+    public function setFeatureUsage(string $id, int $value)
+    {
+        return $this->recordFeatureUsage($id, $value, false);
+    }
+
+    /**
      * Get how many times the feature has been used.
      *
      * @param  string  $id
