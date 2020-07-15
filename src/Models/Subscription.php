@@ -107,13 +107,12 @@ class Subscription extends CashierSubscription
     }
 
     /**
-     * Get how many times the feature has been used.
+     * Get the feature used quota.
      *
      * @param  string  $id
      * @return int
-     * @deprecated 1.1.0
      */
-    public function getFeatureUsage(string $id): int
+    public function getUsedQuota(string $id): int
     {
         $usage = $this->usage()
             ->whereFeatureId($id)
@@ -123,24 +122,12 @@ class Subscription extends CashierSubscription
     }
 
     /**
-     * Get the feature used quota.
+     * Get the feature quota remaining.
      *
      * @param  string  $id
      * @return int
      */
-    public function getUsedQuota(string $id): int
-    {
-        return $this->getFeatureUsage($id);
-    }
-
-    /**
-     * Get the available uses.
-     *
-     * @param  string  $id
-     * @return int
-     * @deprecated 1.1.0
-     */
-    public function getFeatureRemainings(string $id): int
+    public function getRemainingQuota(string $id): int
     {
         $featureValue = $this->getFeatureQuota($id);
 
@@ -152,24 +139,12 @@ class Subscription extends CashierSubscription
     }
 
     /**
-     * Get the feature quota remaining.
+     * Get the feature quota.
      *
      * @param  string  $id
      * @return int
      */
-    public function getRemainingQuota(string $id): int
-    {
-        return $this->getFeatureRemainings($id);
-    }
-
-    /**
-     * Get feature value.
-     *
-     * @param  string  $id
-     * @return int
-     * @deprecated 1.1.0
-     */
-    public function getFeatureValue(string $id): int
+    public function getFeatureQuota(string $id): int
     {
         $feature = $this->getPlan()->getFeature($id);
 
@@ -181,24 +156,12 @@ class Subscription extends CashierSubscription
     }
 
     /**
-     * Get the feature quota.
-     *
-     * @param  string  $id
-     * @return int
-     */
-    public function getFeatureQuota(string $id): int
-    {
-        return $this->getFeatureValue($id);
-    }
-
-    /**
-     * Check if the feature got overflown.
+     * Check if the feature is over the assigned quota.
      *
      * @param  string  $id
      * @return bool
-     * @deprecated 1.1.0
      */
-    public function featureOverflown(string $id): bool
+    public function featureOverQuota(string $id): bool
     {
         $feature = $this->getPlan()->getFeature($id);
 
@@ -207,17 +170,6 @@ class Subscription extends CashierSubscription
         }
 
         return $this->getRemainingQuota($id) < 0;
-    }
-
-    /**
-     * Check if the feature is over the assigned quota.
-     *
-     * @param  string  $id
-     * @return bool
-     */
-    public function featureOverQuota(string $id): bool
-    {
-        return $this->featureOverflown($id);
     }
 
     /**
