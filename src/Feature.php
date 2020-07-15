@@ -2,7 +2,6 @@
 
 namespace RenokiCo\CashierRegister;
 
-use Carbon\Carbon;
 use Illuminate\Contracts\Support\{ Arrayable };
 
 class Feature implements Arrayable
