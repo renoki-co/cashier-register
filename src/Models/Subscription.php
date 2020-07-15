@@ -227,8 +227,8 @@ class Subscription extends CashierSubscription
      */
     public function resetQuotas()
     {
-        foreach ($this->getPlan()->getFeatures() as $feature) {
-            $this->setFeatureUsage($feature->getId(), 0);
+        foreach ($this->usage()->cursor() as $usage) {
+            $usage->delete();
         }
     }
 }
