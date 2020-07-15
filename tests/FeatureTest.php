@@ -109,6 +109,31 @@ class FeatureTest extends TestCase
         );
     }
 
+    public function test_feature_usage_on_resetting_not_resettable()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$planId);
+
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+
+        $subscription->recordFeatureUsage('teams', 1);
+
+        $this->assertEquals(
+            1, $subscription->getUsedQuota('teams')
+        );
+
+        $subscription->resetQuotas();
+
+        $this->assertEquals(
+            1, $subscription->getUsedQuota('teams')
+        );
+
+        $this->assertEquals(
+            9, $subscription->getRemainingQuota('teams')
+        );
+    }
+
     public function test_record_inexistent_feature_usage()
     {
         $user = factory(User::class)->create();
