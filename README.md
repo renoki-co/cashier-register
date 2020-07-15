@@ -221,17 +221,22 @@ $subscription->featureOverQuota('build.minutes');
 
 ## Resetting tracked values
 
-By default, each created feature is resettable - each time the billing cycle ends, it resets to the starting value (3000 in the previous example).
+By default, each created feature is resettable - each time the billing cycle ends, you can call `resetQuotas` to reset them (they will become 3000 in the previous example).
 
-Make sure to set the reset time exactly how long the invoice period is for the plan:
+Make sure to set the reset time after the billing cycle resets.
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')
     ->features([
         Saas::feature('Build Minutes', 'build.minutes', 3000)
-            ->description('3000 build minutes for an entire month')
-            ->resetEvery(30, 'day'),
+            ->description('3000 build minutes for an entire month'),
     ]);
+```
+
+```php
+if ($payment->done()) {
+    $subscription->resetQuotas();
+}
 ```
 
 To avoid resetting, like counting the seats for a subscription, you should call `notResettable()` on the feature:

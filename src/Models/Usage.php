@@ -16,14 +16,7 @@ class Usage extends Model
      */
     protected $fillable = [
         'subscription_id', 'feature_id',
-        'used', 'valid_until',
-    ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $dates = [
-        'valid_until',
+        'used',
     ];
 
     /**
@@ -44,19 +37,5 @@ class Usage extends Model
     public function subscription()
     {
         return $this->belongsTo(config('saas.cashier.models.subscription'));
-    }
-
-    /**
-     * Check whether usage has been expired or not.
-     *
-     * @return bool
-     */
-    public function expired(): bool
-    {
-        if (is_null($this->valid_until)) {
-            return false;
-        }
-
-        return now()->gte($this->valid_until);
     }
 }

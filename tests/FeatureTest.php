@@ -98,7 +98,7 @@ class FeatureTest extends TestCase
             50, $subscription->getUsedQuota('build.minutes')
         );
 
-        Carbon::setTestNow(now()->addMonths(1));
+        $subscription->resetQuotas();
 
         $this->assertEquals(
             0, $subscription->getUsedQuota('build.minutes')
