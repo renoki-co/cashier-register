@@ -1,4 +1,4 @@
-Cashier Register - Laravel Cashier tracker for features
+Cashier Register - Track the plan quotas
 ===========================================
 
 ![CI](https://github.com/renoki-co/cashier-register/workflows/CI/badge.svg?branch=master)
