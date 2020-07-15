@@ -202,21 +202,21 @@ Then track them:
 ```php
 $subscription->recordFeatureUsage('build.minutes', 30); // reducing 30 mins
 
-$subscription->getFeatureUsage('build.minutes') // 30
-$subscription->getFeatureRemainings('build.minutes') // 2950
+$subscription->getUsedQuota('build.minutes') // 30
+$subscription->getRemainingQuota('build.minutes') // 2950
 ```
 
 ## Checking overflow
 
 Checking overflow can be useful when users fallback from a bigger plan to an older plan. In this case, you may end up with an overflow case where the users will have feature tracking values greater than the smaller plan values.
 
-You can check if the feature value overflown by calling `featureOverflown`:
+You can check if the feature value overflown by calling `featureOverQuota`:
 
 ```php
 $subscription->swap($freePlan); // has no build minutes
 
 // Will return true if the consumed build minutes are greater than the free plan (0 minutes)
-$subscription->featureOverflown('build.minutes');
+$subscription->featureOverQuota('build.minutes');
 ```
 
 ## Resetting tracked values

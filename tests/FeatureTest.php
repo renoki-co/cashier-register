@@ -19,11 +19,11 @@ class FeatureTest extends TestCase
         $subscription->recordFeatureUsage('build.minutes', 50);
 
         $this->assertEquals(
-            50, $subscription->getFeatureUsage('build.minutes')
+            50, $subscription->getUsedQuota('build.minutes')
         );
 
         $this->assertEquals(
-            2950, $subscription->getFeatureRemainings('build.minutes')
+            2950, $subscription->getRemainingQuota('build.minutes')
         );
     }
 
@@ -40,11 +40,11 @@ class FeatureTest extends TestCase
         $subscription->setFeatureUsage('build.minutes', 20);
 
         $this->assertEquals(
-            20, $subscription->getFeatureUsage('build.minutes')
+            20, $subscription->getUsedQuota('build.minutes')
         );
 
         $this->assertEquals(
-            2980, $subscription->getFeatureRemainings('build.minutes')
+            2980, $subscription->getRemainingQuota('build.minutes')
         );
     }
 
@@ -59,13 +59,13 @@ class FeatureTest extends TestCase
         $subscription->recordFeatureUsage('build.minutes', 50);
 
         $this->assertEquals(
-            50, $subscription->getFeatureUsage('build.minutes')
+            50, $subscription->getUsedQuota('build.minutes')
         );
 
         $subscription->decrementFeatureUsage('build.minutes', 55);
 
         $this->assertEquals(
-            3000, $subscription->getFeatureRemainings('build.minutes')
+            3000, $subscription->getRemainingQuota('build.minutes')
         );
     }
 
@@ -80,7 +80,7 @@ class FeatureTest extends TestCase
         $subscription->decrementFeatureUsage('build.minutes', 55);
 
         $this->assertEquals(
-            3000, $subscription->getFeatureRemainings('build.minutes')
+            3000, $subscription->getRemainingQuota('build.minutes')
         );
     }
 
@@ -95,17 +95,17 @@ class FeatureTest extends TestCase
         $subscription->recordFeatureUsage('build.minutes', 50);
 
         $this->assertEquals(
-            50, $subscription->getFeatureUsage('build.minutes')
+            50, $subscription->getUsedQuota('build.minutes')
         );
 
         Carbon::setTestNow(now()->addMonths(1));
 
         $this->assertEquals(
-            0, $subscription->getFeatureUsage('build.minutes')
+            0, $subscription->getUsedQuota('build.minutes')
         );
 
         $this->assertEquals(
-            3000, $subscription->getFeatureRemainings('build.minutes')
+            3000, $subscription->getRemainingQuota('build.minutes')
         );
     }
 
@@ -121,11 +121,11 @@ class FeatureTest extends TestCase
         $subscription->recordFeatureUsage('build.minutes', 50);
 
         $this->assertEquals(
-            0, $subscription->getFeatureUsage('build.minutes')
+            0, $subscription->getUsedQuota('build.minutes')
         );
 
         $this->assertEquals(
-            0, $subscription->getFeatureRemainings('build.minutes')
+            0, $subscription->getRemainingQuota('build.minutes')
         );
     }
 
@@ -155,17 +155,17 @@ class FeatureTest extends TestCase
         $subscription->recordFeatureUsage('teams', 5);
 
         $this->assertEquals(
-            5, $subscription->getFeatureUsage('teams')
+            5, $subscription->getUsedQuota('teams')
         );
 
         Carbon::setTestNow(now()->addMonths(1));
 
         $this->assertEquals(
-            5, $subscription->getFeatureUsage('teams')
+            5, $subscription->getUsedQuota('teams')
         );
 
         $this->assertEquals(
-            5, $subscription->getFeatureRemainings('teams')
+            5, $subscription->getRemainingQuota('teams')
         );
     }
 
@@ -179,7 +179,7 @@ class FeatureTest extends TestCase
 
         $subscription->recordFeatureUsage('teams', 11);
 
-        $this->assertTrue($subscription->featureOverflown('teams'));
+        $this->assertTrue($subscription->featureOverQuota('teams'));
     }
 
     public function test_feature_usage_on_unlimited()
@@ -196,17 +196,17 @@ class FeatureTest extends TestCase
         $subscription->recordFeatureUsage('teams', 100);
 
         $this->assertEquals(
-            100, $subscription->getFeatureUsage('teams')
+            100, $subscription->getUsedQuota('teams')
         );
 
         Carbon::setTestNow(now()->addMonths(1));
 
         $this->assertEquals(
-            100, $subscription->getFeatureUsage('teams')
+            100, $subscription->getUsedQuota('teams')
         );
 
         $this->assertEquals(
-            -1, $subscription->getFeatureRemainings('teams')
+            -1, $subscription->getRemainingQuota('teams')
         );
     }
 }
