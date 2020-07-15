@@ -223,7 +223,7 @@ $subscription->featureOverQuota('build.minutes');
 
 By default, each created feature is resettable - each time the billing cycle ends, you can call `resetQuotas` to reset them (they will become 3000 in the previous example).
 
-Make sure to set the reset time after the billing cycle resets.
+Make sure to call `resetQuotas` after the billing cycle resets.
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')
@@ -247,6 +247,8 @@ Saas::plan('Gold Plan', 'gold-plan')
         Saas::feature('Seats', 'seats', 5)->notResettable(),
     ]);
 ```
+
+Now when calling `resetQuotas()`, the `seats` feature won't go back to the default value.
 
 ## Unlimited amount
 
