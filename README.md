@@ -225,17 +225,36 @@ By default, each created feature is resettable - each time the billing cycle end
 
 Make sure to call `resetQuotas` after the billing cycle resets.
 
-```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->features([
-        Saas::feature('Build Minutes', 'build.minutes', 3000)
-            ->description('3000 build minutes for an entire month'),
-    ]);
-```
+For example, you can extend the default Webhook controller that Laravel Cashier comes with and implement the `invoice.payment_succeeded` event handler:
 
 ```php
-if ($payment->done()) {
-    $subscription->resetQuotas();
+<?php
+use Laravel\Cashier\Http\Controllers\WebhookController;
+
+class StripeController extends WebhookController
+{
+    /**
+     * Handle invoice payment succeeded.
+     *
+     * @param  array  $payload
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function handleInvoicePaymentSucceeded($payload)
+    {
+        if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
+            $data = $payload['data']['object'];
+
+            $subscription = $user->subscriptions()
+                ->whereStripeId($data['subscription'] ?? null)
+                ->first();
+
+            if ($subscription) {
+                $subscription->resetQuotas();
+            }
+        }
+
+        return $this->successMethod();
+    }
 }
 ```
 
