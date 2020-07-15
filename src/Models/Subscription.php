@@ -119,7 +119,7 @@ class Subscription extends CashierSubscription
             ->whereFeatureId($id)
             ->first();
 
-        return $usage ? $usage->used: 0;
+        return $usage ? $usage->used : 0;
     }
 
     /**
