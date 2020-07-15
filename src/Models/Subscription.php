@@ -48,14 +48,6 @@ class Subscription extends CashierSubscription
             'feature_id' => $feature->getId(),
         ]);
 
-        if ($feature->isResettable()) {
-            $usage->fill([
-                'valid_until' => is_null($usage->ends_at)
-                    ? $feature->getResetDate($this->created_at)
-                    : $feature->getResetDate($this->ends_at),
-            ]);
-        }
-
         $usage->fill([
             'used' => $incremental ? $usage->used + $value : $value,
         ]);
@@ -127,11 +119,7 @@ class Subscription extends CashierSubscription
             ->whereFeatureId($id)
             ->first();
 
-        if (! $usage) {
-            return 0;
-        }
-
-        return $usage->expired() ? 0 : $usage->used;
+        return $usage ? $usage->used : 0;
     }
 
     /**
@@ -230,5 +218,25 @@ class Subscription extends CashierSubscription
     public function featureOverQuota(string $id): bool
     {
         return $this->featureOverflown($id);
+    }
+
+    /**
+     * Reset the quotas of this subscription.
+     *
+     * @return void
+     */
+    public function resetQuotas()
+    {
+        $plan = $this->getPlan();
+
+        $this->usage()
+            ->get()
+            ->each(function (Usage $usage) use ($plan) {
+                $feature = $plan->getFeature($usage->feature_id);
+
+                if ($feature->isResettable()) {
+                    $usage->delete();
+                }
+            });
     }
 }

@@ -98,7 +98,7 @@ class FeatureTest extends TestCase
             50, $subscription->getUsedQuota('build.minutes')
         );
 
-        Carbon::setTestNow(now()->addMonths(1));
+        $subscription->resetQuotas();
 
         $this->assertEquals(
             0, $subscription->getUsedQuota('build.minutes')
@@ -106,6 +106,31 @@ class FeatureTest extends TestCase
 
         $this->assertEquals(
             3000, $subscription->getRemainingQuota('build.minutes')
+        );
+    }
+
+    public function test_feature_usage_on_resetting_not_resettable()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$planId);
+
+        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+
+        $subscription->recordFeatureUsage('teams', 1);
+
+        $this->assertEquals(
+            1, $subscription->getUsedQuota('teams')
+        );
+
+        $subscription->resetQuotas();
+
+        $this->assertEquals(
+            1, $subscription->getUsedQuota('teams')
+        );
+
+        $this->assertEquals(
+            9, $subscription->getRemainingQuota('teams')
         );
     }
 

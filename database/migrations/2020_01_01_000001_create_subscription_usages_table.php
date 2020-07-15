@@ -18,7 +18,6 @@ class CreateSubscriptionUsagesTable extends Migration
             $table->string('feature_id');
 
             $table->unsignedSmallInteger('used');
-            $table->timestamp('valid_until')->nullable();
 
             $table->timestamps();
 
