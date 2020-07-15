@@ -9,7 +9,7 @@ Cashier Register - Track the plan quotas
 [![Monthly Downloads](https://poser.pugx.org/renoki-co/cashier-register/d/monthly)](https://packagist.org/packages/renoki-co/cashier-register)
 [![License](https://poser.pugx.org/renoki-co/cashier-register/license)](https://packagist.org/packages/renoki-co/cashier-register)
 
-Cashier Register is a simple feature usage tracker for Laravel Cashier.
+Cashier Register is a simple quota feature usage tracker for Laravel Cashier subscriptions.
 
 It helps you define static, project-level plans, and attach them features that can be tracked and limited throughout the app.
 
