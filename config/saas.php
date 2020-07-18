@@ -12,10 +12,13 @@ return [
 
         'models' => [
 
-            'subscription' => \RenokiCo\CashierRegister\Models\Subscription::class,
+            'subscription' => [
 
+                'stripe' => \RenokiCo\CashierRegister\Models\StripeSubscription::class,
+
+                'paddle' => \RenokiCo\CashierRegister\Models\PaddleSubscription::class,
+            ]
         ],
-
     ],
 
 ];

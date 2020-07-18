@@ -52,7 +52,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'stripe-gold-plan-id')
+        Saas::plan('Gold Plan', 'plan-price-identifier')
             ->description('The gold plan.')
             ->price(30, 'EUR')
             ->features([
@@ -120,7 +120,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 }
 ```
 
-**When setting an unique indentifier for the plan (second parameter), make sure to use it from Stripe's plan ID.**
+**When setting an unique indentifier for the plan (second parameter), make sure to use it from Stripe's plan ID or Paddle Subscription ID.**
 
 Defining plans can also help you retrieving them when showing them in the frontend:
 
@@ -136,12 +136,12 @@ foreach ($allPlans as $plan) {
 }
 ```
 
-Or retrieving a specific plan by Stripe Plan ID:
+Or retrieving a specific plan by Plan ID:
 
 ```php
 use RenokiCo\CashierRegister\Saas;
 
-$plan = Saas::getPlan('stripe-plan-id');
+$plan = Saas::getPlan('plan-id');
 ```
 
 Deprecating plans can occur anytime. In order to do so, just call `deprecated()` when defining the plan:
@@ -156,7 +156,7 @@ public function boot()
 {
     parent::boot();
 
-    Saas::plan('Silver Plan', 'stripe-silver-plan-id')
+    Saas::plan('Silver Plan', 'silver-plan-id')
         ->deprecated();
 }
 ```
@@ -225,7 +225,7 @@ By default, each created feature is resettable - each time the billing cycle end
 
 Make sure to call `resetQuotas` after the billing cycle resets.
 
-For example, you can extend the default Webhook controller that Laravel Cashier comes with and implement the `invoice.payment_succeeded` event handler:
+For example, you can extend the default Stripe Webhook controller that Laravel Cashier comes with and implement the `invoice.payment_succeeded` event handler:
 
 ```php
 <?php

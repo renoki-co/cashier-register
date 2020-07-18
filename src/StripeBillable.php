@@ -2,18 +2,18 @@
 
 namespace RenokiCo\CashierRegister;
 
-use Laravel\Cashier\Billable as CashierBillable;
+use Laravel\Cashier\Billable;
 
-trait Billable
+trait StripeBillable
 {
-    use CashierBillable;
+    use Billable;
 
     /**
      * {@inheritdoc}
      */
     public function subscriptions()
     {
-        return $this->hasMany(Models\Subscription::class, $this->getForeignKey())
+        return $this->hasMany(config('saas.models.subscription.stripe'), $this->getForeignKey())
             ->orderBy('created_at', 'desc');
     }
 }
