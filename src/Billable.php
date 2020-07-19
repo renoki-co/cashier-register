@@ -13,7 +13,7 @@ trait Billable
      */
     public function subscriptions()
     {
-        return $this->hasMany(Models\Subscription::class, $this->getForeignKey())
+        return $this->hasMany(config('saas.cashier.models.subscription'), $this->getForeignKey())
             ->orderBy('created_at', 'desc');
     }
 }
