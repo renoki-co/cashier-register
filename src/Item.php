@@ -4,9 +4,7 @@ namespace RenokiCo\CashierRegister;
 
 class Item
 {
-    use Contracts\HasFeatures,
-        Contracts\HasPrice,
-        Contracts\Deprecable,
+    use Contracts\HasPrice,
         Contracts\IsIdentifiable;
 
     /**
@@ -25,7 +23,7 @@ class Item
      * @param  string  $currency
      * @return void
      */
-    public function __construct(string $name, string $id, float $price, string $currency = 'EUR')
+    public function __construct(string $name, string $id, float $price = 0.00, string $currency = 'EUR')
     {
         $this->name = $name;
         $this->id = $id;

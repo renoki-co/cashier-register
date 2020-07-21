@@ -56,13 +56,13 @@ class Saas
      * @param  string  $currency
      * @return $this
      */
-    public function item(string $id, string $name, float $price, string $currency = 'EUR')
+    public static function item(string $id, string $name, float $price = 0.00, string $currency = 'EUR')
     {
-        $price = new Price($id, $name, $price, $currency);
+        $item = new Item($id, $name, $price, $currency);
 
-        static::$prices[] = $price;
+        static::$items[] = $item;
 
-        return $price;
+        return $item;
     }
 
     /**
