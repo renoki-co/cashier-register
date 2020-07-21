@@ -130,7 +130,7 @@ class Saas
      */
     public static function clearPlans(): void
     {
-        static::$plans = [];
+        static::$plans = collect([]);
     }
 
     /**
