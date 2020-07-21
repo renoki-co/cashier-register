@@ -12,6 +12,13 @@ class Saas
     protected static $plans = [];
 
     /**
+     * The list of items with fixed price.
+     *
+     * @var array
+     */
+    protected static $items = [];
+
+    /**
      * Start creating a new plan.
      *
      * @param  string  $name
@@ -38,6 +45,24 @@ class Saas
     public static function feature(string $name, string $id, int $value = 0)
     {
         return new Feature($name, $id, $value);
+    }
+
+    /**
+     * Assign a new item to the list.
+     *
+     * @param  string  $id
+     * @param  string  $name
+     * @param  float  $price
+     * @param  string  $currency
+     * @return $this
+     */
+    public static function item(string $id, string $name, float $price = 0.00, string $currency = 'EUR')
+    {
+        $item = new Item($id, $name, $price, $currency);
+
+        static::$items[] = $item;
+
+        return $item;
     }
 
     /**
@@ -76,12 +101,45 @@ class Saas
     }
 
     /**
+     * Get the list of items.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getItems()
+    {
+        return collect(static::$items);
+    }
+
+    /**
+     * Get a specific item by id.
+     *
+     * @param  string  $id
+     * @return Item|null
+     */
+    public static function getItem(string $id)
+    {
+        return collect(static::$items)->filter(function (Item $item) use ($id) {
+            return $item->getId() === $id;
+        })->first();
+    }
+
+    /**
      * Clear the plans.
      *
      * @return void
      */
     public static function clearPlans(): void
     {
-        static::$plans = [];
+        static::$plans = collect([]);
+    }
+
+    /**
+     * Clear the plans.
+     *
+     * @return void
+     */
+    public static function clearItems(): void
+    {
+        static::$items = collect([]);
     }
 }
