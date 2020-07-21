@@ -2,8 +2,6 @@
 
 namespace RenokiCo\CashierRegister\Contracts;
 
-use RenokiCo\CashierRegister\Feature;
-
 trait HasData
 {
     /**
