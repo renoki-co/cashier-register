@@ -9,7 +9,8 @@ class Plan implements Arrayable
     use Contracts\HasFeatures,
         Contracts\HasPrice,
         Contracts\Deprecable,
-        Contracts\IsIdentifiable;
+        Contracts\IsIdentifiable,
+        Contracts\HasData;
 
     /**
      * Create a new plan builder.

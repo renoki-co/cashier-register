@@ -7,7 +7,8 @@ use Illuminate\Contracts\Support\Arrayable;
 class Item implements Arrayable
 {
     use Contracts\HasPrice,
-        Contracts\IsIdentifiable;
+        Contracts\IsIdentifiable,
+        Contracts\HasData;
 
     /**
      * Get the list of subitems for this item.

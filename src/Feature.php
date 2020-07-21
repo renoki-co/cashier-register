@@ -6,7 +6,8 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Feature implements Arrayable
 {
-    use Contracts\IsIdentifiable;
+    use Contracts\IsIdentifiable,
+        Contracts\HasData;
 
     /**
      * The value of this feature. Used
