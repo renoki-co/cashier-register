@@ -16,12 +16,14 @@ class ItemTest extends TestCase
 
         $this->assertCount(1, Saas::getItems());
 
-        $this->assertEquals('sticker', Saas::getItems()[0]->getId());
+        $item = Saas::getItem('sticker');
+
+        $this->assertEquals('sticker', $item->getId());
     }
 
     public function test_build_items_with_subitems()
     {
-        Saas::clearPlans();
+        Saas::clearItems();
 
         $plan = Saas::item('Sticker Pack', 'sticker-pack')
             ->description('Some sticker pack.')
