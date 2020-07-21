@@ -43,7 +43,7 @@ class Item
     public function subitems(array $subitems)
     {
         $this->subitems = collect($subitems)
-            ->unique(function (Item $item) {
+            ->unique(function (self $item) {
                 return $item->getId();
             });
 
