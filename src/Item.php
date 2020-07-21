@@ -2,7 +2,9 @@
 
 namespace RenokiCo\CashierRegister;
 
-class Item
+use Illuminate\Contracts\Support\Arrayable;
+
+class Item implements Arrayable
 {
     use Contracts\HasPrice,
         Contracts\IsIdentifiable;
@@ -70,7 +72,7 @@ class Item
             'name' => $this->getName(),
             'price' => $this->getPrice(),
             'currency' => $this->getCurrency(),
-            'subitems' => $this->getSubitems(),
+            'subitems' => $this->getSubitems()->toArray(),
         ];
     }
 

@@ -2,7 +2,7 @@
 
 namespace RenokiCo\CashierRegister;
 
-use Illuminate\Contracts\Support\{ Arrayable };
+use Illuminate\Contracts\Support\Arrayable;
 
 class Plan implements Arrayable
 {

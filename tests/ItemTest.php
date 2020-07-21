@@ -25,13 +25,21 @@ class ItemTest extends TestCase
     {
         Saas::clearItems();
 
-        $plan = Saas::item('Sticker Pack', 'sticker-pack')
+        $item = Saas::item('Sticker Pack', 'sticker-pack')
             ->description('Some sticker pack.')
             ->subitems([
                 Saas::item('Laravel Sticker', 'laravel-sticker')
                     ->price(30, 'USD'),
             ]);
 
-        $this->assertCount(1, $plan->getSubitems());
+        $this->assertCount(1, $item->getSubitems());
+
+        $this->assertTrue(
+            is_array($item->toArray())
+        );
+
+        $this->assertTrue(
+            is_array($item->toArray()['subitems'])
+        );
     }
 }
