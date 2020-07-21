@@ -6,26 +6,7 @@ use Illuminate\Contracts\Support\{ Arrayable };
 
 class Feature implements Arrayable
 {
-    /**
-     * The display name of the plan.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * An unique id for the plan.
-     *
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * Description for the plan.
-     *
-     * @var string
-     */
-    protected $description;
+    use Contracts\IsIdentifiable;
 
     /**
      * The value of this feature. Used
@@ -57,19 +38,6 @@ class Feature implements Arrayable
         $this->name = $name;
         $this->id = $id;
         $this->value = $value;
-    }
-
-    /**
-     * Set a description for the plan.
-     *
-     * @param  string  $description
-     * @return $this
-     */
-    public function description(string $description)
-    {
-        $this->description = $description;
-
-        return $this;
     }
 
     /**
@@ -108,36 +76,6 @@ class Feature implements Arrayable
         $this->resettable = false;
 
         return $this;
-    }
-
-    /**
-     * Get the id of the feature.
-     *
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * Get the name of the feature.
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Get the description of the feature.
-     *
-     * @return string|null
-     */
-    public function getDescription()
-    {
-        return $this->description;
     }
 
     /**
