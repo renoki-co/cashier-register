@@ -21,6 +21,6 @@
     </filter>
     <php>
         <server name="APP_ENV" value="testing" />
-        <server name="CASHIER_MODEL" value="RenokiCo\CashierRegister\Test\Models\User" />
+        <server name="CASHIER_MODEL" value="RenokiCo\CashierRegister\Test\Models\Stripe\User" />
     </php>
 </phpunit>
