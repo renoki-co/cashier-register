@@ -23,7 +23,7 @@ class CashierRegisterServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../stubs/CashierRegisterServiceProvider.stub' => app_path('Providers/CashierRegisterServiceProvider.php'),
-        ], 'horizon-provider');
+        ], 'provider');
 
         $this->mergeConfigFrom(
             __DIR__.'/../config/saas.php', 'saas'

@@ -43,10 +43,16 @@ Cashier for Paddle:
 $ composer require laravel/cashier-paddle:"^1.0@dev"
 ```
 
-Run the publishing command for migrations & configs:
+Publish the config file:
 
 ```bash
-$ php artisan vendor:publish
+$ php artisan vendor:publish --provider="RenokiCo\CashierRegister\CashierRegisterServiceProvider" --tag="config"
+```
+
+Publish the migrations:
+
+```bash
+$ php artisan vendor:publish --provider="RenokiCo\CashierRegister\CashierRegisterServiceProvider" --tag="migrations"
 ```
 
 ## 🙌 Usage
@@ -118,7 +124,13 @@ class User extends Model
 
 You can define the plans at the app service provider level and it will stick throughout the request cycle.
 
-First of all, make sure that you published the files with `vendor:publish` and import the created `app/Providers/CashierRegisterServiceProvider` class into your `app.php`:
+First of all, publish the Provider file:
+
+```bash
+$ php artisan vendor:publish --provider="RenokiCo\CashierRegister\CashierRegisterServiceProvider" --tag="provider"
+```
+
+Import the created `app/Providers/CashierRegisterServiceProvider` class into your `app.php`:
 
 ```php
 $providers = [
