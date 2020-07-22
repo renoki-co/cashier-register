@@ -29,7 +29,21 @@ You can install the package via composer:
 composer require renoki-co/cashier-register
 ```
 
-After installing the package, run the publishing command for migrations & configs:
+The package does not come with Cashier as dependency, so you should install according to your needs:
+
+Cashier for Stripe:
+
+```
+$ composer require laravel/cashier:"^12.1"
+```
+
+Cashier for Paddle:
+
+```
+$ composer require laravel/cashier-paddle:"^1.0@dev"
+```
+
+Run the publishing command for migrations & configs:
 
 ```bash
 $ php artisan vendor:publish
@@ -52,7 +66,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'stripe-gold-plan-id')
+        Saas::plan('Gold Plan', 'plan-price-identifier')
             ->description('The gold plan.')
             ->price(30, 'EUR')
             ->features([
@@ -74,12 +88,27 @@ Instead of using Cashier's Billing trait, you should use the trait that comes wi
 
 The trait already uses the original cashier trait, with small modifications so that you can benefit of CashierRegister's features.
 
+For Stripe you can use `BillableWithStripe`:
+
 ```php
-use RenokiCo\CashierRegister\Billable;
+use RenokiCo\CashierRegister\BillableWithStripe;
 
 class User extends Model
 {
-    use Billable;
+    use BillableWithStripe;
+
+    //
+}
+```
+
+For Paddle you can use `BillableWithPaddle`:
+
+```php
+use RenokiCo\CashierRegister\BillableWithPaddle;
+
+class User extends Model
+{
+    use BillableWithPaddle;
 
     //
 }
@@ -120,7 +149,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 }
 ```
 
-**When setting an unique indentifier for the plan (second parameter), make sure to use it from Stripe's plan ID.**
+**When setting an unique indentifier for the plan (second parameter), make sure to use the Stripe Price ID or the Paddle Plan ID.**
 
 Defining plans can also help you retrieving them when showing them in the frontend:
 
@@ -136,12 +165,12 @@ foreach ($allPlans as $plan) {
 }
 ```
 
-Or retrieving a specific plan by Stripe Plan ID:
+Or retrieving a specific plan by Plan ID:
 
 ```php
 use RenokiCo\CashierRegister\Saas;
 
-$plan = Saas::getPlan('stripe-plan-id');
+$plan = Saas::getPlan('plan-id');
 ```
 
 Deprecating plans can occur anytime. In order to do so, just call `deprecated()` when defining the plan:
@@ -156,7 +185,7 @@ public function boot()
 {
     parent::boot();
 
-    Saas::plan('Silver Plan', 'stripe-silver-plan-id')
+    Saas::plan('Silver Plan', 'silver-plan-id')
         ->deprecated();
 }
 ```
@@ -225,7 +254,7 @@ By default, each created feature is resettable - each time the billing cycle end
 
 Make sure to call `resetQuotas` after the billing cycle resets.
 
-For example, you can extend the default Webhook controller that Laravel Cashier comes with and implement the `invoice.payment_succeeded` event handler:
+For example, you can extend the default Stripe Webhook controller that Laravel Cashier comes with and implement the `invoice.payment_succeeded` event handler:
 
 ```php
 <?php

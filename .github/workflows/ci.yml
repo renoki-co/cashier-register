@@ -20,19 +20,27 @@ jobs:
     name: PHP ${{ matrix.php }}
     steps:
     - uses: actions/checkout@v1
+
     - uses: actions/cache@v1
       name: Cache dependencies
       with:
         path: ~/.composer/cache/files
         key: composer-php-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+
     - name: Install dependencies
       run: |
         composer install --no-interaction --prefer-source
+        composer require laravel/cashier:"^12.1" laravel/cashier-paddle:"^1.0@dev"
+
     - name: Run tests
       run: |
         phpunit --coverage-text --coverage-clover=coverage.xml
       env:
         STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+        PADDLE_VENDOR_ID: ${{ secrets.PADDLE_VENDOR_ID }}
+        PADDLE_VENDOR_AUTH_CODE: ${{ secrets.PADDLE_VENDOR_AUTH_CODE }}
+        PADDLE_TEST_PLAN: ${{ secrets.PADDLE_TEST_PLAN }}
+
     - uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: false

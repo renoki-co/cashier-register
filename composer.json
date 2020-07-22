@@ -1,7 +1,7 @@
 {
     "name": "renoki-co/cashier-register",
     "description": "Cashier Register is a simple quota feature usage tracker for Laravel Cashier subscriptions.",
-    "keywords": ["laravel", "php", "saas"," subscription", "plans", "cashier", "stripe", "quota", "quotas"],
+    "keywords": ["laravel", "php", "saas"," subscription", "plans", "cashier", "stripe", "paddle", "quota", "quotas"],
     "license": "MIT",
     "homepage": "https://github.com/renoki-co/cashier-register",
     "authors": [
@@ -12,8 +12,6 @@
         }
     ],
     "require": {
-        "php": ">=7.2",
-        "laravel/cashier": "^12.1",
         "laravel/framework": "^6.2|^7.0"
     },
     "autoload": {

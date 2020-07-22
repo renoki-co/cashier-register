@@ -1,6 +1,6 @@
 <?php
 
-namespace RenokiCo\CashierRegister\Contracts;
+namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Feature;
 

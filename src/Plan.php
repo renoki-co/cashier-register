@@ -6,11 +6,11 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Plan implements Arrayable
 {
-    use Contracts\HasFeatures,
-        Contracts\HasPrice,
-        Contracts\Deprecable,
-        Contracts\IsIdentifiable,
-        Contracts\HasData;
+    use Concerns\HasFeatures,
+        Concerns\HasPrice,
+        Concerns\Deprecable,
+        Concerns\IsIdentifiable,
+        Concerns\HasData;
 
     /**
      * Create a new plan builder.

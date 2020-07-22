@@ -20,23 +20,29 @@ return [
 
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cashier Stripe Models
-    |--------------------------------------------------------------------------
-    |
-    | Here you can configure the model classes to use for the tables
-    | provided by Laravel Cashier. The models are already extended by
-    | Cashier Register, but you can extend them again if you need
-    | to customize them for your needs.
-    |
-    */
-
     'cashier' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cashier Stripe Models
+        |--------------------------------------------------------------------------
+        |
+        | Here you can configure the model classes to use for the tables
+        | provided by Laravel Cashier. The models are already extended by
+        | Cashier Register, but you can extend them again if you need
+        | to customize them for your needs.
+        |
+        */
 
         'models' => [
 
-            'subscription' => \RenokiCo\CashierRegister\Models\Subscription::class,
+            'subscription' => [
+
+                'stripe' => \RenokiCo\CashierRegister\Models\Stripe\Subscription::class,
+
+                'paddle' => \RenokiCo\CashierRegister\Models\Paddle\Subscription::class,
+
+            ],
 
         ],
 

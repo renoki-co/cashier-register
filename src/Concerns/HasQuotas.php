@@ -1,12 +1,13 @@
 <?php
 
-namespace RenokiCo\CashierRegister\Models;
+namespace RenokiCo\CashierRegister\Concerns;
 
-use Laravel\Cashier\Subscription as CashierSubscription;
-use RenokiCo\CashierRegister\Saas;
+use RenokiCo\CashierRegister\Models\Usage;
 
-class Subscription extends CashierSubscription
+trait HasQuotas
 {
+    use HasPlans;
+
     /**
      * Get the feature usages.
      *
@@ -15,16 +16,6 @@ class Subscription extends CashierSubscription
     public function usage()
     {
         return $this->hasMany(config('saas.models.usage'));
-    }
-
-    /**
-     * Get the plan this subscription belongs to.
-     *
-     * @return \RenokiCo\CashierRegister\Plan
-     */
-    public function getPlan()
-    {
-        return Saas::getPlan($this->stripe_plan);
     }
 
     /**
