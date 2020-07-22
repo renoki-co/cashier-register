@@ -88,12 +88,27 @@ Instead of using Cashier's Billing trait, you should use the trait that comes wi
 
 The trait already uses the original cashier trait, with small modifications so that you can benefit of CashierRegister's features.
 
+For Stripe you can use `BillableWithStripe`:
+
 ```php
-use RenokiCo\CashierRegister\Billable;
+use RenokiCo\CashierRegister\BillableWithStripe;
 
 class User extends Model
 {
-    use Billable;
+    use BillableWithStripe;
+
+    //
+}
+```
+
+For Paddle you can use `BillableWithPaddle`:
+
+```php
+use RenokiCo\CashierRegister\BillableWithPaddle;
+
+class User extends Model
+{
+    use BillableWithPaddle;
 
     //
 }
@@ -134,7 +149,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 }
 ```
 
-**When setting an unique indentifier for the plan (second parameter), make sure to use it from Stripe's plan ID or Paddle Subscription ID.**
+**When setting an unique indentifier for the plan (second parameter), make sure to use the Stripe Price ID or the Paddle Plan ID.**
 
 Defining plans can also help you retrieving them when showing them in the frontend:
 
