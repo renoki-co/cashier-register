@@ -6,9 +6,9 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Item implements Arrayable
 {
-    use Contracts\HasPrice,
-        Contracts\IsIdentifiable,
-        Contracts\HasData;
+    use Concerns\HasPrice,
+        Concerns\IsIdentifiable,
+        Concerns\HasData;
 
     /**
      * Get the list of subitems for this item.
