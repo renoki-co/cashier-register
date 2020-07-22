@@ -6,7 +6,7 @@ use RenokiCo\CashierRegister\Saas;
 
 trait HasPlans
 {
-   /**
+    /**
      * Get the plan this instance belongs to.
      *
      * @return \RenokiCo\CashierRegister\Plan
