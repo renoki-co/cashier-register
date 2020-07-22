@@ -2,9 +2,9 @@
 
 namespace RenokiCo\CashierRegister;
 
-use Laravel\Paddle\Billable;
+use Laravel\Cashier\Billable;
 
-trait PaddleBillable
+trait BillableWithStripe
 {
     use Billable;
 
@@ -13,7 +13,7 @@ trait PaddleBillable
      */
     public function subscriptions()
     {
-        return $this->hasMany(config('saas.models.subscription.paddle'), $this->getForeignKey())
+        return $this->hasMany(config('saas.models.subscription.stripe'), $this->getForeignKey())
             ->orderBy('created_at', 'desc');
     }
 }
