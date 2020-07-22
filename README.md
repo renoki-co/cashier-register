@@ -29,7 +29,21 @@ You can install the package via composer:
 composer require renoki-co/cashier-register
 ```
 
-After installing the package, run the publishing command for migrations & configs:
+The package does not come with Cashier as dependency, so you should install according to your needs:
+
+Cashier for Stripe:
+
+```
+$ composer require laravel/cashier:"^12.1"
+```
+
+Cashier for Paddle:
+
+```
+$ composer require laravel/cashier-paddle:"^1.0@dev"
+```
+
+Run the publishing command for migrations & configs:
 
 ```bash
 $ php artisan vendor:publish

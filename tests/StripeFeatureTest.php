@@ -4,17 +4,17 @@ namespace RenokiCo\CashierRegister\Test;
 
 use Carbon\Carbon;
 use RenokiCo\CashierRegister\Saas;
-use RenokiCo\CashierRegister\Test\Models\User;
+use RenokiCo\CashierRegister\Test\Models\Stripe\User;
 
-class FeatureTest extends TestCase
+class StripeFeatureTest extends TestCase
 {
     public function test_record_feature_usage()
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -31,9 +31,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -52,9 +52,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -73,9 +73,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->decrementFeatureUsage('build.minutes', 55);
 
@@ -88,9 +88,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -113,9 +113,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 1);
 
@@ -138,10 +138,10 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId)
+        $plan = Saas::getPlan(static::$stripePlanId)
             ->features([]);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -158,7 +158,7 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
         $this->assertTrue(
             is_array($plan->toArray())
@@ -173,9 +173,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 5);
 
@@ -198,9 +198,9 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId);
+        $plan = Saas::getPlan(static::$stripePlanId);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 11);
 
@@ -211,12 +211,12 @@ class FeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$planId)
+        $plan = Saas::getPlan(static::$stripePlanId)
             ->features([
                 Saas::feature('Seats', 'teams')->unlimited()->notResettable(),
             ]);
 
-        $subscription = $user->newSubscription('main', static::$planId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 100);
 

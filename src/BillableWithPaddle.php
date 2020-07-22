@@ -13,7 +13,7 @@ trait BillableWithPaddle
      */
     public function subscriptions()
     {
-        return $this->hasMany(config('saas.models.subscription.paddle'), $this->getForeignKey())
+        return $this->hasMany(config('saas.cashier.models.subscription.paddle'), $this->getForeignKey())
             ->orderBy('created_at', 'desc');
     }
 }

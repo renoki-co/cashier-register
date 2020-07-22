@@ -13,7 +13,7 @@ trait BillableWithStripe
      */
     public function subscriptions()
     {
-        return $this->hasMany(config('saas.models.subscription.stripe'), $this->getForeignKey())
+        return $this->hasMany(config('saas.cashier.models.subscription.stripe'), $this->getForeignKey())
             ->orderBy('created_at', 'desc');
     }
 }

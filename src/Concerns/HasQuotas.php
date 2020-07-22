@@ -2,6 +2,8 @@
 
 namespace RenokiCo\CashierRegister\Concerns;
 
+use RenokiCo\CashierRegister\Models\Usage;
+
 trait HasQuotas
 {
     use HasPlans;

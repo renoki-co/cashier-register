@@ -13,15 +13,11 @@ use Stripe\Stripe;
 
 abstract class TestCase extends Orchestra
 {
-    /**
-     * @var string
-     */
     protected static $productId;
 
-    /**
-     * @var string
-     */
-    protected static $planId;
+    protected static $stripePlanId;
+
+    protected static $paddlePlanId;
 
     /**
      * {@inheritdoc}
@@ -42,7 +38,13 @@ abstract class TestCase extends Orchestra
 
         $this->withFactories(__DIR__.'/database/factories');
 
-        Saas::plan('Monthly $10', static::$planId)
+        Saas::plan('Monthly $10', static::$stripePlanId)
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 3000),
+                Saas::feature('Seats', 'teams', 10)->notResettable(),
+            ]);
+
+        Saas::plan('Monthly $20', static::$paddlePlanId)
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 3000),
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
@@ -58,7 +60,7 @@ abstract class TestCase extends Orchestra
 
         Stripe::setApiKey(getenv('STRIPE_SECRET') ?: env('STRIPE_SECRET'));
 
-        static::$planId = 'monthly-10-'.Str::random(10);
+        static::$stripePlanId = 'monthly-10-'.Str::random(10);
 
         static::$productId = 'product-1'.Str::random(10);
 
@@ -69,7 +71,7 @@ abstract class TestCase extends Orchestra
         ]);
 
         Plan::create([
-            'id' => static::$planId,
+            'id' => static::$stripePlanId,
             'nickname' => 'Monthly $10',
             'currency' => 'USD',
             'interval' => 'month',
@@ -77,6 +79,8 @@ abstract class TestCase extends Orchestra
             'amount' => 1000,
             'product' => static::$productId,
         ]);
+
+        static::$paddlePlanId = getenv('PADDLE_TEST_PLAN') ?: env('PADDLE_TEST_PLAN');
     }
 
     /**
@@ -86,7 +90,7 @@ abstract class TestCase extends Orchestra
     {
         parent::tearDownAfterClass();
 
-        static::deleteStripeResource(new Plan(static::$planId));
+        static::deleteStripeResource(new Plan(static::$stripePlanId));
     }
 
     /**
@@ -118,7 +122,8 @@ abstract class TestCase extends Orchestra
             'database' => __DIR__.'/database.sqlite',
             'prefix'   => '',
         ]);
-        $app['config']->set('auth.providers.users.model', User::class);
+        $app['config']->set('auth.providers.users_with_stripe.model', Models\Stripe\User::class);
+        $app['config']->set('auth.providers.users_with_paddle.model', Models\Paddle\User::class);
         $app['config']->set('app.key', 'wslxrEFGWY6GfGhvN9L3wH3KSRJQQpBD');
     }
 

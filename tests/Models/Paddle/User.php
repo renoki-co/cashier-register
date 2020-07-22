@@ -1,13 +1,15 @@
 <?php
 
-namespace RenokiCo\CashierRegister\Test\Models;
+namespace RenokiCo\CashierRegister\Test\Models\Paddle;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use RenokiCo\CashierRegister\BillableWithStripe;
+use RenokiCo\CashierRegister\BillableWithPaddle;
 
-class UserWithStripe extends Authenticatable
+class User extends Authenticatable
 {
-    use BillableWithStripe;
+    use BillableWithPaddle;
+
+    protected $table = 'users';
 
     protected $fillable = [
         'name', 'email', 'password',
