@@ -3,7 +3,6 @@
 namespace RenokiCo\CashierRegister;
 
 use Illuminate\Support\ServiceProvider;
-use Laravel\Cashier\Cashier;
 
 class CashierRegisterServiceProvider extends ServiceProvider
 {
@@ -38,6 +37,6 @@ class CashierRegisterServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Cashier::ignoreMigrations();
+        //
     }
 }
