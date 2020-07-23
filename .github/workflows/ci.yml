@@ -17,7 +17,8 @@ jobs:
     strategy:
       matrix:
         php: ['7.2', '7.3', '7.4']
-    name: PHP ${{ matrix.php }}
+        dep: [prefer-stable, prefer-lowest]
+    name: PHP ${{ matrix.php }} --${{ matrix.dep }}
     steps:
     - uses: actions/checkout@v1
 
@@ -25,11 +26,11 @@ jobs:
       name: Cache dependencies
       with:
         path: ~/.composer/cache/files
-        key: composer-php-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+        key: composer-php-${{ matrix.php }}-dep-${{ matrix.dep }}-${{ hashFiles('composer.json') }}
 
     - name: Install dependencies
       run: |
-        composer install --no-interaction --prefer-source
+        composer update --no-interaction --${{ matrix.dep }}
         composer require laravel/cashier:"^12.1" laravel/cashier-paddle:"^1.0@dev"
 
     - name: Run tests
