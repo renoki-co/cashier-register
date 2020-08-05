@@ -187,6 +187,8 @@ trait HasQuotas
         return collect($plan->getFeatures())
             ->filter
             ->isNotResettable()
+            ->reject
+            ->isUnlimited()
             ->filter(function (Feature $feature) use ($plan) {
                 return $this->getRemainingQuota(
                     $feature->getId(), $plan->getId()
