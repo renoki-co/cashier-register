@@ -321,6 +321,30 @@ Saas::plan('Gold Plan', 'gold-plan')
     ]);
 ```
 
+## Checking for overexceeded quotas
+
+When swapping from a bigger plan to a small plan, you might restrict users from doing it unless all the quotas do not exceed the smaller plan's quotas.
+
+For example, an user can subscribe to a plan that has 10 teams, it creates 10 teams, but later decides to downgrade. In this case, you can check which features
+are exceeding:
+
+```php
+$freePlan = Saas::plan('Free Plan', 'free-plan');
+$paidPlan = Saas::plan('Paid Plan', 'paid-plan');
+
+// Returning an Illuminate\Support\Collection instance with each
+// item as RenokiCo\CashierRegister\Feature instance.
+$overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping(
+    $paidPlan->getId()
+);
+
+foreach ($overQuotaFeatures as $feature) {
+    // $feature->getName();
+}
+```
+
+**Please keep in mind that this works only for non-resettable features, like Teams, Members, etc. due to the fact that features, when swapping between plans, should be handled manually, either wanting to keep them as-is or resetting them using `resetQuotas()`**
+
 ## Static items
 
 In case you are not using plans, you can describe items once in Cashier Register's service provider and then leverage it for some neat usage:

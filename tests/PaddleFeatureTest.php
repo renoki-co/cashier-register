@@ -294,4 +294,35 @@ class PaddleFeatureTest extends TestCase
             -1, $subscription->getRemainingQuota('teams')
         );
     }
+
+    public function test_downgrading_plan()
+    {
+        $user = factory(User::class)->create();
+
+        $freePlan = Saas::getPlan(static::$stripeFreePlanId);
+
+        $paidPlan = Saas::getPlan(static::$stripePlanId);
+
+        $subscription = $user->subscriptions()->create([
+            'name' => 'main',
+            'paddle_id' => 1,
+            'paddle_plan' => static::$paddlePlanId,
+            'paddle_status' => 'active',
+            'quantity' => 1,
+        ]);
+
+        $subscription->recordFeatureUsage('teams', 10);
+
+        $overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping(
+            static::$paddleFreePlanId
+        );
+
+        $this->assertCount(
+            1, $overQuotaFeatures
+        );
+
+        $this->assertEquals(
+            'teams', $overQuotaFeatures->first()->getId()
+        );
+    }
 }
