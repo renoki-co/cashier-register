@@ -343,6 +343,8 @@ foreach ($overQuotaFeatures as $feature) {
 }
 ```
 
+**Please keep in mind that this works only for non-resettable features, like Teams, Members, etc. due to the fact that features, when swapping between plans, should be handled manually, either wanting to keep them as-is or resetting them using `resetQuotas()`**
+
 ## Static items
 
 In case you are not using plans, you can describe items once in Cashier Register's service provider and then leverage it for some neat usage:
