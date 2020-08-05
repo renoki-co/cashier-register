@@ -2,8 +2,8 @@
 
 namespace RenokiCo\CashierRegister\Concerns;
 
-use RenokiCo\CashierRegister\Models\Usage;
 use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\Models\Usage;
 use RenokiCo\CashierRegister\Saas;
 
 trait HasQuotas
