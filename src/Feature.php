@@ -100,16 +100,6 @@ class Feature implements Arrayable
     }
 
     /**
-     * Check if this feature is not resettable after each billing cycle.
-     *
-     * @return bool
-     */
-    public function isNotResettable(): bool
-    {
-        return ! $this->isResettable();
-    }
-
-    /**
      * Check if the feature has unlimited uses.
      *
      * @return bool
