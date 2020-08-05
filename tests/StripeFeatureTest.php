@@ -234,4 +234,29 @@ class StripeFeatureTest extends TestCase
             -1, $subscription->getRemainingQuota('teams')
         );
     }
+
+    public function test_downgrading_plan()
+    {
+        $user = factory(User::class)->create();
+
+        $freePlan = Saas::getPlan(static::$stripeFreePlanId);
+
+        $paidPlan = Saas::getPlan(static::$stripePlanId);
+
+        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
+
+        $subscription->recordFeatureUsage('teams', 10);
+
+        $overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping(
+            static::$stripeFreePlanId
+        );
+
+        $this->assertCount(
+            1, $overQuotaFeatures
+        );
+
+        $this->assertEquals(
+            'teams', $overQuotaFeatures->first()->getId()
+        );
+    }
 }

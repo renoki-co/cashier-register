@@ -3,6 +3,8 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Models\Usage;
+use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\Saas;
 
 trait HasQuotas
 {
@@ -116,11 +118,12 @@ trait HasQuotas
      * Get the feature quota remaining.
      *
      * @param  string  $id
+     * @param  null|string  $planId
      * @return int
      */
-    public function getRemainingQuota(string $id): int
+    public function getRemainingQuota(string $id, $planId = null): int
     {
-        $featureValue = $this->getFeatureQuota($id);
+        $featureValue = $this->getFeatureQuota($id, $planId);
 
         if ($featureValue < 0) {
             return -1;
@@ -133,11 +136,14 @@ trait HasQuotas
      * Get the feature quota.
      *
      * @param  string  $id
+     * @param  null|string  $planId
      * @return int
      */
-    public function getFeatureQuota(string $id): int
+    public function getFeatureQuota(string $id, $planId = null): int
     {
-        $feature = $this->getPlan()->getFeature($id);
+        $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
+
+        $feature = $plan->getFeature($id);
 
         if (! $feature) {
             return 0;
@@ -150,17 +156,43 @@ trait HasQuotas
      * Check if the feature is over the assigned quota.
      *
      * @param  string  $id
+     * @param  null|string  $planId
      * @return bool
      */
-    public function featureOverQuota(string $id): bool
+    public function featureOverQuota(string $id, $planId = null): bool
     {
-        $feature = $this->getPlan()->getFeature($id);
+        $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
+
+        $feature = $plan->getFeature($id);
 
         if ($feature->isUnlimited()) {
             return false;
         }
 
-        return $this->getRemainingQuota($id) < 0;
+        return $this->getRemainingQuota($id, $planId) < 0;
+    }
+
+    /**
+     * Check if there are features over quota
+     * if the current subscription would be swapped
+     * to a new one.
+     *
+     * @param  string  $planId
+     * @return \Illuminate\Support\Collection
+     */
+    public function featuresOverQuotaWhenSwapping(string $planId)
+    {
+        $plan = Saas::getPlan($planId);
+
+        return collect($plan->getFeatures())
+            ->filter
+            ->isNotResettable()
+            ->filter(function (Feature $feature) use ($plan) {
+                return $this->getRemainingQuota(
+                    $feature->getId(), $plan->getId()
+                ) < 0;
+            })
+            ->values();
     }
 
     /**

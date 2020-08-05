@@ -15,9 +15,15 @@ abstract class TestCase extends Orchestra
 {
     protected static $productId;
 
+    protected static $freeProductId;
+
     protected static $stripePlanId;
 
+    protected static $stripeFreePlanId;
+
     protected static $paddlePlanId;
+
+    protected static $paddleFreePlanId;
 
     /**
      * {@inheritdoc}
@@ -44,10 +50,22 @@ abstract class TestCase extends Orchestra
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
             ]);
 
+        Saas::plan('Free Plan', static::$stripeFreePlanId)
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 10),
+                Saas::feature('Seats', 'teams', 5)->notResettable(),
+            ]);
+
         Saas::plan('Monthly $20', static::$paddlePlanId)
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 3000),
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
+            ]);
+
+        Saas::plan('Free Plan', static::$paddleFreePlanId)
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 10),
+                Saas::feature('Seats', 'teams', 5)->notResettable(),
             ]);
     }
 
@@ -62,10 +80,20 @@ abstract class TestCase extends Orchestra
 
         static::$stripePlanId = 'monthly-10-'.Str::random(10);
 
+        static::$stripeFreePlanId = 'free-'.Str::random(10);
+
         static::$productId = 'product-1'.Str::random(10);
+
+        static::$freeProductId = 'product-free'.Str::random(10);
 
         Product::create([
             'id' => static::$productId,
+            'name' => 'Laravel Cashier Test Product',
+            'type' => 'service',
+        ]);
+
+        Product::create([
+            'id' => static::$freeProductId,
             'name' => 'Laravel Cashier Test Product',
             'type' => 'service',
         ]);
@@ -80,7 +108,19 @@ abstract class TestCase extends Orchestra
             'product' => static::$productId,
         ]);
 
+        Plan::create([
+            'id' => static::$stripeFreePlanId,
+            'nickname' => 'Free',
+            'currency' => 'USD',
+            'interval' => 'month',
+            'billing_scheme' => 'per_unit',
+            'amount' => 0,
+            'product' => static::$freeProductId,
+        ]);
+
         static::$paddlePlanId = getenv('PADDLE_TEST_PLAN') ?: env('PADDLE_TEST_PLAN');
+
+        static::$paddleFreePlanId = getenv('PADDLE_TEST_FREE_PLAN') ?: env('PADDLE_TEST_FREE_PLAN');
     }
 
     /**
@@ -91,6 +131,7 @@ abstract class TestCase extends Orchestra
         parent::tearDownAfterClass();
 
         static::deleteStripeResource(new Plan(static::$stripePlanId));
+        static::deleteStripeResource(new Plan(static::$stripeFreePlanId));
     }
 
     /**

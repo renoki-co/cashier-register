@@ -40,6 +40,7 @@ jobs:
         PADDLE_VENDOR_ID: ${{ secrets.PADDLE_VENDOR_ID }}
         PADDLE_VENDOR_AUTH_CODE: ${{ secrets.PADDLE_VENDOR_AUTH_CODE }}
         PADDLE_TEST_PLAN: ${{ secrets.PADDLE_TEST_PLAN }}
+        PADDLE_TEST_FREE_PLAN: ${{ secrets.PADDLE_TEST_FREE_PLAN }}
 
     - uses: codecov/codecov-action@v1
       with:
