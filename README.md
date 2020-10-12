@@ -161,7 +161,7 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 }
 ```
 
-**When setting an unique indentifier for the plan (second parameter), make sure to use the Stripe Price ID or the Paddle Plan ID.**
+**When setting an unique identifier for the plan (second parameter), make sure to use the Stripe Price ID or the Paddle Plan ID.**
 
 Defining plans can also help you retrieving them when showing them in the frontend:
 
