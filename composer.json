@@ -29,7 +29,8 @@
         "test": "vendor/bin/phpunit"
     },
     "require-dev": {
-        "laravel/legacy-factories": "^1.0.4",
+        "laravel/legacy-factories": "^1.1",
+        "mockery/mockery": "^1.4",
         "orchestra/database": "^5.0|^6.0",
         "orchestra/testbench": "^5.0|^6.0"
     },
