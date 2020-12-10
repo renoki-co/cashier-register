@@ -36,13 +36,13 @@ The package does not come with Cashier as dependency, so you should install acco
 Cashier for Stripe:
 
 ```
-$ composer require laravel/cashier:"^12.1"
+$ composer require laravel/cashier:"^12.6"
 ```
 
 Cashier for Paddle:
 
 ```
-$ composer require laravel/cashier-paddle:"^1.0@dev"
+$ composer require laravel/cashier-paddle:"^1.3"
 ```
 
 Publish the config file:
