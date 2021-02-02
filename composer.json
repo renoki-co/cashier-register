@@ -13,7 +13,7 @@
     ],
     "require": {
         "doctrine/dbal": "^2.9",
-        "laravel/framework": "^7.30|^8.23"
+        "laravel/framework": "^7.30|^8.24"
     },
     "autoload": {
         "psr-4": {
