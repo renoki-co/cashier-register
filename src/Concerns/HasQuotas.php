@@ -3,7 +3,6 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Feature;
-use RenokiCo\CashierRegister\Models\Usage;
 use RenokiCo\CashierRegister\Saas;
 
 trait HasQuotas
@@ -207,7 +206,7 @@ trait HasQuotas
 
         $this->usage()
             ->get()
-            ->each(function (Usage $usage) use ($plan) {
+            ->each(function ($usage) use ($plan) {
                 $feature = $plan->getFeature($usage->feature_id);
 
                 if ($feature->isResettable()) {
