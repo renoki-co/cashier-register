@@ -3,11 +3,11 @@
 namespace RenokiCo\CashierRegister\Test\Models\Stripe;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use RenokiCo\CashierRegister\BillableWithStripe;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
-    use BillableWithStripe;
+    use Billable;
 
     protected $table = 'users';
 

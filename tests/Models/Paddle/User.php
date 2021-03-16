@@ -3,11 +3,11 @@
 namespace RenokiCo\CashierRegister\Test\Models\Paddle;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use RenokiCo\CashierRegister\BillableWithPaddle;
+use Laravel\Paddle\Billable;
 
 class User extends Authenticatable
 {
-    use BillableWithPaddle;
+    use Billable;
 
     protected $table = 'users';
 

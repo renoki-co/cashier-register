@@ -33,16 +33,14 @@ composer require renoki-co/cashier-register
 
 The package does not come with Cashier as dependency, so you should install according to your needs:
 
-Cashier for Stripe:
-
 ```
-$ composer require laravel/cashier:"^12.7"
+$ composer require laravel/cashier:"^12.9.1"
 ```
 
-Cashier for Paddle:
+For Paddle, use Cashier for Paddle:
 
 ```
-$ composer require laravel/cashier-paddle:"^1.3"
+$ composer require laravel/cashier-paddle:"^1.4.3"
 ```
 
 Publish the config file:
@@ -92,35 +90,14 @@ $user->subscription('main')
 
 ## Preparing the model
 
-Instead of using Cashier's Billing trait, you should use the trait that comes with this package.
+For billables, you should follow the installation instructions given with Cashier for Paddle or Cashier for Stripe.
 
-The trait already uses the original cashier trait, with small modifications so that you can benefit of CashierRegister's features.
+This package already sets the custom `Subscription` model. In case you want to add more functionalities to the Subscription model, make sure you extend accordingly from these models:
 
-For Stripe you can use `BillableWithStripe`:
+- Paddle: `RenokiCo\CashierRegister\Models\Paddle\Subscription`
+- Stripe: `RenokiCo\CashierRegister\Models\Stripe\Subscription`
 
-```php
-use RenokiCo\CashierRegister\BillableWithStripe;
-
-class User extends Model
-{
-    use BillableWithStripe;
-
-    //
-}
-```
-
-For Paddle you can use `BillableWithPaddle`:
-
-```php
-use RenokiCo\CashierRegister\BillableWithPaddle;
-
-class User extends Model
-{
-    use BillableWithPaddle;
-
-    //
-}
-```
+Further, make sure you check the `saas.php` file and replace the subscription model from there, or you can use the `::useSubscriptionModel` call in your code.
 
 ## Preparing the plans
 
