@@ -33,13 +33,11 @@ composer require renoki-co/cashier-register
 
 The package does not come with Cashier as dependency, so you should install according to your needs:
 
-Cashier for Stripe:
-
 ```
 $ composer require laravel/cashier:"^12.9.1"
 ```
 
-Cashier for Paddle:
+For Paddle, use Cashier for Paddle:
 
 ```
 $ composer require laravel/cashier-paddle:"^1.4.3"
@@ -91,6 +89,8 @@ $user->subscription('main')
 ```
 
 ## Preparing the model
+
+For billables, you should follow the installation instructions given with Cashier for Paddle or Cashier for Stripe.
 
 This package already sets the custom `Subscription` model. In case you want to add more functionalities to the Subscription model, make sure you extend accordingly from these models:
 
