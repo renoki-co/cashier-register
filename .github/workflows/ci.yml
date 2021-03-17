@@ -54,7 +54,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" "doctrine/dbal:^2.9|^3.0" --no-interaction --no-update
+        composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" "doctrine/dbal:^2.9" --no-interaction --no-update
         composer update --${{ matrix.prefer }} --prefer-dist --no-interaction --no-suggest
         composer require laravel/cashier:"^12.9.1" laravel/cashier-paddle:"^1.4.3"
 
