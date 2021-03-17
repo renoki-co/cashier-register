@@ -12,7 +12,6 @@
         }
     ],
     "require": {
-        "doctrine/dbal": "^2.9|^3.0",
         "laravel/framework": "^7.9|^8.0"
     },
     "autoload": {
