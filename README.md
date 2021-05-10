@@ -34,13 +34,13 @@ composer require renoki-co/cashier-register
 The package does not come with Cashier as dependency, so you should install according to your needs:
 
 ```
-$ composer require laravel/cashier:"^12.9.1"
+$ composer require laravel/cashier:"^12.13"
 ```
 
 For Paddle, use Cashier for Paddle:
 
 ```
-$ composer require laravel/cashier-paddle:"^1.4.3"
+$ composer require laravel/cashier-paddle:"^1.4.4"
 ```
 
 Publish the config file:
