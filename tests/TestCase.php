@@ -80,55 +80,51 @@ abstract class TestCase extends Orchestra
     {
         parent::setUpBeforeClass();
 
-        if (getenv('CASHIER_PACKAGE') === 'stripe') {
-            Stripe::setApiKey(getenv('STRIPE_SECRET') ?: env('STRIPE_SECRET'));
+        Stripe::setApiKey(getenv('STRIPE_SECRET') ?: env('STRIPE_SECRET'));
 
-            static::$stripePlanId = 'monthly-10-'.Str::random(10);
+        static::$stripePlanId = 'monthly-10-'.Str::random(10);
 
-            static::$stripeFreePlanId = 'free-'.Str::random(10);
+        static::$stripeFreePlanId = 'free-'.Str::random(10);
 
-            static::$productId = 'product-1'.Str::random(10);
+        static::$productId = 'product-1'.Str::random(10);
 
-            static::$freeProductId = 'product-free'.Str::random(10);
+        static::$freeProductId = 'product-free'.Str::random(10);
 
-            Product::create([
-                'id' => static::$productId,
-                'name' => 'Laravel Cashier Test Product',
-                'type' => 'service',
-            ]);
+        Product::create([
+            'id' => static::$productId,
+            'name' => 'Laravel Cashier Test Product',
+            'type' => 'service',
+        ]);
 
-            Product::create([
-                'id' => static::$freeProductId,
-                'name' => 'Laravel Cashier Test Product',
-                'type' => 'service',
-            ]);
+        Product::create([
+            'id' => static::$freeProductId,
+            'name' => 'Laravel Cashier Test Product',
+            'type' => 'service',
+        ]);
 
-            Plan::create([
-                'id' => static::$stripePlanId,
-                'nickname' => 'Monthly $10',
-                'currency' => 'USD',
-                'interval' => 'month',
-                'billing_scheme' => 'per_unit',
-                'amount' => 1000,
-                'product' => static::$productId,
-            ]);
+        Plan::create([
+            'id' => static::$stripePlanId,
+            'nickname' => 'Monthly $10',
+            'currency' => 'USD',
+            'interval' => 'month',
+            'billing_scheme' => 'per_unit',
+            'amount' => 1000,
+            'product' => static::$productId,
+        ]);
 
-            Plan::create([
-                'id' => static::$stripeFreePlanId,
-                'nickname' => 'Free',
-                'currency' => 'USD',
-                'interval' => 'month',
-                'billing_scheme' => 'per_unit',
-                'amount' => 0,
-                'product' => static::$freeProductId,
-            ]);
-        }
+        Plan::create([
+            'id' => static::$stripeFreePlanId,
+            'nickname' => 'Free',
+            'currency' => 'USD',
+            'interval' => 'month',
+            'billing_scheme' => 'per_unit',
+            'amount' => 0,
+            'product' => static::$freeProductId,
+        ]);
 
-        if (getenv('CASHIER_PACKAGE') === 'paddle') {
-            static::$paddlePlanId = getenv('PADDLE_TEST_PLAN') ?: env('PADDLE_TEST_PLAN');
+        static::$paddlePlanId = getenv('PADDLE_TEST_PLAN') ?: env('PADDLE_TEST_PLAN');
 
-            static::$paddleFreePlanId = getenv('PADDLE_TEST_FREE_PLAN') ?: env('PADDLE_TEST_FREE_PLAN');
-        }
+        static::$paddleFreePlanId = getenv('PADDLE_TEST_FREE_PLAN') ?: env('PADDLE_TEST_FREE_PLAN');
     }
 
     /**
@@ -138,10 +134,8 @@ abstract class TestCase extends Orchestra
     {
         parent::tearDownAfterClass();
 
-        if (getenv('CASHIER_PACKAGE') === 'stripe') {
-            static::deleteStripeResource(new Plan(static::$stripePlanId));
-            static::deleteStripeResource(new Plan(static::$stripeFreePlanId));
-        }
+        static::deleteStripeResource(new Plan(static::$stripePlanId));
+        static::deleteStripeResource(new Plan(static::$stripeFreePlanId));
     }
 
     /**
@@ -152,19 +146,11 @@ abstract class TestCase extends Orchestra
      */
     protected function getPackageProviders($app)
     {
-        $providers = [];
-
-        if (getenv('CASHIER_PACKAGE') === 'stripe') {
-            $providers[] = \Laravel\Cashier\CashierServiceProvider::class;
-        }
-
-        if (getenv('CASHIER_PACKAGE') === 'paddle') {
-            $providers[] = \Laravel\Paddle\CashierServiceProvider::class;
-        }
-
-        return array_merge($providers, [
+        return [
+            \Laravel\Cashier\CashierServiceProvider::class,
+            \Laravel\Paddle\CashierServiceProvider ::class,
             \RenokiCo\CashierRegister\CashierRegisterServiceProvider::class,
-        ]);
+        ];
     }
 
     /**
@@ -198,12 +184,10 @@ abstract class TestCase extends Orchestra
 
     protected static function deleteStripeResource(ApiResource $resource)
     {
-        if (getenv('CASHIER_PACKAGE') === 'stripe') {
-            try {
-                $resource->delete();
-            } catch (InvalidRequestException $e) {
-                //
-            }
+        try {
+            $resource->delete();
+        } catch (InvalidRequestException $e) {
+            //
         }
     }
 }
