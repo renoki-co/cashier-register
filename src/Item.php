@@ -20,19 +20,20 @@ class Item implements Arrayable
     /**
      * Create a new item.
      *
-     * @param  string  $id
      * @param  string  $name
+     * @param  string|int  $id
      * @param  float  $price
      * @param  string  $currency
      * @return void
      */
-    public function __construct(string $name, string $id, float $price = 0.00, string $currency = 'EUR')
+    public function __construct(string $name, $id, float $price = 0.00, string $currency = 'EUR')
     {
-        $this->name = $name;
-        $this->id = $id;
-        $this->price = $price;
+        $this->name($name);
+        $this->id($id);
+        $this->price($price);
+
         $this->currency = $currency;
-        $this->subitems = collect([]);
+        $this->subitems = [];
     }
 
     /**
@@ -43,10 +44,9 @@ class Item implements Arrayable
      */
     public function subitems(array $subitems)
     {
-        $this->subitems = collect($subitems)
-            ->unique(function (self $item) {
-                return $item->getId();
-            });
+        $this->subitems = collect($subitems)->unique(function (self $item) {
+            return $item->getId();
+        })->toArray();
 
         return $this;
     }

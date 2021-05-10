@@ -16,14 +16,14 @@ class Plan implements Arrayable
      * Create a new plan builder.
      *
      * @param  string  $name
-     * @param  string  $id
+     * @param  string|int|null  $id
      * @return void
      */
-    public function __construct(string $name, string $id)
+    public function __construct(string $name, $id = null)
     {
-        $this->name = $name;
-        $this->id = $id;
-        $this->features = collect([]);
+        $this->name($name);
+        $this->id($id);
+        $this->features([]);
     }
 
     /**

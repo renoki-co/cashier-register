@@ -30,15 +30,15 @@ class Feature implements Arrayable
      * Create a new feature builder.
      *
      * @param  string  $name
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  int  $value
      * @return void
      */
-    public function __construct(string $name, string $id, int $value = 0)
+    public function __construct(string $name, $id, int $value = 0)
     {
-        $this->name = $name;
-        $this->id = $id;
-        $this->value = $value;
+        $this->name($name);
+        $this->id($id);
+        $this->value($value);
     }
 
     /**

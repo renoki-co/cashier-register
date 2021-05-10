@@ -82,9 +82,9 @@ class Saas
      */
     public static function getAvailablePlans()
     {
-        return static::getPlans()
-            ->filter
-            ->isActive();
+        return static::getPlans()->filter(function ($plan) {
+            return $plan->isActive();
+        });
     }
 
     /**
@@ -130,7 +130,7 @@ class Saas
      */
     public static function clearPlans(): void
     {
-        static::$plans = collect([]);
+        static::$plans = [];
     }
 
     /**
@@ -140,6 +140,6 @@ class Saas
      */
     public static function clearItems(): void
     {
-        static::$items = collect([]);
+        static::$items = [];
     }
 }

@@ -183,9 +183,13 @@ trait HasQuotas
     {
         $plan = Saas::getPlan($planId);
 
-        return collect($plan->getFeatures())
-            ->reject->isResettable()
-            ->reject->isUnlimited()
+        return $plan->getFeatures()
+            ->reject(function ($feature) {
+                return $feature->isResettable();
+            })
+            ->reject(function ($feature) {
+                return $feature->isUnlimited();
+            })
             ->filter(function (Feature $feature) use ($plan) {
                 $remainingQuota = $this->getRemainingQuota(
                     $feature->getId(), $plan->getId()

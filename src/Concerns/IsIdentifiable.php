@@ -41,10 +41,10 @@ trait IsIdentifiable
     /**
      * Set an id for the instance.
      *
-     * @param  string  $name
+     * @param  string|int|null  $id
      * @return self
      */
-    public function id(string $id)
+    public function id($id = null)
     {
         $this->id = $id;
 
