@@ -26,7 +26,7 @@ class PlanTest extends TestCase
 
         $this->assertEquals('plan', $plan->getId());
 
-        $this->assertEquals(['somekey' => 'someval'], $plan->getData());
+        $this->assertEquals(['somekey' => 'someval', 'popular' => true], $plan->getData());
     }
 
     public function test_build_plans_with_features()
