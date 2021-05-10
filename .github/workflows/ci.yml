@@ -56,7 +56,7 @@ jobs:
       run: |
         composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" "doctrine/dbal:^2.9" --no-interaction --no-update
         composer update --${{ matrix.prefer }} --prefer-dist --no-interaction --no-suggest
-        composer require laravel/cashier:"^12.13" laravel/cashier-paddle:"^1.4" --ignore-platform-reqs
+        composer require laravel/cashier:"^12.13" laravel/cashier-paddle:"^1.4" --ignore-platform-reqs -W
 
     - name: Run tests
       run: |
