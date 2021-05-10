@@ -158,7 +158,6 @@ abstract class TestCase extends Orchestra
             $providers[] = \Laravel\Paddle\CashierServiceProvider::class;
         }
 
-
         return array_merge($providers, [
             \RenokiCo\CashierRegister\CashierRegisterServiceProvider::class,
         ]);
