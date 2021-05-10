@@ -13,7 +13,8 @@ class PlanTest extends TestCase
         Saas::plan('Active Plan', 'plan')
             ->price(10, 'USD')
             ->description('Some plan...')
-            ->data(['somekey' => 'someval']);
+            ->data(['somekey' => 'someval'])
+            ->popular();
 
         Saas::plan('Archived Plan', 'archived-plan')
             ->price(15, 'USD')
@@ -25,7 +26,7 @@ class PlanTest extends TestCase
 
         $this->assertEquals('plan', $plan->getId());
 
-        $this->assertEquals(['somekey' => 'someval'], $plan->getData());
+        $this->assertEquals(['somekey' => 'someval', 'popular' => true], $plan->getData());
     }
 
     public function test_build_plans_with_features()

@@ -376,6 +376,17 @@ $planData = $plan->getData(); // ['golden' => true]
 $featureData = $feature->getData(); // ['digital' => true]
 ```
 
+### Setting the plan as popular
+
+Some plans are popular among others, and you can simply mark them:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->popular();
+```
+
+This will add a data field called `popular` that is either `true/false`.
+
 ## 🐛 Testing
 
 ``` bash
