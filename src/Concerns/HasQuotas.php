@@ -22,12 +22,12 @@ trait HasQuotas
     /**
      * Increment the feature usage.
      *
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  int  $value
      * @param  bool  $incremental
      * @return \RenokiCo\CashierRegister\Models\Usage|null
      */
-    public function recordFeatureUsage(string $id, int $value = 1, bool $incremental = true)
+    public function recordFeatureUsage($id, int $value = 1, bool $incremental = true)
     {
         $feature = $this->getPlan()->getFeature($id);
 
@@ -50,11 +50,11 @@ trait HasQuotas
     /**
      * Reduce the usage amount.
      *
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  int  $uses
      * @return null|\RenokiCo\CashierRegister\Models\Usage
      */
-    public function reduceFeatureUsage(string $id, int $uses = 1, bool $incremental = true)
+    public function reduceFeatureUsage($id, int $uses = 1, bool $incremental = true)
     {
         $usage = $this->usage()
             ->whereFeatureId($id)
@@ -77,11 +77,11 @@ trait HasQuotas
     /**
      * Reduce the usage amount.
      *
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  int  $uses
      * @return null|\RenokiCo\CashierRegister\Models\Usage
      */
-    public function decrementFeatureUsage(string $id, int $uses = 1, bool $incremental = true)
+    public function decrementFeatureUsage($id, int $uses = 1, bool $incremental = true)
     {
         return $this->reduceFeatureUsage($id, $uses, $incremental);
     }
@@ -89,11 +89,11 @@ trait HasQuotas
     /**
      * Set the feature usage to a specific value.
      *
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  int  $value
      * @return \RenokiCo\CashierRegister\Models\Usage|null
      */
-    public function setFeatureUsage(string $id, int $value)
+    public function setFeatureUsage($id, int $value)
     {
         return $this->recordFeatureUsage($id, $value, false);
     }
@@ -101,10 +101,10 @@ trait HasQuotas
     /**
      * Get the feature used quota.
      *
-     * @param  string  $id
+     * @param  string|int  $id
      * @return int
      */
-    public function getUsedQuota(string $id): int
+    public function getUsedQuota($id): int
     {
         $usage = $this->usage()
             ->whereFeatureId($id)
@@ -116,11 +116,11 @@ trait HasQuotas
     /**
      * Get the feature quota remaining.
      *
-     * @param  string  $id
-     * @param  null|string  $planId
+     * @param  string|int  $id
+     * @param  string|null  $planId
      * @return int
      */
-    public function getRemainingQuota(string $id, $planId = null): int
+    public function getRemainingQuota($id, $planId = null): int
     {
         $featureValue = $this->getFeatureQuota($id, $planId);
 
@@ -134,11 +134,11 @@ trait HasQuotas
     /**
      * Get the feature quota.
      *
-     * @param  string  $id
-     * @param  null|string  $planId
+     * @param  string|int  $id
+     * @param  string|null  $planId
      * @return int
      */
-    public function getFeatureQuota(string $id, $planId = null): int
+    public function getFeatureQuota($id, $planId = null): int
     {
         $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
 
@@ -154,11 +154,11 @@ trait HasQuotas
     /**
      * Check if the feature is over the assigned quota.
      *
-     * @param  string  $id
-     * @param  null|string  $planId
+     * @param  string|int  $id
+     * @param  string|null  $planId
      * @return bool
      */
-    public function featureOverQuota(string $id, $planId = null): bool
+    public function featureOverQuota($id, $planId = null): bool
     {
         $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
 

@@ -72,9 +72,10 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'plan-price-identifier')
+        Saas::plan('Gold Plan', 'monthly-price-id', 'yearly-price-id')
             ->description('The gold plan.')
-            ->price(30, 'EUR')
+            ->monthly(30, 'EUR')
+            ->yearly(300, 'EUR')
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 3000)
                     ->description('3000 build minutes for an entire month!'),
@@ -87,6 +88,8 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 $user->subscription('main')
     ->recordFeatureUsage('build.minutes', 30);
 ```
+
+**Please note: The Yearly Price ID and the Yearly Price are optional.**
 
 ## Preparing the model
 

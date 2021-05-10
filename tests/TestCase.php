@@ -50,7 +50,7 @@ abstract class TestCase extends Orchestra
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
             ]);
 
-        Saas::plan('Free Plan', static::$stripeFreePlanId)
+        Saas::plan('Free Plan', static::$stripeFreePlanId, static::$stripeFreePlanId)
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 10),
                 Saas::feature('Seats', 'teams', 5)->notResettable(),
@@ -62,7 +62,7 @@ abstract class TestCase extends Orchestra
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
             ]);
 
-        Saas::plan('Free Plan', static::$paddleFreePlanId)
+        Saas::plan('Free Plan', static::$paddleFreePlanId, static::$paddleFreePlanId)
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 10),
                 Saas::feature('Seats', 'teams', 5)->notResettable(),

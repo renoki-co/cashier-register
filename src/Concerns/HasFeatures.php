@@ -41,10 +41,10 @@ trait HasFeatures
     /**
      * Get a specific feature by id.
      *
-     * @param  string  $id
-     * @return Feature|null
+     * @param  string|int  $id
+     * @return \RenokiCo\CashierRegister\Feature|null
      */
-    public function getFeature(string $id)
+    public function getFeature($id)
     {
         return $this->getFeatures()->filter(function (Feature $feature) use ($id) {
             return $feature->getId() === $id;
