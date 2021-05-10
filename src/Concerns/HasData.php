@@ -25,9 +25,21 @@ trait HasData
     }
 
     /**
+     * Set the plan as being popular.
+     *
+     * @return self
+     */
+    public function popular()
+    {
+        return $this->data(array_merge(
+            $this->getData(), ['popular' => true]
+        ));
+    }
+
+    /**
      * Get the list of all features.
      *
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function getData()
     {

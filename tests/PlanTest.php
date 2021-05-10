@@ -13,7 +13,8 @@ class PlanTest extends TestCase
         Saas::plan('Active Plan', 'plan')
             ->price(10, 'USD')
             ->description('Some plan...')
-            ->data(['somekey' => 'someval']);
+            ->data(['somekey' => 'someval'])
+            ->popular();
 
         Saas::plan('Archived Plan', 'archived-plan')
             ->price(15, 'USD')
