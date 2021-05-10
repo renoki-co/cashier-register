@@ -313,9 +313,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $freePlan = Saas::getPlan(static::$stripeFreePlanId);
+        $freePlan = Saas::getPlan(static::$paddleFreePlanId);
 
-        $paidPlan = Saas::getPlan(static::$stripePlanId);
+        $paidPlan = Saas::getPlan(static::$paddlePlanId);
 
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
