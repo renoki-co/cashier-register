@@ -28,13 +28,16 @@ jobs:
         prefer:
           # - 'prefer-lowest'
           - 'prefer-stable'
+        cashier:
+          - stripe
+          - paddle
         include:
           - laravel: '7.*'
             testbench: '5.*'
           - laravel: '8.*'
             testbench: '6.*'
 
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} --${{ matrix.prefer }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} with ${{ matrix.cashier }} --${{ matrix.prefer }}
 
     steps:
     - uses: actions/checkout@v2.3.4
@@ -56,7 +59,16 @@ jobs:
       run: |
         composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "orchestra/database:${{ matrix.testbench }}" "doctrine/dbal:^2.9" --no-interaction --no-update
         composer update --${{ matrix.prefer }} --prefer-dist --no-interaction --no-suggest
-        composer require laravel/cashier:"^12.13" laravel/cashier-paddle:"^1.4.4"
+
+    - name: Install Stripe Cashier
+      if: "matrix.cashier == 'stripe'"
+      run: |
+        composer require laravel/cashier:"^12.13"
+
+    - name: Install Paddle Cashier
+      if: "matrix.cashier == 'paddle'"
+      run: |
+        composer require laravel/cashier-paddle:"^1.4"
 
     - name: Run tests
       run: |
@@ -67,6 +79,7 @@ jobs:
         PADDLE_VENDOR_AUTH_CODE: ${{ secrets.PADDLE_VENDOR_AUTH_CODE }}
         PADDLE_TEST_PLAN: ${{ secrets.PADDLE_TEST_PLAN }}
         PADDLE_TEST_FREE_PLAN: ${{ secrets.PADDLE_TEST_FREE_PLAN }}
+        CASHIER_PACKAGE: ${{ matrix.cashier }}
 
     - uses: codecov/codecov-action@v1
       with:

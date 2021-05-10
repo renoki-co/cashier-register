@@ -8,6 +8,20 @@ use RenokiCo\CashierRegister\Test\Models\Paddle\User;
 
 class PaddleFeatureTest extends TestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        if (getenv('CASHIER_PACKAGE') !== 'paddle') {
+            $this->markTestSkipped(
+                'Skipping the current test suite because it\'s not Paddle.'
+            );
+        }
+    }
+
     public function test_record_feature_usage()
     {
         $user = factory(User::class)->create();
