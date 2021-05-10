@@ -8,20 +8,6 @@ use RenokiCo\CashierRegister\Test\Models\Stripe\User;
 
 class StripeFeatureTest extends TestCase
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        if (getenv('CASHIER_PACKAGE') !== 'stripe') {
-            $this->markTestSkipped(
-                'Skipping the current test suite because it\'s not Stripe.'
-            );
-        }
-    }
-
     public function test_record_feature_usage()
     {
         $user = factory(User::class)->create();
