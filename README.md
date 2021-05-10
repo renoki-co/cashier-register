@@ -176,8 +176,7 @@ public function boot()
 {
     parent::boot();
 
-    Saas::plan('Silver Plan', 'silver-plan-id')
-        ->deprecated();
+    Saas::plan('Silver Plan', 'silver-plan-id')->deprecated();
 }
 ```
 
@@ -208,11 +207,10 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'gold-plan')
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000)
-                    ->description('3000 build minutes for an entire month!'),
-            ]);
+        Saas::plan('Gold Plan', 'gold-plan')->features([
+            Saas::feature('Build Minutes', 'build.minutes', 3000)
+                ->description('3000 build minutes for an entire month!'),
+        ]);
     }
 }
 ```
@@ -294,10 +292,9 @@ Now when calling `resetQuotas()`, the `seats` feature won't go back to the defau
 To set an infinite amount of usage, use the `unlimited()` method:
 
 ```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->features([
-        Saas::feature('Seats', 'seats')->unlimited(),
-    ]);
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::feature('Seats', 'seats')->unlimited(),
+]);
 ```
 
 ## Checking for overexceeded quotas
