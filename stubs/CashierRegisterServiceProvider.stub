@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use RenokiCo\CashierRegister\CashierRegisterServiceProvider as BaseServiceProvider;
+use RenokiCo\CashierRegister\Saas;
 
 class CashierRegisterServiceProvider extends BaseServiceProvider
 {
@@ -15,7 +16,13 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        //
+        Saas::plan('Gold Plan', 'gold-plan')
+            ->description('The gold plan is 10 EUR.')
+            ->price(10, 'EUR')
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes')->value(3000),
+                Saas::feature('Seats', 'seats')->unlimited(),
+            ]);
     }
 
     /**
