@@ -14,7 +14,7 @@ trait IsIdentifiable
     /**
      * An unique id for the instance.
      *
-     * @var string
+     * @var string|int
      */
     protected $id;
 

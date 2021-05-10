@@ -9,9 +9,9 @@ trait HasFeatures
     /**
      * The features list for the instance.
      *
-     * @var array|\Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection
      */
-    protected $features = [];
+    protected $features;
 
     /**
      * Attach features to the instance.
@@ -23,7 +23,7 @@ trait HasFeatures
     {
         $this->features = collect($features)->unique(function (Feature $feature) {
             return $feature->getId();
-        })->toArray();
+        });
 
         return $this;
     }
@@ -35,7 +35,7 @@ trait HasFeatures
      */
     public function getFeatures()
     {
-        return collect($this->features);
+        return $this->features;
     }
 
     /**

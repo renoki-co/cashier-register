@@ -13,9 +13,9 @@ class Item implements Arrayable
     /**
      * Get the list of subitems for this item.
      *
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
-    protected $subitems = [];
+    protected $subitems;
 
     /**
      * Create a new item.
@@ -46,7 +46,7 @@ class Item implements Arrayable
     {
         $this->subitems = collect($subitems)->unique(function (self $item) {
             return $item->getId();
-        })->toArray();
+        });
 
         return $this;
     }
@@ -58,7 +58,7 @@ class Item implements Arrayable
      */
     public function getSubitems()
     {
-        return collect($this->subitems);
+        return $this->subitems;
     }
 
     /**
