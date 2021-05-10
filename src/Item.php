@@ -33,7 +33,7 @@ class Item implements Arrayable
         $this->price($price);
 
         $this->currency = $currency;
-        $this->subitems = [];
+        $this->subitems = collect([]);
     }
 
     /**

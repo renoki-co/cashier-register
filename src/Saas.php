@@ -97,7 +97,7 @@ class Saas
     public static function getPlan($id)
     {
         return collect(static::$plans)->filter(function (Plan $plan) use ($id) {
-            return $plan->getId() === $id;
+            return $plan->getId() == $id;
         })->first();
     }
 
@@ -120,7 +120,7 @@ class Saas
     public static function getItem($id)
     {
         return collect(static::$items)->filter(function (Item $item) use ($id) {
-            return $item->getId() === $id;
+            return $item->getId() == $id;
         })->first();
     }
 
