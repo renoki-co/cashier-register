@@ -54,7 +54,7 @@ class Saas
      * @param  string  $name
      * @param  float  $price
      * @param  string  $currency
-     * @return $this
+     * @return self
      */
     public static function item(string $id, string $name, float $price = 0.00, string $currency = 'EUR')
     {

@@ -14,7 +14,7 @@ trait Deprecable
     /**
      * Mark the instance as deprecated.
      *
-     * @return $this
+     * @return self
      */
     public function archive()
     {
@@ -26,7 +26,7 @@ trait Deprecable
     /**
      * Alias for archive().
      *
-     * @return $this
+     * @return self
      */
     public function deprecated()
     {

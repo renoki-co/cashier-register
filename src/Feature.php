@@ -45,7 +45,7 @@ class Feature implements Arrayable
      * Set a new value for the usability.
      *
      * @param  int  $value
-     * @return $this
+     * @return self
      */
     public function value(int $value)
     {
@@ -58,7 +58,7 @@ class Feature implements Arrayable
      * Set the feature as unlimited value.
      *
      * @param  int  $value
-     * @return $this
+     * @return self
      */
     public function unlimited()
     {
@@ -70,7 +70,7 @@ class Feature implements Arrayable
     /**
      * Mark the feature as not resettable.
      *
-     * @return $this
+     * @return self
      */
     public function notResettable()
     {

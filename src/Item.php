@@ -39,7 +39,7 @@ class Item implements Arrayable
      * Attach subitems to the item.
      *
      * @param  array  $subitems
-     * @return $this
+     * @return self
      */
     public function subitems(array $subitems)
     {

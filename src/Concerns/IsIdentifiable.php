@@ -29,7 +29,7 @@ trait IsIdentifiable
      * Set a name for the instance.
      *
      * @param  string  $name
-     * @return $this
+     * @return self
      */
     public function name(string $name)
     {
@@ -42,7 +42,7 @@ trait IsIdentifiable
      * Set an id for the instance.
      *
      * @param  string  $name
-     * @return $this
+     * @return self
      */
     public function id(string $id)
     {
@@ -55,7 +55,7 @@ trait IsIdentifiable
      * Set a description for the instance.
      *
      * @param  string  $description
-     * @return $this
+     * @return self
      */
     public function description(string $description)
     {

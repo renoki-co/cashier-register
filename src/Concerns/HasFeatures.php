@@ -17,7 +17,7 @@ trait HasFeatures
      * Attach features to the instance.
      *
      * @param  array  $features
-     * @return $this
+     * @return self
      */
     public function features(array $features)
     {

@@ -15,7 +15,7 @@ trait HasData
      * Attach data to the instance.
      *
      * @param  array  $data
-     * @return $this
+     * @return self
      */
     public function data(array $data)
     {

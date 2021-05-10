@@ -23,7 +23,7 @@ trait HasPrice
      *
      * @param  float  $price
      * @param  string|null  $currency
-     * @return $this
+     * @return self
      */
     public function price(float $price, $currency = null)
     {
