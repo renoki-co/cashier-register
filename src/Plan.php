@@ -44,6 +44,7 @@ class Plan implements Arrayable
     public function yearlyId($id)
     {
         $this->yearlyId = $id;
+
         return $this;
     }
 
