@@ -44,29 +44,33 @@ abstract class TestCase extends Orchestra
 
         $this->withFactories(__DIR__.'/database/factories');
 
-        Saas::plan('Monthly $10', static::$stripePlanId)
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-                Saas::feature('Seats', 'teams', 10)->notResettable(),
-            ]);
+        if (getenv('CASHIER_PACKAGE') === 'stripe') {
+            Saas::plan('Monthly $10', static::$stripePlanId)
+                ->features([
+                    Saas::feature('Build Minutes', 'build.minutes', 3000),
+                    Saas::feature('Seats', 'teams', 10)->notResettable(),
+                ]);
 
-        Saas::plan('Free Plan', static::$stripeFreePlanId)
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 10),
-                Saas::feature('Seats', 'teams', 5)->notResettable(),
-            ]);
+            Saas::plan('Free Plan', static::$stripeFreePlanId)
+                ->features([
+                    Saas::feature('Build Minutes', 'build.minutes', 10),
+                    Saas::feature('Seats', 'teams', 5)->notResettable(),
+                ]);
+        }
 
-        Saas::plan('Monthly $20', static::$paddlePlanId)
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-                Saas::feature('Seats', 'teams', 10)->notResettable(),
-            ]);
+        if (getenv('CASHIER_PACKAGE') === 'paddle') {
+            Saas::plan('Monthly $20', static::$paddlePlanId)
+                ->features([
+                    Saas::feature('Build Minutes', 'build.minutes', 3000),
+                    Saas::feature('Seats', 'teams', 10)->notResettable(),
+                ]);
 
-        Saas::plan('Free Plan', static::$paddleFreePlanId)
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 10),
-                Saas::feature('Seats', 'teams', 5)->notResettable(),
-            ]);
+            Saas::plan('Free Plan', static::$paddleFreePlanId)
+                ->features([
+                    Saas::feature('Build Minutes', 'build.minutes', 10),
+                    Saas::feature('Seats', 'teams', 5)->notResettable(),
+                ]);
+        }
     }
 
     /**
