@@ -22,12 +22,13 @@ class Saas
      * Start creating a new plan.
      *
      * @param  string  $name
-     * @param  string  $id
+     * @param  string|int  $id
+     * @param  string|int|null  $yearlyId
      * @return \RenokiCo\CashierRegister\Plan
      */
-    public static function plan(string $name, string $id)
+    public static function plan(string $name, $id, $yearlyId = null)
     {
-        $plan = new Plan($name, $id);
+        $plan = new Plan($name, $id, $yearlyId);
 
         static::$plans[] = $plan;
 
@@ -38,11 +39,11 @@ class Saas
      * Start creating a new feature.
      *
      * @param  string  $name
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  int  $value
      * @return \RenokiCo\CashierRegister\Feature
      */
-    public static function feature(string $name, string $id, int $value = 0)
+    public static function feature(string $name, $id, int $value = 0)
     {
         return new Feature($name, $id, $value);
     }
@@ -50,13 +51,13 @@ class Saas
     /**
      * Assign a new item to the list.
      *
-     * @param  string  $id
+     * @param  string|int  $id
      * @param  string  $name
      * @param  float  $price
      * @param  string  $currency
      * @return self
      */
-    public static function item(string $id, string $name, float $price = 0.00, string $currency = 'EUR')
+    public static function item($id, string $name, float $price = 0.00, string $currency = 'EUR')
     {
         $item = new Item($id, $name, $price, $currency);
 
@@ -82,21 +83,21 @@ class Saas
      */
     public static function getAvailablePlans()
     {
-        return static::getPlans()
-            ->filter
-            ->isActive();
+        return static::getPlans()->filter(function ($plan) {
+            return $plan->isActive();
+        });
     }
 
     /**
      * Get a specific plan by id.
      *
-     * @param  string  $id
-     * @return Plan|null
+     * @param  string|int  $id
+     * @return \RenokiCo\CashierRegister\Plan|null
      */
-    public static function getPlan(string $id)
+    public static function getPlan($id)
     {
         return collect(static::$plans)->filter(function (Plan $plan) use ($id) {
-            return $plan->getId() === $id;
+            return $plan->getId() == $id;
         })->first();
     }
 
@@ -113,13 +114,13 @@ class Saas
     /**
      * Get a specific item by id.
      *
-     * @param  string  $id
-     * @return Item|null
+     * @param  string|int  $id
+     * @return \RenokiCo\CashierRegister\Item|null
      */
-    public static function getItem(string $id)
+    public static function getItem($id)
     {
         return collect(static::$items)->filter(function (Item $item) use ($id) {
-            return $item->getId() === $id;
+            return $item->getId() == $id;
         })->first();
     }
 
@@ -130,7 +131,7 @@ class Saas
      */
     public static function clearPlans(): void
     {
-        static::$plans = collect([]);
+        static::$plans = [];
     }
 
     /**
@@ -140,6 +141,6 @@ class Saas
      */
     public static function clearItems(): void
     {
-        static::$items = collect([]);
+        static::$items = [];
     }
 }

@@ -13,17 +13,94 @@ class Plan implements Arrayable
         Concerns\HasData;
 
     /**
+     * The yearly instance price.
+     *
+     * @var float
+     */
+    protected $yearlyPrice = 0.00;
+
+    /**
      * Create a new plan builder.
      *
      * @param  string  $name
-     * @param  string  $id
+     * @param  string|int|null  $id
+     * @param  string|int|null  $yearlyId
      * @return void
      */
-    public function __construct(string $name, string $id)
+    public function __construct(string $name, $id = null, $yearlyId = null)
     {
-        $this->name = $name;
-        $this->id = $id;
-        $this->features = collect([]);
+        $this->name($name);
+        $this->id($id);
+        $this->yearlyId($yearlyId);
+        $this->features([]);
+    }
+
+    /**
+     * Set the yearly ID for the plan.
+     *
+     * @param  string|int  $yearlyId
+     * @return self
+     */
+    public function yearlyId($id)
+    {
+        $this->yearlyId = $id;
+
+        return $this;
+    }
+
+    /**
+     * Set the monthly price for the plan.
+     *
+     * @param  float  $price
+     * @param  string|null  $currency
+     * @return self
+     */
+    public function monthly(float $price, $currency = null)
+    {
+        return $this->price($price, $currency);
+    }
+
+    /**
+     * Set the yearl price for the plan.
+     *
+     * @param  float  $price
+     * @return self
+     */
+    public function yearly(float $price)
+    {
+        $this->yearlyPrice = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get the yearly ID for the plan.
+     *
+     * @return string|int|null
+     */
+    public function getYearlyId()
+    {
+        return $this->yearlyId;
+    }
+
+    /**
+     * Get the monthly price of the plan.
+     *
+     * @return float
+     */
+    public function getMonthlyPrice(): float
+    {
+        return $this->getPrice();
+    }
+
+    /**
+     * Get the yearly price of the plan.
+     *
+     * @return float
+     */
+    public function getYearlyPrice(): float
+    {
+        return $this->yearlyPrice;
     }
 
     /**
@@ -35,9 +112,11 @@ class Plan implements Arrayable
     {
         return [
             'id' => $this->getId(),
+            'yearlyId' => $this->getYearlyId(),
             'name' => $this->getName(),
             'description' => $this->getDescription(),
-            'price' => $this->getPrice(),
+            'monthly_price' => $this->getMonthlyPrice(),
+            'yearly_price' => $this->getYearlyPrice(),
             'currency' => $this->getCurrency(),
             'active' => $this->isActive(),
             'features' => $this->getFeatures()->toArray(),

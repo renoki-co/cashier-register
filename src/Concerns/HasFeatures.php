@@ -9,9 +9,9 @@ trait HasFeatures
     /**
      * The features list for the instance.
      *
-     * @var array|\Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection
      */
-    protected $features = [];
+    protected $features;
 
     /**
      * Attach features to the instance.
@@ -21,10 +21,9 @@ trait HasFeatures
      */
     public function features(array $features)
     {
-        $this->features = collect($features)
-            ->unique(function (Feature $feature) {
-                return $feature->getId();
-            });
+        $this->features = collect($features)->unique(function (Feature $feature) {
+            return $feature->getId();
+        });
 
         return $this;
     }
@@ -36,19 +35,19 @@ trait HasFeatures
      */
     public function getFeatures()
     {
-        return collect($this->features);
+        return $this->features;
     }
 
     /**
      * Get a specific feature by id.
      *
-     * @param  string  $id
-     * @return Feature|null
+     * @param  string|int  $id
+     * @return \RenokiCo\CashierRegister\Feature|null
      */
-    public function getFeature(string $id)
+    public function getFeature($id)
     {
         return $this->getFeatures()->filter(function (Feature $feature) use ($id) {
-            return $feature->getId() === $id;
+            return $feature->getId() == $id;
         })->first();
     }
 }

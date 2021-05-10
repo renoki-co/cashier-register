@@ -10,14 +10,16 @@ class PlanTest extends TestCase
     {
         Saas::clearPlans();
 
-        Saas::plan('Active Plan', 'plan')
-            ->price(10, 'USD')
+        Saas::plan('Active Plan', 'plan', 'plan-yearly')
+            ->monthly(10, 'USD')
+            ->yearly(100, 'USD')
             ->description('Some plan...')
             ->data(['somekey' => 'someval'])
             ->popular();
 
-        Saas::plan('Archived Plan', 'archived-plan')
-            ->price(15, 'USD')
+        Saas::plan('Archived Plan', 'archived-plan', 'archived-plan-yearly')
+            ->monthly(15, 'USD')
+            ->yearly(150, 'USD')
             ->deprecated();
 
         $this->assertCount(1, Saas::getAvailablePlans());
@@ -25,7 +27,7 @@ class PlanTest extends TestCase
         $plan = Saas::getPlan('plan');
 
         $this->assertEquals('plan', $plan->getId());
-
+        $this->assertEquals('plan-yearly', $plan->getYearlyId());
         $this->assertEquals(['somekey' => 'someval', 'popular' => true], $plan->getData());
     }
 
