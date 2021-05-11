@@ -3,6 +3,7 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\Plan;
 
 trait HasFeatures
 {
@@ -21,7 +22,22 @@ trait HasFeatures
      */
     public function features(array $features)
     {
-        $this->features = collect($features)->unique(function (Feature $feature) {
+        $this->features = $this->getFeatures()->merge(collect($features))->unique(function (Feature $feature) {
+            return $feature->getId();
+        });
+
+        return $this;
+    }
+
+    /**
+     * Inherit features from another plan.
+     *
+     * @param  \RenokiCo\CashierRegister\Plan  $plan
+     * @return self
+     */
+    public function inheritFeaturesFromPlan(Plan $plan, array $features)
+    {
+        $this->features = collect($features)->merge($plan->getFeatures())->merge($this->getFeatures())->unique(function (Feature $feature) {
             return $feature->getId();
         });
 
