@@ -406,6 +406,8 @@ $paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freeP
 
 The second argument passed to the function is the array of features to replace within the current Free Plan.
 
+**Keep in mind, avoid using further `->features()` when inheriting from another plan.**
+
 ## 🐛 Testing
 
 ``` bash
