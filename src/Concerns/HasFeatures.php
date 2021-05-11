@@ -22,7 +22,7 @@ trait HasFeatures
      */
     public function features(array $features)
     {
-        $this->features = collect($features)->merge($this->getFeatures())->unique(function (Feature $feature) {
+        $this->features = collect($features)->unique(function (Feature $feature) {
             return $feature->getId();
         });
 
