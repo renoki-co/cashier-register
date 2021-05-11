@@ -49,7 +49,7 @@ trait HasQuotas
         ]);
 
         $planId = $this->getPlanIdentifier();
-        $featureOverQuota = $this->featureOverQuota($id, $planId);
+        $featureOverQuota = $this->featureOverQuotaFor($id, $usage, $planId);
 
         if (! $feature->isUnlimited() && $featureOverQuota) {
             $remainingQuota = $this->getRemainingQuotaFor($id, $usage, $planId);
@@ -230,6 +230,27 @@ trait HasQuotas
         }
 
         return $this->getRemainingQuota($id, $planId) < 0;
+    }
+
+    /**
+     * Check if the feature is over the assigned quota.
+     *
+     * @param  string|int  $id
+     * @param  \Illuminate\Database\Eloquent\Model  $usage
+     * @param  string|null  $planId
+     * @return bool
+     */
+    public function featureOverQuotaFor($id, $usage, $planId = null): bool
+    {
+        $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
+
+        $feature = $plan->getFeature($id);
+
+        if ($feature->isUnlimited()) {
+            return false;
+        }
+
+        return $this->getRemainingQuotaFor($id, $usage, $planId) < 0;
     }
 
     /**

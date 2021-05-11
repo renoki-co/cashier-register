@@ -208,7 +208,6 @@ class StripeFeatureTest extends TestCase
             $overQuota = $valueOverQuota;
         });
 
-        $this->assertTrue($subscription->featureOverQuota('teams'));
         $this->assertEquals(1, $overQuota);
     }
 
