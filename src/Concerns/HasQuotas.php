@@ -244,17 +244,16 @@ trait HasQuotas
     {
         $plan = Saas::getPlan($planId);
 
-        return $plan->getFeatures()->reject(function ($feature) {
-            return $feature->isResettable();
-        })->reject(function ($feature) {
-            return $feature->isUnlimited();
-        })->filter(function (Feature $feature) use ($plan) {
-            $remainingQuota = $this->getRemainingQuota(
-                $feature->getId(), $plan->getId()
-            );
+        return $plan->getFeatures()
+            ->reject->isResettable()
+            ->reject->isUnlimited()
+            ->filter(function (Feature $feature) use ($plan) {
+                $remainingQuota = $this->getRemainingQuota(
+                    $feature->getId(), $plan->getId()
+                );
 
-            return $remainingQuota <= 0;
-        });
+                return $remainingQuota < 0;
+            });
     }
 
     /**
