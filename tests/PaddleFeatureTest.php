@@ -17,7 +17,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -42,7 +42,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -69,7 +69,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -96,7 +96,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -117,7 +117,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -148,7 +148,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -180,7 +180,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -220,7 +220,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -251,14 +251,19 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
 
-        $subscription->recordFeatureUsage('teams', 11);
+        $overQuota = 'not_set';
+
+        $subscription->recordFeatureUsage('teams', 11, true, function ($feature, $valueOverQuota, $subscription) use (&$overQuota) {
+            $overQuota = $valueOverQuota;
+        });
 
         $this->assertTrue($subscription->featureOverQuota('teams'));
+        $this->assertEquals(1, $overQuota);
     }
 
     public function test_feature_usage_on_unlimited()
@@ -273,12 +278,16 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
 
-        $subscription->recordFeatureUsage('teams', 100);
+        $overQuota = 0;
+
+        $subscription->recordFeatureUsage('teams', 100, true, function ($feature, $valueOverQuota, $subscription)  use (&$overQuota) {
+            $overQuota = 'set';
+        });
 
         $this->assertEquals(
             100, $subscription->getUsedQuota('teams')
@@ -293,6 +302,8 @@ class PaddleFeatureTest extends TestCase
         $this->assertEquals(
             -1, $subscription->getRemainingQuota('teams')
         );
+
+        $this->assertEquals(0, $overQuota);
     }
 
     public function test_downgrading_plan()
@@ -306,7 +317,7 @@ class PaddleFeatureTest extends TestCase
         $subscription = $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => static::$paddlePlanId,
+            'paddle_plan' => $paidPlan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -314,7 +325,7 @@ class PaddleFeatureTest extends TestCase
         $subscription->recordFeatureUsage('teams', 10);
 
         $overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping(
-            static::$paddleFreePlanId
+            $freePlan->getId()
         );
 
         $this->assertCount(

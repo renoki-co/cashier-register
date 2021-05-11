@@ -2,8 +2,11 @@
 
 namespace RenokiCo\CashierRegister\Concerns;
 
-use RenokiCo\CashierRegister\Feature;
+use Closure;
 use RenokiCo\CashierRegister\Saas;
+use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\MeteredFeature;
+use RenokiCo\CashierRegister\Exceptions\QuotaExceededException;
 
 trait HasQuotas
 {
@@ -25,9 +28,10 @@ trait HasQuotas
      * @param  string|int  $id
      * @param  int  $value
      * @param  bool  $incremental
+     * @param  Closure|null  $exceedHandler
      * @return \RenokiCo\CashierRegister\Models\Usage|null
      */
-    public function recordFeatureUsage($id, int $value = 1, bool $incremental = true)
+    public function recordFeatureUsage($id, int $value = 1, bool $incremental = true, Closure $exceedHandler = null)
     {
         $feature = $this->getPlan()->getFeature($id);
 
@@ -43,6 +47,44 @@ trait HasQuotas
         $usage->fill([
             'used' => $incremental ? $usage->used + $value : $value,
         ]);
+
+        $planId = $this->getPlanIdentifier();
+        $featureOverQuota = $this->featureOverQuota($id, $planId);
+
+        if (! $feature->isUnlimited() && $featureOverQuota) {
+            $remainingQuota = $this->getRemainingQuotaFor($id, $usage, $planId);
+
+            $valueOverQuota = value(function () use ($value, $remainingQuota) {
+                return $remainingQuota < 0
+                    ? -1 * $remainingQuota
+                    : $value;
+            });
+
+            if ($feature instanceof MeteredFeature && method_exists($this, 'reportUsageFor')) {
+                /** @var MeteredFeature $feature */
+
+                // If the user has for example 5 minutes left and the pipeline
+                // ended and 10 minutes were consumed, update the feature usage to
+                // feature value (meaning everything got consumed) and report
+                // the usage based on the difference for the remaining difference,
+                // but with positive value.
+                $this->reportUsageFor($feature->getMeteredId(), $valueOverQuota);
+            }
+
+            /** @var Feature $feature */
+
+            // Fill the usage later since the getRemaininQuotaFor() uses the $usage
+            // object that was updated with the current requested feature usage recording.
+            // This way, the next time the customer uses again the feature, it will jump straight up
+            // to billing using metering instead of calculating the difference.
+            $usage->fill([
+                'used' => $this->getFeatureQuota($id, $planId),
+            ]);
+
+            if ($exceedHandler) {
+                $exceedHandler($feature, $valueOverQuota, $this);
+            }
+        }
 
         return tap($usage)->save();
     }
@@ -132,6 +174,25 @@ trait HasQuotas
     }
 
     /**
+     * Get the feature quota remaining.
+     *
+     * @param  string|int  $id
+     * @param  \Illuminate\Database\Eloquent\Model  $usage
+     * @param  string|null  $planId
+     * @return int
+     */
+    public function getRemainingQuotaFor($id, $usage, $planId = null): int
+    {
+        $featureValue = $this->getFeatureQuota($id, $planId);
+
+        if ($featureValue < 0) {
+            return -1;
+        }
+
+        return $featureValue - $usage->used;
+    }
+
+    /**
      * Get the feature quota.
      *
      * @param  string|int  $id
@@ -183,20 +244,17 @@ trait HasQuotas
     {
         $plan = Saas::getPlan($planId);
 
-        return $plan->getFeatures()
-            ->reject(function ($feature) {
-                return $feature->isResettable();
-            })
-            ->reject(function ($feature) {
-                return $feature->isUnlimited();
-            })
-            ->filter(function (Feature $feature) use ($plan) {
-                $remainingQuota = $this->getRemainingQuota(
-                    $feature->getId(), $plan->getId()
-                );
+        return $plan->getFeatures()->reject(function ($feature) {
+            return $feature->isResettable();
+        })->reject(function ($feature) {
+            return $feature->isUnlimited();
+        })->filter(function (Feature $feature) use ($plan) {
+            $remainingQuota = $this->getRemainingQuota(
+                $feature->getId(), $plan->getId()
+            );
 
-                return $remainingQuota <= 0;
-            });
+            return $remainingQuota <= 0;
+        });
     }
 
     /**
