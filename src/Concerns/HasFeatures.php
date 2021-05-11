@@ -47,7 +47,7 @@ trait HasFeatures
     public function getFeature($id)
     {
         return $this->getFeatures()->filter(function (Feature $feature) use ($id) {
-            return $feature->getId() == $id;
+            return $feature->getId() === $id;
         })->first();
     }
 }

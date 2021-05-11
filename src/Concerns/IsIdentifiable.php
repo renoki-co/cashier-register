@@ -77,9 +77,9 @@ trait IsIdentifiable
     /**
      * Get the id of the instance.
      *
-     * @return string
+     * @return string|int
      */
-    public function getId(): string
+    public function getId()
     {
         return $this->id;
     }
