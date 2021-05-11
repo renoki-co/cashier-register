@@ -49,6 +49,18 @@ class Saas
     }
 
     /**
+     * Start creating a new metered feature.
+     *
+     * @param  string  $name
+     * @param  string|int  $id
+     * @return \RenokiCo\CashierRegister\MeteredFeature
+     */
+    public function meteredFeature(string $name, $id)
+    {
+        return new MeteredFeature($name, $id);
+    }
+
+    /**
      * Assign a new item to the list.
      *
      * @param  string|int  $id

@@ -3,6 +3,7 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\MeteredFeature;
 use RenokiCo\CashierRegister\Plan;
 
 trait HasFeatures
@@ -52,6 +53,18 @@ trait HasFeatures
     public function getFeatures()
     {
         return collect($this->features);
+    }
+
+    /**
+     * Get the metered features.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getMeteredFeatures()
+    {
+        return $this->getFeatures()->filter(function ($feature) {
+            return $feature instanceof MeteredFeature;
+        });
     }
 
     /**
