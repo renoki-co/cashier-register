@@ -36,10 +36,10 @@ trait HasPrice
     /**
      * Set the currency for the plan.
      *
-     * @param  string  $currency
+     * @param  string|null  $currency
      * @return self
      */
-    public function currency(string $currency)
+    public function currency(string $currency = null)
     {
         $this->currency = $currency ?: $this->currency;
 
