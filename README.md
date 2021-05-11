@@ -282,10 +282,9 @@ class StripeController extends WebhookController
 To avoid resetting, like counting the seats for a subscription, you should call `notResettable()` on the feature:
 
 ```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->features([
-        Saas::feature('Seats', 'seats', 5)->notResettable(),
-    ]);
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::feature('Seats', 'seats', 5)->notResettable(),
+]);
 ```
 
 Now when calling `resetQuotas()`, the `seats` feature won't go back to the default value.
@@ -389,6 +388,25 @@ Saas::plan('Gold Plan', 'gold-plan')
 ```
 
 This will add a data field called `popular` that is either `true/false`.
+
+## Inherit features from other plans
+
+You may copy the base features from a given plan and overwrite same-ID features for new plans.
+
+```php
+$freePlan = Saas::plan('Free Plan', 'free-plan')->features([
+    Saas::feature('Seats', 'seats')->value(10),
+]);
+
+$paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freePlan, [
+    Saas::feature('Seats', 'seats')->unlimited(), // same-ID features are replaced
+    Saas::feature('Beta Access', 'beta.access')->unlimited(), // new IDs are merged
+]);
+```
+
+The second argument passed to the function is the array of features to replace within the current Free Plan.
+
+**Keep in mind, avoid using further `->features()` when inheriting from another plan.**
 
 ## 🐛 Testing
 

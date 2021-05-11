@@ -55,7 +55,7 @@ class Saas
      * @param  string  $name
      * @param  float  $price
      * @param  string  $currency
-     * @return self
+     * @return \RenokiCo\CashierRegister\Item
      */
     public static function item($id, string $name, float $price = 0.00, string $currency = 'EUR')
     {

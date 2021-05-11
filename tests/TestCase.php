@@ -44,28 +44,28 @@ abstract class TestCase extends Orchestra
 
         $this->withFactories(__DIR__.'/database/factories');
 
-        Saas::plan('Monthly $10', static::$stripePlanId)
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000),
-                Saas::feature('Seats', 'teams', 10)->notResettable(),
-            ]);
-
-        Saas::plan('Free Plan', static::$stripeFreePlanId, static::$stripeFreePlanId)
+        $freeStripePlan = Saas::plan('Free Plan', static::$stripeFreePlanId, static::$stripeFreePlanId)
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 10),
                 Saas::feature('Seats', 'teams', 5)->notResettable(),
+            ]);
+
+        $freePaddlePlan = Saas::plan('Free Plan', static::$paddleFreePlanId, static::$paddleFreePlanId)
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 10),
+                Saas::feature('Seats', 'teams', 5)->notResettable(),
+            ]);
+
+        Saas::plan('Monthly $10', static::$stripePlanId)
+            ->inheritFeaturesFromPlan($freeStripePlan, [
+                Saas::feature('Build Minutes', 'build.minutes', 3000),
+                Saas::feature('Seats', 'teams', 10)->notResettable(),
             ]);
 
         Saas::plan('Monthly $20', static::$paddlePlanId)
-            ->features([
+            ->inheritFeaturesFromPlan($freePaddlePlan, [
                 Saas::feature('Build Minutes', 'build.minutes', 3000),
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
-            ]);
-
-        Saas::plan('Free Plan', static::$paddleFreePlanId, static::$paddleFreePlanId)
-            ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 10),
-                Saas::feature('Seats', 'teams', 5)->notResettable(),
             ]);
     }
 

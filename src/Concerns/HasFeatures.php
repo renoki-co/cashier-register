@@ -3,6 +3,7 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\Plan;
 
 trait HasFeatures
 {
@@ -11,7 +12,7 @@ trait HasFeatures
      *
      * @var \Illuminate\Support\Collection
      */
-    protected $features;
+    protected $features = [];
 
     /**
      * Attach features to the instance.
@@ -29,13 +30,28 @@ trait HasFeatures
     }
 
     /**
+     * Inherit features from another plan.
+     *
+     * @param  \RenokiCo\CashierRegister\Plan  $plan
+     * @return self
+     */
+    public function inheritFeaturesFromPlan(Plan $plan, array $features = [])
+    {
+        $this->features = collect($features)->merge($plan->getFeatures())->merge($this->getFeatures())->unique(function (Feature $feature) {
+            return $feature->getId();
+        });
+
+        return $this;
+    }
+
+    /**
      * Get the list of all features.
      *
      * @return \Illuminate\Support\Collection
      */
     public function getFeatures()
     {
-        return $this->features;
+        return collect($this->features);
     }
 
     /**

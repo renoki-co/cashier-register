@@ -50,4 +50,34 @@ class PlanTest extends TestCase
 
         $this->assertEquals(['os' => 'linux'], $feature->getData());
     }
+
+    public function test_build_plans_with_inherited_features()
+    {
+        Saas::clearPlans();
+
+        $freePlan = Saas::plan('Free Plan', 'free-plan')
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes')
+                    ->description('Build minutes for all your projects.')
+                    ->value(100)
+                    ->data(['os' => 'linux']),
+            ]);
+
+        $plan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freePlan, [
+            Saas::feature('Build Minutes', 'build.minutes')
+                ->value(200)
+                ->data(['os' => ['linux']]),
+
+            Saas::feature('Windows Builds', 'windows.build.minutes')->unlimited(),
+        ]);
+
+        $this->assertCount(2, $plan->getFeatures());
+
+        $feature = $plan->getFeature('build.minutes');
+        $windowsBuildsFeature = $plan->getFeature('windows.build.minutes');
+
+        $this->assertEquals(['os' => ['linux']], $feature->getData());
+        $this->assertEquals(200, $feature->getValue());
+        $this->assertTrue($windowsBuildsFeature->isUnlimited());
+    }
 }
