@@ -35,7 +35,7 @@ trait HasFeatures
      * @param  \RenokiCo\CashierRegister\Plan  $plan
      * @return self
      */
-    public function inheritFeaturesFromPlan(Plan $plan, array $features)
+    public function inheritFeaturesFromPlan(Plan $plan, array $features = [])
     {
         $this->features = collect($features)->merge($plan->getFeatures())->merge($this->getFeatures())->unique(function (Feature $feature) {
             return $feature->getId();
