@@ -12,7 +12,7 @@ trait HasFeatures
      *
      * @var \Illuminate\Support\Collection
      */
-    protected $features;
+    protected $features = [];
 
     /**
      * Attach features to the instance.
@@ -51,7 +51,7 @@ trait HasFeatures
      */
     public function getFeatures()
     {
-        return $this->features;
+        return collect($this->features);
     }
 
     /**
