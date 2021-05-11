@@ -74,8 +74,9 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 
         Saas::plan('Gold Plan', 'monthly-price-id', 'yearly-price-id')
             ->description('The gold plan.')
-            ->monthly(30, 'EUR')
-            ->yearly(300, 'EUR')
+            ->monthly(30)
+            ->yearly(300)
+            ->currency('EUR')
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 3000)
                     ->description('3000 build minutes for an entire month!'),

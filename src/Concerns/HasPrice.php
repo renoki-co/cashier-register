@@ -25,9 +25,22 @@ trait HasPrice
      * @param  string|null  $currency
      * @return self
      */
-    public function price(float $price, $currency = null)
+    public function price(float $price, string $currency = null)
     {
         $this->price = $price;
+        $this->currency($currency);
+
+        return $this;
+    }
+
+    /**
+     * Set the currency for the plan.
+     *
+     * @param  string  $currency
+     * @return self
+     */
+    public function currency(string $currency)
+    {
         $this->currency = $currency ?: $this->currency;
 
         return $this;
