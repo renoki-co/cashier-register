@@ -11,9 +11,27 @@ Cashier Register - Track the plan quotas
 
 Cashier Register is a simple quota feature usage tracker for Laravel Cashier subscriptions.
 
-It helps you define static, project-level plans, and attach them features that can be tracked and limited throughout the app.
+It helps you define static, project-level plans, and attach them features that can be tracked and limited throughout the app. For example, you might want to set a limit of `5` seats per team and make it so internally. Cashier Register comes with a nice wrapper for Laravel Cashier that does that out-of-the-box.
 
-For example, you might want to set a limit of `5` seats and to be done internally. CashierRegister comes with a nice wrapper for Laravel Cashier that does that out-of-the-box.
+- [Cashier Register - Track the plan quotas](#cashier-register---track-the-plan-quotas)
+  - [🤝 Supporting](#-supporting)
+  - [🚀 Installation](#-installation)
+  - [🙌 Usage](#-usage)
+  - [Preparing the model](#preparing-the-model)
+  - [Preparing the plans](#preparing-the-plans)
+    - [Feature Usage Tracking](#feature-usage-tracking)
+    - [Checking for overflow](#checking-for-overflow)
+    - [Resetting tracked values](#resetting-tracked-values)
+    - [Unlimited amounts](#unlimited-amounts)
+    - [Checking for overexceeded quotas](#checking-for-overexceeded-quotas)
+    - [Additional data](#additional-data)
+    - [Setting the plan as popular](#setting-the-plan-as-popular)
+    - [Inherit features from other plans](#inherit-features-from-other-plans)
+  - [Static items](#static-items)
+  - [🐛 Testing](#-testing)
+  - [🤝 Contributing](#-contributing)
+  - [🔒  Security](#--security)
+  - [🎉 Credits](#-credits)
 
 ## 🤝 Supporting
 
@@ -192,7 +210,7 @@ use RenokiCo\CashierRegister\Saas;
 $plans = Saas::getAvailablePlans();
 ```
 
-## Feature Usage Tracking
+### Feature Usage Tracking
 
 You can attach features to the plans:
 
@@ -228,7 +246,7 @@ $subscription->getUsedQuota('build.minutes') // 30
 $subscription->getRemainingQuota('build.minutes') // 2950
 ```
 
-## Checking overflow
+### Checking for overflow
 
 Checking overflow can be useful when users fallback from a bigger plan to an older plan. In this case, you may end up with an overflow case where the users will have feature tracking values greater than the smaller plan values.
 
@@ -241,7 +259,7 @@ $subscription->swap($freePlan); // has no build minutes
 $subscription->featureOverQuota('build.minutes');
 ```
 
-## Resetting tracked values
+### Resetting tracked values
 
 By default, each created feature is resettable - each time the billing cycle ends, you can call `resetQuotas` to reset them (they will become 3000 in the previous example).
 
@@ -290,7 +308,7 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 
 Now when calling `resetQuotas()`, the `seats` feature won't go back to the default value.
 
-## Unlimited amount
+### Unlimited amounts
 
 To set an infinite amount of usage, use the `unlimited()` method:
 
@@ -300,7 +318,7 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 ]);
 ```
 
-## Checking for overexceeded quotas
+### Checking for overexceeded quotas
 
 When swapping from a bigger plan to a small plan, you might restrict users from doing it unless all the quotas do not exceed the smaller plan's quotas.
 
@@ -323,6 +341,56 @@ foreach ($overQuotaFeatures as $feature) {
 ```
 
 **Please keep in mind that this works only for non-resettable features, like Teams, Members, etc. due to the fact that features, when swapping between plans, should be handled manually, either wanting to keep them as-is or resetting them using `resetQuotas()`**
+
+### Additional data
+
+Items, plans and features implement a `->data()` method that allows you to attach custom data for each item:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->data(['golden' => true])
+    ->features([
+        Saas::feature('Seats', 'seats')
+            ->data(['digital' => true])
+            ->unlimited(),
+    ]);
+
+$plan = Saas::getPlan('gold-plan');
+$feature = $plan->getFeature('seats');
+
+$planData = $plan->getData(); // ['golden' => true]
+$featureData = $feature->getData(); // ['digital' => true]
+```
+
+### Setting the plan as popular
+
+Some plans are popular among others, and you can simply mark them:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->popular();
+```
+
+This will add a data field called `popular` that is either `true/false`.
+
+### Inherit features from other plans
+
+You may copy the base features from a given plan and overwrite same-ID features for new plans.
+
+```php
+$freePlan = Saas::plan('Free Plan', 'free-plan')->features([
+    Saas::feature('Seats', 'seats')->value(10),
+]);
+
+$paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freePlan, [
+    Saas::feature('Seats', 'seats')->unlimited(), // same-ID features are replaced
+    Saas::feature('Beta Access', 'beta.access')->unlimited(), // new IDs are merged
+]);
+```
+
+The second argument passed to the function is the array of features to replace within the current Free Plan.
+
+**Keep in mind, avoid using further `->features()` when inheriting from another plan.**
 
 ## Static items
 
@@ -358,56 +426,6 @@ foreach ($item->getSubitems() as $item) {
     $item->getName(); // Elephant Sticker, Zebra Sticker, etc...
 }
 ```
-
-## Additional data
-
-Items, plans and features implement a `->data()` method that allows you to attach custom data for each item:
-
-```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->data(['golden' => true])
-    ->features([
-        Saas::feature('Seats', 'seats')
-            ->data(['digital' => true])
-            ->unlimited(),
-    ]);
-
-$plan = Saas::getPlan('gold-plan');
-$feature = $plan->getFeature('seats');
-
-$planData = $plan->getData(); // ['golden' => true]
-$featureData = $feature->getData(); // ['digital' => true]
-```
-
-### Setting the plan as popular
-
-Some plans are popular among others, and you can simply mark them:
-
-```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->popular();
-```
-
-This will add a data field called `popular` that is either `true/false`.
-
-## Inherit features from other plans
-
-You may copy the base features from a given plan and overwrite same-ID features for new plans.
-
-```php
-$freePlan = Saas::plan('Free Plan', 'free-plan')->features([
-    Saas::feature('Seats', 'seats')->value(10),
-]);
-
-$paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freePlan, [
-    Saas::feature('Seats', 'seats')->unlimited(), // same-ID features are replaced
-    Saas::feature('Beta Access', 'beta.access')->unlimited(), // new IDs are merged
-]);
-```
-
-The second argument passed to the function is the array of features to replace within the current Free Plan.
-
-**Keep in mind, avoid using further `->features()` when inheriting from another plan.**
 
 ## 🐛 Testing
 
