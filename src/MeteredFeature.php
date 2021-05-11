@@ -21,16 +21,25 @@ class MeteredFeature extends Feature
     protected $meteredPrice = 0.00;
 
     /**
+     * The metered unit name.
+     *
+     * @var string
+     */
+    protected $meteredUnitName;
+
+    /**
      * Set the metered price.
      *
      * @param  string|int  $id
      * @param  float  $price
+     * @param  string|null  $unitName
      * @return self
      */
-    public function meteredPrice($id, float $price)
+    public function meteredPrice($id, float $price, string $unitName = null)
     {
         $this->meteredId = $id;
         $this->meteredPrice = $price;
+        $this->meteredUnitName = $unitName;
 
         return $this;
     }
@@ -56,23 +65,13 @@ class MeteredFeature extends Feature
     }
 
     /**
-     * Check if this feature is resettable after each billing cycle.
+     * Get the metered unit name.
      *
-     * @return bool
+     * @return string|null
      */
-    public function isResettable(): bool
+    public function getMeteredUnitName()
     {
-        return true;
-    }
-
-    /**
-     * Check if the feature has unlimited uses.
-     *
-     * @return bool
-     */
-    public function isUnlimited(): bool
-    {
-        return true;
+        return $this->meteredUnitName;
     }
 
     /**
@@ -91,6 +90,7 @@ class MeteredFeature extends Feature
             'value' => $parent['value'],
             'metered_id' => $this->getMeteredId(),
             'metered_price' => $this->getMeteredPrice(),
+            'metered_unit_name' => $this->getMeteredUnitName(),
         ];
     }
 }

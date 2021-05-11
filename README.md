@@ -24,6 +24,7 @@ It helps you define static, project-level plans, and attach them features that c
     - [Resetting tracked values](#resetting-tracked-values)
     - [Unlimited amounts](#unlimited-amounts)
     - [Checking for overexceeded quotas](#checking-for-overexceeded-quotas)
+    - [Metered features](#metered-features)
     - [Additional data](#additional-data)
     - [Setting the plan as popular](#setting-the-plan-as-popular)
     - [Inherit features from other plans](#inherit-features-from-other-plans)
@@ -341,6 +342,30 @@ foreach ($overQuotaFeatures as $feature) {
 ```
 
 **Please keep in mind that this works only for non-resettable features, like Teams, Members, etc. due to the fact that features, when swapping between plans, should be handled manually, either wanting to keep them as-is or resetting them using `resetQuotas()`**
+
+### Metered features
+
+Metered features are opened for Stripe only and this will open up custom metering for exceeding quotas on features.
+
+You might want to give your customers a specific amount of a feature, let's say `Build Minutes`, but for exceeding amount of minutes you might invoice at the end of the month a price of `$0.01` per minute:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
+        ->meteredPrice('price_identifier', 0.01, 'minutes'), // on-demand: $0.01/minute
+]);
+```
+
+If you simply want just the on-demand price of the metered feature, just omit the amount:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::meteredFeature('Build Minutes', 'build.minutes'), // included: 0
+        ->meteredPrice('price_identifier', 0.01, 'minutes'), // on-demand: $0.01/minute
+]);
+```
+
+**The third parameter is just a conventional name for the unit. `0.01` is the price per unit (PPU). In this case, it's `minute` and `$0.01`, assuming the plan's price is in USD.**
 
 ### Additional data
 
