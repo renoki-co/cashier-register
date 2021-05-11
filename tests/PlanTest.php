@@ -74,7 +74,10 @@ class PlanTest extends TestCase
         $this->assertCount(2, $plan->getFeatures());
 
         $feature = $plan->getFeature('build.minutes');
+        $windowsBuildsFeature = $plan->getFeature('windows.build.minutes');
 
         $this->assertEquals(['os' => ['linux']], $feature->getData());
+        $this->assertEquals(200, $feature->getValue());
+        $this->assertTrue($windowsBuildsFeature->isUnlimited());
     }
 }
