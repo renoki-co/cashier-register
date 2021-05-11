@@ -8,5 +8,6 @@ use RenokiCo\CashierRegister\Concerns\HasQuotas;
 
 class Subscription extends CashierSubscription
 {
-    use HasQuotas, HasPlans;
+    use HasPlans;
+    use HasQuotas;
 }

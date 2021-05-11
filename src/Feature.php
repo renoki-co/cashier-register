@@ -6,8 +6,8 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Feature implements Arrayable
 {
-    use Concerns\IsIdentifiable,
-        Concerns\HasData;
+    use Concerns\HasData;
+    use Concerns\IsIdentifiable;
 
     /**
      * The value of this feature. Used

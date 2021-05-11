@@ -6,11 +6,11 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Plan implements Arrayable
 {
-    use Concerns\HasFeatures,
-        Concerns\HasPrice,
-        Concerns\Deprecable,
-        Concerns\IsIdentifiable,
-        Concerns\HasData;
+    use Concerns\Deprecable;
+    use Concerns\IsIdentifiable;
+    use Concerns\HasData;
+    use Concerns\HasFeatures;
+    use Concerns\HasPrice;
 
     /**
      * The yearly instance price.
