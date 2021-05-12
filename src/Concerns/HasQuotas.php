@@ -3,10 +3,9 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use Closure;
-use RenokiCo\CashierRegister\Saas;
 use RenokiCo\CashierRegister\Feature;
 use RenokiCo\CashierRegister\MeteredFeature;
-use RenokiCo\CashierRegister\Exceptions\QuotaExceededException;
+use RenokiCo\CashierRegister\Saas;
 
 trait HasQuotas
 {

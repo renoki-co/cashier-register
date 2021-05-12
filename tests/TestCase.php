@@ -2,15 +2,14 @@
 
 namespace RenokiCo\CashierRegister\Test;
 
+use Orchestra\Testbench\TestCase as Orchestra;
+use RenokiCo\CashierRegister\Saas;
+use Stripe\ApiResource;
+use Stripe\Exception\InvalidRequestException;
 use Stripe\Plan;
 use Stripe\Price;
-use Stripe\Stripe;
 use Stripe\Product;
-use Stripe\ApiResource;
-use Illuminate\Support\Str;
-use RenokiCo\CashierRegister\Saas;
-use Stripe\Exception\InvalidRequestException;
-use Orchestra\Testbench\TestCase as Orchestra;
+use Stripe\Stripe;
 
 abstract class TestCase extends Orchestra
 {
