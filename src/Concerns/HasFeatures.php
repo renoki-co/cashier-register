@@ -38,9 +38,12 @@ trait HasFeatures
      */
     public function inheritFeaturesFromPlan(Plan $plan, array $features = [])
     {
-        $this->features = collect($features)->merge($plan->getFeatures())->merge($this->getFeatures())->unique(function (Feature $feature) {
-            return $feature->getId();
-        });
+        $this->features = collect($features)
+            ->merge($plan->getFeatures())
+            ->merge($this->getFeatures())
+            ->unique(function (Feature $feature) {
+                return $feature->getId();
+            });
 
         return $this;
     }
@@ -75,8 +78,8 @@ trait HasFeatures
      */
     public function getFeature($id)
     {
-        return $this->getFeatures()->filter(function (Feature $feature) use ($id) {
+        return $this->getFeatures()->first(function (Feature $feature) use ($id) {
             return $feature->getId() == $id;
-        })->first();
+        });
     }
 }

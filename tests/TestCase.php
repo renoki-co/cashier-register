@@ -2,28 +2,33 @@
 
 namespace RenokiCo\CashierRegister\Test;
 
-use Illuminate\Support\Str;
-use Orchestra\Testbench\TestCase as Orchestra;
-use RenokiCo\CashierRegister\Saas;
-use Stripe\ApiResource;
-use Stripe\Exception\InvalidRequestException;
 use Stripe\Plan;
-use Stripe\Product;
+use Stripe\Price;
 use Stripe\Stripe;
+use Stripe\Product;
+use Stripe\ApiResource;
+use Illuminate\Support\Str;
+use RenokiCo\CashierRegister\Saas;
+use Stripe\Exception\InvalidRequestException;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
     protected static $productId;
 
-    protected static $freeProductId;
+    protected static $stripeMonthlyPlanId;
 
-    protected static $stripePlanId;
+    protected static $stripeMeteredPriceId;
+
+    protected static $stripeYearlyPlanId;
 
     protected static $stripeFreePlanId;
 
     protected static $paddlePlanId;
 
     protected static $paddleFreePlanId;
+
+    protected static $paddleYearlyPlanId;
 
     /**
      * {@inheritdoc}
@@ -56,9 +61,17 @@ abstract class TestCase extends Orchestra
                 Saas::feature('Seats', 'teams', 5)->notResettable(),
             ]);
 
-        Saas::plan('Monthly $10', static::$stripePlanId)
+        Saas::plan('Monthly $10', static::$stripeMonthlyPlanId)
             ->inheritFeaturesFromPlan($freeStripePlan, [
                 Saas::feature('Build Minutes', 'build.minutes', 3000),
+                Saas::meteredFeature('Metered Build Minutes', 'metered.build.minutes', 3000)
+                    ->meteredPrice(static::$stripeMeteredPriceId, 0.1, 'minute'),
+                Saas::feature('Seats', 'teams', 10)->notResettable(),
+            ]);
+
+        Saas::plan('Yearly $100', static::$stripeYearlyPlanId)
+            ->inheritFeaturesFromPlan($freeStripePlan, [
+                Saas::feature('Build Minutes', 'build.minutes')->unlimited(),
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
             ]);
 
@@ -76,50 +89,69 @@ abstract class TestCase extends Orchestra
     {
         parent::setUpBeforeClass();
 
+        static::configureStripe();
+        static::configurePaddle();
+    }
+
+    /**
+     * Configure Stripe.
+     *
+     * @return void
+     */
+    protected static function configureStripe()
+    {
         Stripe::setApiKey(getenv('STRIPE_SECRET') ?: env('STRIPE_SECRET'));
 
-        static::$stripePlanId = 'monthly-10-'.Str::random(10);
+        static::$productId = Product::create(['name' => 'Demo Product'])->id;
 
-        static::$stripeFreePlanId = 'free-'.Str::random(10);
-
-        static::$productId = 'product-1'.Str::random(10);
-
-        static::$freeProductId = 'product-free'.Str::random(10);
-
-        Product::create([
-            'id' => static::$productId,
-            'name' => 'Laravel Cashier Test Product',
-            'type' => 'service',
-        ]);
-
-        Product::create([
-            'id' => static::$freeProductId,
-            'name' => 'Laravel Cashier Test Product',
-            'type' => 'service',
-        ]);
-
-        Plan::create([
-            'id' => static::$stripePlanId,
+        static::$stripeMonthlyPlanId = Plan::create([
             'nickname' => 'Monthly $10',
             'currency' => 'USD',
             'interval' => 'month',
             'billing_scheme' => 'per_unit',
             'amount' => 1000,
             'product' => static::$productId,
-        ]);
+        ])->id;
 
-        Plan::create([
-            'id' => static::$stripeFreePlanId,
+        static::$stripeYearlyPlanId = Plan::create([
+            'nickname' => 'Yearly $100',
+            'currency' => 'USD',
+            'interval' => 'year',
+            'billing_scheme' => 'per_unit',
+            'amount' => 10000,
+            'product' => static::$productId,
+        ])->id;
+
+        static::$stripeFreePlanId = Plan::create([
             'nickname' => 'Free',
             'currency' => 'USD',
             'interval' => 'month',
             'billing_scheme' => 'per_unit',
             'amount' => 0,
-            'product' => static::$freeProductId,
-        ]);
+            'product' => static::$productId,
+        ])->id;
 
+        static::$stripeMeteredPriceId = Price::create([
+            'nickname' => 'Monthly Metered $0.01 per unit',
+            'currency' => 'USD',
+            'recurring' => [
+                'interval' => 'month',
+                'usage_type' => 'metered',
+            ],
+            'unit_amount' => 1,
+            'product' => static::$productId,
+        ])->id;
+    }
+
+    /**
+     * Configure Paddle.
+     *
+     * @return void
+     */
+    protected static function configurePaddle()
+    {
         static::$paddlePlanId = getenv('PADDLE_TEST_PLAN') ?: env('PADDLE_TEST_PLAN');
-
+        static::$paddleYearlyPlanId = getenv('PADDLE_YEARLY_TEST_PLAN') ?: env('PADDLE_YEARLY_TEST_PLAN');
         static::$paddleFreePlanId = getenv('PADDLE_TEST_FREE_PLAN') ?: env('PADDLE_TEST_FREE_PLAN');
     }
 
@@ -130,8 +162,10 @@ abstract class TestCase extends Orchestra
     {
         parent::tearDownAfterClass();
 
-        static::deleteStripeResource(new Plan(static::$stripePlanId));
+        static::deleteStripeResource(new Plan(static::$stripeMonthlyPlanId));
+        static::deleteStripeResource(new Plan(static::$stripeYearlyPlanId));
         static::deleteStripeResource(new Plan(static::$stripeFreePlanId));
+        static::deleteStripeResource(new Product(static::$productId));
     }
 
     /**
@@ -178,6 +212,12 @@ abstract class TestCase extends Orchestra
         file_put_contents(__DIR__.'/database.sqlite', null);
     }
 
+    /**
+     * Delete the given Stripe resource.
+     *
+     * @param  \Stripe\ApiResource  $resource
+     * @return void
+     */
     protected static function deleteStripeResource(ApiResource $resource)
     {
         try {

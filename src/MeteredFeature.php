@@ -81,16 +81,10 @@ class MeteredFeature extends Feature
      */
     public function toArray()
     {
-        $parent = parent::toArray();
-
-        return [
-            'id' => $parent['id'],
-            'name' => $parent['name'],
-            'description' => $parent['description'],
-            'value' => $parent['value'],
+        return array_merge(parent::toArray(), [
             'metered_id' => $this->getMeteredId(),
             'metered_price' => $this->getMeteredPrice(),
             'metered_unit_name' => $this->getMeteredUnitName(),
-        ];
+        ]);
     }
 }

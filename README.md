@@ -352,7 +352,7 @@ You might want to give your customers a specific amount of a feature, let's say 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
-        ->meteredPrice('price_identifier', 0.01, 'minutes'), // on-demand: $0.01/minute
+        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
 ]);
 ```
 
@@ -361,7 +361,7 @@ If you simply want just the on-demand price of the metered feature, just omit th
 ```php
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::meteredFeature('Build Minutes', 'build.minutes'), // included: 0
-        ->meteredPrice('price_identifier', 0.01, 'minutes'), // on-demand: $0.01/minute
+        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
 ]);
 ```
 

@@ -53,11 +53,12 @@ class Saas
      *
      * @param  string  $name
      * @param  string|int  $id
+     * @param  int  $value
      * @return \RenokiCo\CashierRegister\MeteredFeature
      */
-    public function meteredFeature(string $name, $id)
+    public static function meteredFeature(string $name, $id, int $value = 0)
     {
-        return new MeteredFeature($name, $id);
+        return new MeteredFeature($name, $id, $value);
     }
 
     /**
@@ -101,7 +102,7 @@ class Saas
     }
 
     /**
-     * Get a specific plan by id.
+     * Get a specific plan by id or by yearly ID.
      *
      * @param  string|int  $id
      * @return \RenokiCo\CashierRegister\Plan|null
@@ -109,7 +110,7 @@ class Saas
     public static function getPlan($id)
     {
         return collect(static::$plans)->filter(function (Plan $plan) use ($id) {
-            return $plan->getId() == $id;
+            return $plan->getId() == $id || $plan->getYearlyId() == $id;
         })->first();
     }
 

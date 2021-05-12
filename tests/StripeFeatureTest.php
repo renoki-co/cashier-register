@@ -8,19 +8,31 @@ use RenokiCo\CashierRegister\Test\Models\Stripe\User;
 
 class StripeFeatureTest extends TestCase
 {
+    protected function createSubscription($user, $plan)
+    {
+        $subscription = $user->newSubscription('main', $plan->getId());
+        $meteredFeatures = $plan->getMeteredFeatures();
+
+        if (! $meteredFeatures->isEmpty()) {
+            foreach ($meteredFeatures as $feature) {
+                $subscription->meteredPlan($feature->getMeteredId());
+            }
+        }
+
+        return $subscription->create('pm_card_visa');
+    }
+
     public function test_record_feature_usage()
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
-        $this->assertEquals(
-            50, $subscription->getUsedQuota('build.minutes')
-        );
+        $this->assertEquals(50, $subscription->getUsedQuota('build.minutes'));
 
         $this->assertEquals(
             2950, $subscription->getRemainingQuota('build.minutes')
@@ -31,9 +43,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -52,9 +64,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -73,9 +85,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->decrementFeatureUsage('build.minutes', 55);
 
@@ -88,9 +100,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -113,9 +125,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('teams', 1);
 
@@ -138,10 +150,10 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId)
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId)
             ->features([]);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -158,7 +170,7 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
         $this->assertTrue(
             is_array($plan->toArray())
@@ -173,9 +185,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('teams', 5);
 
@@ -198,9 +210,9 @@ class StripeFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId);
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $overQuota = 'not_set';
 
@@ -211,16 +223,56 @@ class StripeFeatureTest extends TestCase
         $this->assertEquals(1, $overQuota);
     }
 
+    public function test_feature_usage_over_the_amount_with_metering()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
+
+        $subscription = $this->createSubscription($user, $plan);
+
+        $overQuota = 'not_set';
+
+        $subscription->recordFeatureUsage('metered.build.minutes', 4000, true, function ($feature, $valueOverQuota, $subscription) use (&$overQuota) {
+            $overQuota = $valueOverQuota;
+        });
+
+        $this->assertEquals(1000, $overQuota);
+
+        $this->assertEquals(
+            3000, $subscription->getUsedQuota('metered.build.minutes')
+        );
+
+        $usage = $subscription->usageRecordsFor(static::$stripeMeteredPriceId)[0]->total_usage;
+
+        $this->assertEquals(1000, $usage);
+
+        // The new feature record should use only the metered billing.
+        $subscription->recordFeatureUsage('metered.build.minutes', 4000, true, function ($feature, $valueOverQuota, $subscription) use (&$overQuota) {
+            $overQuota = $valueOverQuota;
+        });
+
+        $this->assertEquals(4000, $overQuota);
+
+        $usage = $subscription->usageRecordsFor(static::$stripeMeteredPriceId)[0]->total_usage;
+
+        $this->assertEquals(5000, $usage);
+
+        $this->assertEquals(
+            3000, $subscription->getUsedQuota('metered.build.minutes')
+        );
+    }
+
     public function test_feature_usage_on_unlimited()
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$stripePlanId)
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId)
             ->features([
                 Saas::feature('Seats', 'teams')->unlimited()->notResettable(),
             ]);
 
-        $subscription = $user->newSubscription('main', $plan->getId())->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $plan);
 
         $overQuota = 0;
 
@@ -251,9 +303,9 @@ class StripeFeatureTest extends TestCase
 
         $freePlan = Saas::getPlan(static::$stripeFreePlanId);
 
-        $paidPlan = Saas::getPlan(static::$stripePlanId);
+        $paidPlan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', static::$stripePlanId)->create('pm_card_visa');
+        $subscription = $user->newSubscription('main', static::$stripeMonthlyPlanId)->create('pm_card_visa');
 
         $subscription->recordFeatureUsage('teams', 10);
 
