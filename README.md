@@ -16,19 +16,27 @@ It helps you define static, project-level plans, and attach them features that c
 - [Cashier Register - Track the plan quotas](#cashier-register---track-the-plan-quotas)
   - [🤝 Supporting](#-supporting)
   - [🚀 Installation](#-installation)
+    - [Cashier for Stripe](#cashier-for-stripe)
+    - [Cashier for Paddle](#cashier-for-paddle)
   - [🙌 Usage](#-usage)
-  - [Preparing the model](#preparing-the-model)
-  - [Preparing the plans](#preparing-the-plans)
-    - [Feature Usage Tracking](#feature-usage-tracking)
-    - [Checking for overflow](#checking-for-overflow)
-    - [Metered billing when overflowing](#metered-billing-when-overflowing)
+  - [🏧 Preparing the model](#-preparing-the-model)
+  - [💰 Preparing the plans](#-preparing-the-plans)
+    - [Installing the Service Provider](#installing-the-service-provider)
+    - [Defining the plans](#defining-the-plans)
+    - [Defining yearly plans](#defining-yearly-plans)
+    - [Retrieving the plans](#retrieving-the-plans)
+    - [Deprecating/Archiving plans](#deprecatingarchiving-plans)
+    - [Setting the plan as popular](#setting-the-plan-as-popular)
+  - [Plan Features](#plan-features)
+    - [Checking Exceeded Quotas](#checking-exceeded-quotas)
+    - [Catching Mid-Exceed Quotas](#catching-mid-exceed-quotas)
     - [Resetting tracked values](#resetting-tracked-values)
     - [Unlimited amounts](#unlimited-amounts)
-    - [Checking for overexceeded quotas](#checking-for-overexceeded-quotas)
-    - [Metered features](#metered-features)
-    - [Additional data](#additional-data)
-    - [Setting the plan as popular](#setting-the-plan-as-popular)
     - [Inherit features from other plans](#inherit-features-from-other-plans)
+    - [Additional data](#additional-data)
+  - [Stripe-specific Features](#stripe-specific-features)
+    - [Stripe Metered Billing with Mid-Exceed Quotas](#stripe-metered-billing-with-mid-exceed-quotas)
+    - [Metered Features](#metered-features)
   - [Static items](#static-items)
   - [🐛 Testing](#-testing)
   - [🤝 Contributing](#-contributing)
@@ -51,18 +59,6 @@ You can install the package via composer:
 composer require renoki-co/cashier-register
 ```
 
-The package does not come with Cashier as dependency, so you should install according to your needs:
-
-```
-$ composer require laravel/cashier:"^12.13"
-```
-
-For Paddle, use Cashier for Paddle:
-
-```
-$ composer require laravel/cashier-paddle:"^1.4.4"
-```
-
 Publish the config file:
 
 ```bash
@@ -73,6 +69,20 @@ Publish the migrations:
 
 ```bash
 $ php artisan vendor:publish --provider="RenokiCo\CashierRegister\CashierRegisterServiceProvider" --tag="migrations"
+```
+
+The package does not come with Cashier as dependency, so you should install according to your needs:
+
+### Cashier for Stripe
+
+```
+$ composer require laravel/cashier:"^12.13"
+```
+
+### Cashier for Paddle
+
+```
+$ composer require laravel/cashier-paddle:"^1.4.4"
 ```
 
 ## 🙌 Usage
@@ -92,27 +102,24 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'monthly-price-id', 'yearly-price-id')
-            ->description('The gold plan.')
+        Saas::plan('Gold Plan', 'price_from_stripe_mo...', 'yearly_price_id')
             ->monthly(30)
             ->yearly(300)
             ->currency('EUR')
             ->features([
-                Saas::feature('Build Minutes', 'build.minutes', 3000)
-                    ->description('3000 build minutes for an entire month!'),
+                Saas::feature('Build Minutes', 'build.minutes', 3000),
             ]);
     }
 }
 ```
 
+To meter a specific feature usage, you simply may call:
+
 ```php
-$user->subscription('main')
-    ->recordFeatureUsage('build.minutes', 30);
+$user->subscription('main')->recordFeatureUsage('build.minutes', 30);
 ```
 
-**Please note: The Yearly Price ID and the Yearly Price are optional.**
-
-## Preparing the model
+## 🏧 Preparing the model
 
 For billables, you should follow the installation instructions given with Cashier for Paddle or Cashier for Stripe.
 
@@ -123,7 +130,11 @@ This package already sets the custom `Subscription` model. In case you want to a
 
 Further, make sure you check the `saas.php` file and replace the subscription model from there, or you can use the `::useSubscriptionModel` call in your code.
 
-## Preparing the plans
+Cashier Register already does that for you in the background, but feel free to replace them with your models if you need to.
+
+## 💰 Preparing the plans
+
+### Installing the Service Provider
 
 You can define the plans at the app service provider level and it will stick throughout the request cycle.
 
@@ -142,6 +153,8 @@ $providers = [
 ];
 ```
 
+### Defining the plans
+
 In `CashierRegisterServiceProvider`'s `boot` method you may define the plans you need:
 
 ```php
@@ -159,14 +172,63 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        // Define plans here.
+        Saas::plan('Gold Plan', 'price_...')
+            ->monthly(30)
+            ->currency('EUR')
+            ->features([
+                Saas::feature('Seats', 'seats', 5)->notResettable(),
+            ]);
     }
 }
 ```
 
-**When setting an unique identifier for the plan (second parameter), make sure to use the Stripe Price ID or the Paddle Plan ID.**
+Please note that the `::plan` method accepts a display name, and the following two parameters are that **plan identifiers in either Stripe or Paddle**. This will ensure the available plans have unique IDs and they will be processed accordingly:
 
-Defining plans can also help you retrieving them when showing them in the frontend:
+```php
+use RenokiCo\CashierRegister\CashierRegisterServiceProvider as BaseServiceProvider;
+use RenokiCo\CashierRegister\Saas;
+
+class CashierRegisterServiceProvider extends BaseServiceProvider
+{
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        parent::boot();
+
+        Saas::plan('Gold Plan', 'price_monthly');
+    }
+}
+```
+
+### Defining yearly plans
+
+By default, yearly plans are not included but you might specify it:
+
+```php
+use RenokiCo\CashierRegister\CashierRegisterServiceProvider as BaseServiceProvider;
+use RenokiCo\CashierRegister\Saas;
+
+class CashierRegisterServiceProvider extends BaseServiceProvider
+{
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        parent::boot();
+
+        Saas::plan('Gold Plan', 'price_monthly', 'price_yearly');
+    }
+}
+```
+
+### Retrieving the plans
 
 ```php
 use RenokiCo\CashierRegister\Saas;
@@ -180,17 +242,32 @@ foreach ($allPlans as $plan) {
 }
 ```
 
-Or retrieving a specific plan by Plan ID:
+When retrieving a specific plan by Plan ID, you may pass the identifier:
 
 ```php
 use RenokiCo\CashierRegister\Saas;
 
-$plan = Saas::getPlan('plan-id');
+$plan = Saas::getPlan('price_monthly');
 ```
+
+Please note that if the yearly plan ID is defined, you can also retrieved by it. However, the `->getId()` and `->getYearlyid()` are different:
+
+```php
+use RenokiCo\CashierRegister\Saas;
+
+$plan = Saas::getPlan('price_yearly');
+
+$plan->getId(); // price_monthly
+$plan->getYearlyId(); // price_yearly
+```
+
+### Deprecating/Archiving plans
 
 Deprecating plans can occur anytime. In order to do so, just call `deprecated()` when defining the plan:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 /**
  * Boot the service provider.
  *
@@ -212,9 +289,20 @@ use RenokiCo\CashierRegister\Saas;
 $plans = Saas::getAvailablePlans();
 ```
 
-### Feature Usage Tracking
+### Setting the plan as popular
 
-You can attach features to the plans:
+Some plans are popular among others, and you can simply mark them:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->popular();
+```
+
+This will add a data field called `popular` that is either `true/false`.
+
+## Plan Features
+
+You can attach features to the plans and thus you can check usage for each subscription:
 
 ```php
 use RenokiCo\CashierRegister\CashierRegisterServiceProvider as BaseServiceProvider;
@@ -231,77 +319,68 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
-        Saas::plan('Gold Plan', 'gold-plan')->features([
-            Saas::feature('Build Minutes', 'build.minutes', 3000)
-                ->description('3000 build minutes for an entire month!'),
+        Saas::plan('Gold Plan', 'price_gold')->features([
+            Saas::feature('Seats', 'seats', 5)->notResettable(),
         ]);
     }
 }
+
+$subscription->recordFeatureUsage('seats', 3); // 3 new users joined
+
+$subscription->getUsedQuota('seats'); // 3
+$subscription->getRemainingQuota('seats') // 2
 ```
 
-Then track them:
+### Checking Exceeded Quotas
+
+Checking exceeded quotas can be useful when users fallback from a bigger plan to an older plan. In this case, you may end up with an exceeded quota case where the users will have feature tracking values greater than the smaller plan values.
+
+Before swapping, you might check the features from the lower plan and get the list of features that need to be handled:
 
 ```php
-$subscription->recordFeatureUsage('build.minutes', 30); // reducing 30 mins
+$freePlan = Saas::plan('Free Plan', 'price_free'); // already subscribed to this plan
+$paidPlan = Saas::plan('Paid Plan', 'price_paid');
 
-$subscription->getUsedQuota('build.minutes') // 30
-$subscription->getRemainingQuota('build.minutes') // 2950
+$overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping($paidPlan->getId());
+
+// If no features are over quotas before swapping, apply the plan swap.
+if ($overQuotaFeatures->count() === 0) {
+    $subscription->swap($freePlan);
+}
+
+foreach ($overQuotaFeatures as $feature) {
+    // $feature->getName();
+}
 ```
 
-### Checking for overflow
+### Catching Mid-Exceed Quotas
 
-Checking overflow can be useful when users fallback from a bigger plan to an older plan. In this case, you may end up with an overflow case where the users will have feature tracking values greater than the smaller plan values.
+Naturally, `recordFeatureUsage()` has a callback parameter that gets called whenever the amount of consumption gets over the allocated total quota right when recording the usage.
 
-You can check if the feature value overflown by calling `featureOverQuota`:
-
-```php
-$subscription->swap($freePlan); // has no build minutes
-
-// Will return true if the consumed build minutes are greater than the free plan (0 minutes)
-$subscription->featureOverQuota('build.minutes');
-```
-
-Naturally, `recordFeatureUsage()` has a callback method that gets called whenever the amount of consumption gets over the allocated total quota.
-
-For example, users can have 1000 build minutes each month, but at some point if they have 10 left and they consume 15, the feature usage will be saturated/depleted completely, and the extra amount will be passed to the callback:
+For example, customers can have 5 seats in total, but when all of 5 are met, you might want to re-check the amount of exceeded quota and billing separately:
 
 ```php
-$subscription->recordFeatureUsage('build.minutes', 15, true, function ($feature, $valueOverQuota, $subscription) {
-    // Bill the user with on-demand pricing, per se.
-    $this->billOnDemandFor($valueOverQuota, $subscription);
-});
-```
+$subscription->recordFeatureUsage('seats', 5); // 5 new users joined, 0 seats remaining
 
-### Metered billing when overflowing
-
-When exceeding the allocated quota for a specific feature, [Metered Billing for Stripe](#metered-features) can come in and bill for metered usage, but only if it's a Metered Feature and the quota is exceeded and the feature is defined as [Metered Feature](#metered-features).
-
-```php
-Saas::plan('Gold Plan', 'gold-plan')->features([
-    Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
-        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
-]);
-
-$subscription->recordFeatureUsage('build.minutes', 4000, true, function ($feature, $valueOverQuota, $subscription) {
-    // From the used 4000 minutes, 3000 were included already by the plan feature.
-    // Extra 1000 (to reach a total usage of 4000) is over the quota, so because
-    // the feature is metered and we defined a ->meteredPrice(), the package
-    // wil automatically record the usage to Stripe via Cashier.
-
-    // Here you can run custom logic to handle overflow.
+$subscription->recordFeatureUsage('seats', 3, true, function ($feature, $valueOverQuota, $subscription) {
+    $this->billUserForExtraSeats($subscription->model, $valueOverQuota);
 });
 ```
 
 ### Resetting tracked values
 
-By default, each created feature is resettable - each time the billing cycle ends, you can call `resetQuotas` to reset them (they will become 3000 in the previous example).
+Each created feature is resettable - each time the billing cycle ends, you can call `resetQuotas` on the subscription to reset them.
 
-Make sure to call `resetQuotas` after the billing cycle resets.
+You can have:
 
-For example, you can extend the default Stripe Webhook controller that Laravel Cashier comes with and implement the `invoice.payment_succeeded` event handler:
+- consumable features, for example the amount of mails your client can send each month via your newsletter service
+- non-resettable features, like team seats, the amount of maximum projects at a time, etc.
+
+The appropriate way is to be able to reset the quotas after each billing cycle. With Stripe, you might want to implement a Webhook controller listening to the `invoice.payment_succeeded` event:
 
 ```php
 <?php
+
 use Laravel\Cashier\Http\Controllers\WebhookController;
 
 class StripeController extends WebhookController
@@ -331,7 +410,7 @@ class StripeController extends WebhookController
 }
 ```
 
-To avoid resetting, like counting the seats for a subscription, you should call `notResettable()` on the feature:
+To avoid resetting, you may call `notResettable()` on the feature. This way, the quota reset won't occur on the `seats` feature.
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')->features([
@@ -339,11 +418,9 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 ]);
 ```
 
-Now when calling `resetQuotas()`, the `seats` feature won't go back to the default value.
-
 ### Unlimited amounts
 
-To set an infinite amount of usage, use the `unlimited()` method:
+To set an infinite amount of usage, use the `unlimited()` method. You can consume as much as you want from the feature, and it will never exceed the quota:
 
 ```php
 Saas::plan('Gold Plan', 'gold-plan')->features([
@@ -351,31 +428,68 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 ]);
 ```
 
-### Checking for overexceeded quotas
+### Inherit features from other plans
 
-When swapping from a bigger plan to a small plan, you might restrict users from doing it unless all the quotas do not exceed the smaller plan's quotas.
+You may copy the base features from a given plan and overwrite same-ID features for new plans.
 
-For example, an user can subscribe to a plan that has 10 teams, it creates 10 teams, but later decides to downgrade. In this case, you can check which features
-are exceeding:
+In the following example, the `Paid Plan` has unlimited seats (compared with the 10 seats per Free Plan) and a new feature called `beta.access` that is exclusively for the paid plan.
 
 ```php
-$freePlan = Saas::plan('Free Plan', 'free-plan');
-$paidPlan = Saas::plan('Paid Plan', 'paid-plan');
+$freePlan = Saas::plan('Free Plan', 'free-plan')->features([
+    Saas::feature('Seats', 'seats')->value(10),
+]);
 
-// Returning an Illuminate\Support\Collection instance with each
-// item as RenokiCo\CashierRegister\Feature instance.
-$overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping(
-    $paidPlan->getId()
-);
-
-foreach ($overQuotaFeatures as $feature) {
-    // $feature->getName();
-}
+$paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freePlan, [
+    Saas::feature('Seats', 'seats')->unlimited(), // same-ID features are replaced
+    Saas::feature('Beta Access', 'beta.access')->unlimited(), // new IDs are merged
+]);
 ```
 
-**Please keep in mind that this works only for non-resettable features, like Teams, Members, etc. due to the fact that features, when swapping between plans, should be handled manually, either wanting to keep them as-is or resetting them using `resetQuotas()`**
+**Keep in mind, avoid using further `->features()` when inheriting from another plan.**
 
-### Metered features
+### Additional data
+
+Items, plans and features implement a `->data()` method that allows you to attach custom data for each item:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')
+    ->data(['golden' => true])
+    ->features([
+        Saas::feature('Seats', 'seats')
+            ->data(['digital' => true])
+            ->unlimited(),
+    ]);
+
+$plan = Saas::getPlan('gold-plan');
+$feature = $plan->getFeature('seats');
+
+$planData = $plan->getData(); // ['golden' => true]
+$featureData = $feature->getData(); // ['digital' => true]
+```
+
+## Stripe-specific Features
+
+### Stripe Metered Billing with Mid-Exceed Quotas
+
+When exceeding the allocated quota for a specific feature when recording, [Metered Billing for Stripe](#metered-features) comes in and bills for extra metered usage, but only if the feature is defined as [Metered Feature](#metered-features).
+
+```php
+Saas::plan('Gold Plan', 'gold_price')->features([
+    Saas::meteredFeature('Seats', 'seats', 5), // included: 5
+        ->meteredPrice('price_metered_identifier', 3, 'seat'), // on-demand: $0.01/minute
+]);
+
+$subscription->recordFeatureUsage('seats', 3); // 3 new users joined, 2 seats remaining
+
+$subscription->recordFeatureUsage('seats', 4, true, function ($feature, $valueOverQuota, $subscription) {
+    // From the used 3 seats, 5 are free. It remains only 2 seats.
+    // The user wants another 4 seats, so Stripe Metered Billing is going to bill only 2, the remaining over quota.
+
+    // Here you can run custom logic to handle overflow. The metered billing usage report was already done.
+});
+```
+
+### Metered Features
 
 Metered features are opened for Stripe only and this will open up custom metering for exceeding quotas on features.
 
@@ -398,56 +512,6 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 ```
 
 **The third parameter is just a conventional name for the unit. `0.01` is the price per unit (PPU). In this case, it's `minute` and `$0.01`, assuming the plan's price is in USD.**
-
-### Additional data
-
-Items, plans and features implement a `->data()` method that allows you to attach custom data for each item:
-
-```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->data(['golden' => true])
-    ->features([
-        Saas::feature('Seats', 'seats')
-            ->data(['digital' => true])
-            ->unlimited(),
-    ]);
-
-$plan = Saas::getPlan('gold-plan');
-$feature = $plan->getFeature('seats');
-
-$planData = $plan->getData(); // ['golden' => true]
-$featureData = $feature->getData(); // ['digital' => true]
-```
-
-### Setting the plan as popular
-
-Some plans are popular among others, and you can simply mark them:
-
-```php
-Saas::plan('Gold Plan', 'gold-plan')
-    ->popular();
-```
-
-This will add a data field called `popular` that is either `true/false`.
-
-### Inherit features from other plans
-
-You may copy the base features from a given plan and overwrite same-ID features for new plans.
-
-```php
-$freePlan = Saas::plan('Free Plan', 'free-plan')->features([
-    Saas::feature('Seats', 'seats')->value(10),
-]);
-
-$paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freePlan, [
-    Saas::feature('Seats', 'seats')->unlimited(), // same-ID features are replaced
-    Saas::feature('Beta Access', 'beta.access')->unlimited(), // new IDs are merged
-]);
-```
-
-The second argument passed to the function is the array of features to replace within the current Free Plan.
-
-**Keep in mind, avoid using further `->features()` when inheriting from another plan.**
 
 ## Static items
 
