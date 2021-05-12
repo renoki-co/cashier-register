@@ -115,6 +115,7 @@ class Plan implements Arrayable
             'yearlyId' => $this->getYearlyId(),
             'name' => $this->getName(),
             'description' => $this->getDescription(),
+            'price' => $this->getMonthlyPrice(),
             'monthly_price' => $this->getMonthlyPrice(),
             'yearly_price' => $this->getYearlyPrice(),
             'currency' => $this->getCurrency(),
