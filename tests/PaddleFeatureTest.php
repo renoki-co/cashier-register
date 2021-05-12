@@ -280,7 +280,7 @@ class PaddleFeatureTest extends TestCase
 
         $overQuota = 0;
 
-        $subscription->recordFeatureUsage('teams', 100, true, function ($feature, $valueOverQuota, $subscription)  use (&$overQuota) {
+        $subscription->recordFeatureUsage('teams', 100, true, function ($feature, $valueOverQuota, $subscription) use (&$overQuota) {
             $overQuota = 'set';
         });
 

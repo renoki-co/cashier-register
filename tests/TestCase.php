@@ -2,8 +2,8 @@
 
 namespace RenokiCo\CashierRegister\Test;
 
-use RenokiCo\CashierRegister\Saas;
 use Orchestra\Testbench\TestCase as Orchestra;
+use RenokiCo\CashierRegister\Saas;
 
 abstract class TestCase extends Orchestra
 {
