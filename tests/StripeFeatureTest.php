@@ -320,5 +320,9 @@ class StripeFeatureTest extends TestCase
         $this->assertEquals(
             'teams', $overQuotaFeatures->first()->getId()
         );
+
+        $subscription->swap($freePlan->getId());
+
+        $this->assertTrue($subscription->featureOverQuota('teams'));
     }
 }
