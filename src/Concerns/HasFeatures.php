@@ -3,6 +3,7 @@
 namespace RenokiCo\CashierRegister\Concerns;
 
 use RenokiCo\CashierRegister\Feature;
+use RenokiCo\CashierRegister\MeteredFeature;
 use RenokiCo\CashierRegister\Plan;
 
 trait HasFeatures
@@ -37,9 +38,12 @@ trait HasFeatures
      */
     public function inheritFeaturesFromPlan(Plan $plan, array $features = [])
     {
-        $this->features = collect($features)->merge($plan->getFeatures())->merge($this->getFeatures())->unique(function (Feature $feature) {
-            return $feature->getId();
-        });
+        $this->features = collect($features)
+            ->merge($plan->getFeatures())
+            ->merge($this->getFeatures())
+            ->unique(function (Feature $feature) {
+                return $feature->getId();
+            });
 
         return $this;
     }
@@ -55,6 +59,18 @@ trait HasFeatures
     }
 
     /**
+     * Get the metered features.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getMeteredFeatures()
+    {
+        return $this->getFeatures()->filter(function ($feature) {
+            return $feature instanceof MeteredFeature;
+        });
+    }
+
+    /**
      * Get a specific feature by id.
      *
      * @param  string|int  $id
@@ -62,8 +78,8 @@ trait HasFeatures
      */
     public function getFeature($id)
     {
-        return $this->getFeatures()->filter(function (Feature $feature) use ($id) {
+        return $this->getFeatures()->first(function (Feature $feature) use ($id) {
             return $feature->getId() == $id;
-        })->first();
+        });
     }
 }

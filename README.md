@@ -21,9 +21,11 @@ It helps you define static, project-level plans, and attach them features that c
   - [Preparing the plans](#preparing-the-plans)
     - [Feature Usage Tracking](#feature-usage-tracking)
     - [Checking for overflow](#checking-for-overflow)
+    - [Metered billing when overflowing](#metered-billing-when-overflowing)
     - [Resetting tracked values](#resetting-tracked-values)
     - [Unlimited amounts](#unlimited-amounts)
     - [Checking for overexceeded quotas](#checking-for-overexceeded-quotas)
+    - [Metered features](#metered-features)
     - [Additional data](#additional-data)
     - [Setting the plan as popular](#setting-the-plan-as-popular)
     - [Inherit features from other plans](#inherit-features-from-other-plans)
@@ -259,6 +261,37 @@ $subscription->swap($freePlan); // has no build minutes
 $subscription->featureOverQuota('build.minutes');
 ```
 
+Naturally, `recordFeatureUsage()` has a callback method that gets called whenever the amount of consumption gets over the allocated total quota.
+
+For example, users can have 1000 build minutes each month, but at some point if they have 10 left and they consume 15, the feature usage will be saturated/depleted completely, and the extra amount will be passed to the callback:
+
+```php
+$subscription->recordFeatureUsage('build.minutes', 15, true, function ($feature, $valueOverQuota, $subscription) {
+    // Bill the user with on-demand pricing, per se.
+    $this->billOnDemandFor($valueOverQuota, $subscription);
+});
+```
+
+### Metered billing when overflowing
+
+When exceeding the allocated quota for a specific feature, [Metered Billing for Stripe](#metered-features) can come in and bill for metered usage, but only if it's a Metered Feature and the quota is exceeded and the feature is defined as [Metered Feature](#metered-features).
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
+        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
+]);
+
+$subscription->recordFeatureUsage('build.minutes', 4000, true, function ($feature, $valueOverQuota, $subscription) {
+    // From the used 4000 minutes, 3000 were included already by the plan feature.
+    // Extra 1000 (to reach a total usage of 4000) is over the quota, so because
+    // the feature is metered and we defined a ->meteredPrice(), the package
+    // wil automatically record the usage to Stripe via Cashier.
+
+    // Here you can run custom logic to handle overflow.
+});
+```
+
 ### Resetting tracked values
 
 By default, each created feature is resettable - each time the billing cycle ends, you can call `resetQuotas` to reset them (they will become 3000 in the previous example).
@@ -341,6 +374,30 @@ foreach ($overQuotaFeatures as $feature) {
 ```
 
 **Please keep in mind that this works only for non-resettable features, like Teams, Members, etc. due to the fact that features, when swapping between plans, should be handled manually, either wanting to keep them as-is or resetting them using `resetQuotas()`**
+
+### Metered features
+
+Metered features are opened for Stripe only and this will open up custom metering for exceeding quotas on features.
+
+You might want to give your customers a specific amount of a feature, let's say `Build Minutes`, but for exceeding amount of minutes you might invoice at the end of the month a price of `$0.01` per minute:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
+        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
+]);
+```
+
+If you simply want just the on-demand price of the metered feature, just omit the amount:
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::meteredFeature('Build Minutes', 'build.minutes'), // included: 0
+        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
+]);
+```
+
+**The third parameter is just a conventional name for the unit. `0.01` is the price per unit (PPU). In this case, it's `minute` and `$0.01`, assuming the plan's price is in USD.**
 
 ### Additional data
 
