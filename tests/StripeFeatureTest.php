@@ -5,9 +5,138 @@ namespace RenokiCo\CashierRegister\Test;
 use Carbon\Carbon;
 use RenokiCo\CashierRegister\Saas;
 use RenokiCo\CashierRegister\Test\Models\Stripe\User;
+use Stripe\Plan;
+use Stripe\Price;
+use Stripe\Stripe;
+use Stripe\Product;
+use Stripe\ApiResource;
+use Stripe\Exception\InvalidRequestException;
 
 class StripeFeatureTest extends TestCase
 {
+    protected static $productId;
+
+    protected static $stripeMonthlyPlanId;
+
+    protected static $stripeMeteredPriceId;
+
+    protected static $stripeYearlyPlanId;
+
+    protected static $stripeFreePlanId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        Stripe::setApiKey(getenv('STRIPE_SECRET') ?: env('STRIPE_SECRET'));
+
+        static::$productId = Product::create(['name' => 'Demo Product'])->id;
+
+        static::$stripeMonthlyPlanId = Plan::create([
+            'nickname' => 'Monthly $10',
+            'currency' => 'USD',
+            'interval' => 'month',
+            'billing_scheme' => 'per_unit',
+            'amount' => 1000,
+            'product' => static::$productId,
+        ])->id;
+
+        static::$stripeYearlyPlanId = Plan::create([
+            'nickname' => 'Yearly $100',
+            'currency' => 'USD',
+            'interval' => 'year',
+            'billing_scheme' => 'per_unit',
+            'amount' => 10000,
+            'product' => static::$productId,
+        ])->id;
+
+        static::$stripeFreePlanId = Plan::create([
+            'nickname' => 'Free',
+            'currency' => 'USD',
+            'interval' => 'month',
+            'billing_scheme' => 'per_unit',
+            'amount' => 0,
+            'product' => static::$productId,
+        ])->id;
+
+        static::$stripeMeteredPriceId = Price::create([
+            'nickname' => 'Monthly Metered $0.01 per unit',
+            'currency' => 'USD',
+            'recurring' => [
+                'interval' => 'month',
+                'usage_type' => 'metered',
+            ],
+            'unit_amount' => 1,
+            'product' => static::$productId,
+        ])->id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $freeStripePlan = Saas::plan('Free Plan', static::$stripeFreePlanId, static::$stripeYearlyPlanId)
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 10),
+                Saas::feature('Seats', 'teams', 5)->notResettable(),
+            ]);
+
+        Saas::plan('Monthly $10', static::$stripeMonthlyPlanId)
+            ->inheritFeaturesFromPlan($freeStripePlan, [
+                Saas::feature('Build Minutes', 'build.minutes', 3000),
+                Saas::meteredFeature('Metered Build Minutes', 'metered.build.minutes', 3000)
+                    ->meteredPrice(static::$stripeMeteredPriceId, 0.1, 'minute'),
+                Saas::feature('Seats', 'teams', 10)->notResettable(),
+            ]);
+
+        Saas::plan('Yearly $100', static::$stripeYearlyPlanId)
+            ->inheritFeaturesFromPlan($freeStripePlan, [
+                Saas::feature('Build Minutes', 'build.minutes')->unlimited(),
+                Saas::feature('Seats', 'teams', 10)->notResettable(),
+            ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tearDownAfterClass(): void
+    {
+        parent::tearDownAfterClass();
+
+        static::deleteStripeResource(new Plan(static::$stripeMonthlyPlanId));
+        static::deleteStripeResource(new Plan(static::$stripeYearlyPlanId));
+        static::deleteStripeResource(new Plan(static::$stripeFreePlanId));
+        static::deleteStripeResource(new Product(static::$productId));
+    }
+
+    /**
+     * Delete the given Stripe resource.
+     *
+     * @param  \Stripe\ApiResource  $resource
+     * @return void
+     */
+    protected static function deleteStripeResource(ApiResource $resource)
+    {
+        try {
+            $resource->delete();
+        } catch (InvalidRequestException $e) {
+            //
+        }
+    }
+
+    /**
+     * Create a new subscription.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $user
+     * @param  \RenokiCo\CashierRegister\Plan  $plan
+     * @return \Illuminate\Database\Eloquent\Model
+     */
     protected function createSubscription($user, $plan)
     {
         $subscription = $user->newSubscription('main', $plan->getId());

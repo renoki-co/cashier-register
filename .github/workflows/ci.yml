@@ -67,6 +67,7 @@ jobs:
         PADDLE_VENDOR_AUTH_CODE: ${{ secrets.PADDLE_VENDOR_AUTH_CODE }}
         PADDLE_TEST_PLAN: ${{ secrets.PADDLE_TEST_PLAN }}
         PADDLE_TEST_FREE_PLAN: ${{ secrets.PADDLE_TEST_FREE_PLAN }}
+        PADDLE_YEARLY_TEST_PLAN: ${{ secrets.PADDLE_YEARLY_TEST_PLAN }}
 
     - uses: codecov/codecov-action@v1
       with:

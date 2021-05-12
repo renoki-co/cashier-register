@@ -8,19 +8,69 @@ use RenokiCo\CashierRegister\Test\Models\Paddle\User;
 
 class PaddleFeatureTest extends TestCase
 {
-    public function test_record_feature_usage()
+    protected static $paddleMonthlyPlanId;
+
+    protected static $paddleFreePlanId;
+
+    protected static $paddleYearlyPlanId;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function setUpBeforeClass(): void
     {
-        $user = factory(User::class)->create();
+        parent::setUpBeforeClass();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        static::$paddleMonthlyPlanId = getenv('PADDLE_TEST_PLAN') ?: env('PADDLE_TEST_PLAN');
+        static::$paddleYearlyPlanId = getenv('PADDLE_YEARLY_TEST_PLAN') ?: env('PADDLE_YEARLY_TEST_PLAN');
+        static::$paddleFreePlanId = getenv('PADDLE_TEST_FREE_PLAN') ?: env('PADDLE_TEST_FREE_PLAN');
+    }
 
-        $subscription = $user->subscriptions()->create([
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $freePaddlePlan = Saas::plan('Free Plan', static::$paddleFreePlanId, static::$paddleYearlyPlanId)
+            ->features([
+                Saas::feature('Build Minutes', 'build.minutes', 10),
+                Saas::feature('Seats', 'teams', 5)->notResettable(),
+            ]);
+
+        Saas::plan('Monthly $20', static::$paddleMonthlyPlanId)
+            ->inheritFeaturesFromPlan($freePaddlePlan, [
+                Saas::feature('Build Minutes', 'build.minutes', 3000),
+                Saas::feature('Seats', 'teams', 10)->notResettable(),
+            ]);
+    }
+
+    /**
+     * Create a new subscription.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $user
+     * @param  \RenokiCo\CashierRegister\Plan  $plan
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function createSubscription($user, $plan)
+    {
+        return $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
             'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
+    }
+
+    public function test_record_feature_usage()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
+
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -37,15 +87,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -64,15 +108,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -91,15 +129,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->decrementFeatureUsage('build.minutes', 55);
 
@@ -112,15 +144,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -143,15 +169,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('teams', 1);
 
@@ -174,16 +194,10 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId)
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId)
             ->features([]);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('build.minutes', 50);
 
@@ -200,7 +214,7 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
         $this->assertTrue(
             is_array($plan->toArray())
@@ -215,15 +229,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $subscription->recordFeatureUsage('teams', 5);
 
@@ -246,15 +254,9 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId);
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $overQuota = 'not_set';
 
@@ -269,18 +271,12 @@ class PaddleFeatureTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $plan = Saas::getPlan(static::$paddlePlanId)
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId)
             ->features([
                 Saas::feature('Seats', 'teams')->unlimited()->notResettable(),
             ]);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $plan);
 
         $overQuota = 0;
 
@@ -311,15 +307,9 @@ class PaddleFeatureTest extends TestCase
 
         $freePlan = Saas::getPlan(static::$paddleFreePlanId);
 
-        $paidPlan = Saas::getPlan(static::$paddlePlanId);
+        $paidPlan = Saas::getPlan(static::$paddleMonthlyPlanId);
 
-        $subscription = $user->subscriptions()->create([
-            'name' => 'main',
-            'paddle_id' => 1,
-            'paddle_plan' => $paidPlan->getId(),
-            'paddle_status' => 'active',
-            'quantity' => 1,
-        ]);
+        $subscription = $this->createSubscription($user, $paidPlan);
 
         $subscription->recordFeatureUsage('teams', 10);
 
@@ -334,9 +324,5 @@ class PaddleFeatureTest extends TestCase
         $this->assertEquals(
             'teams', $overQuotaFeatures->first()->getId()
         );
-
-        $subscription->swap($freePlan->getId());
-
-        $this->assertTrue($subscription->featureOverQuota('teams'));
     }
 }

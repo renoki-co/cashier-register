@@ -21,6 +21,7 @@ It helps you define static, project-level plans, and attach them features that c
   - [Preparing the plans](#preparing-the-plans)
     - [Feature Usage Tracking](#feature-usage-tracking)
     - [Checking for overflow](#checking-for-overflow)
+    - [Metered billing when overflowing](#metered-billing-when-overflowing)
     - [Resetting tracked values](#resetting-tracked-values)
     - [Unlimited amounts](#unlimited-amounts)
     - [Checking for overexceeded quotas](#checking-for-overexceeded-quotas)
@@ -258,6 +259,37 @@ $subscription->swap($freePlan); // has no build minutes
 
 // Will return true if the consumed build minutes are greater than the free plan (0 minutes)
 $subscription->featureOverQuota('build.minutes');
+```
+
+Naturally, `recordFeatureUsage()` has a callback method that gets called whenever the amount of consumption gets over the allocated total quota.
+
+For example, users can have 1000 build minutes each month, but at some point if they have 10 left and they consume 15, the feature usage will be saturated/depleted completely, and the extra amount will be passed to the callback:
+
+```php
+$subscription->recordFeatureUsage('build.minutes', 15, true, function ($feature, $valueOverQuota, $subscription) {
+    // Bill the user with on-demand pricing, per se.
+    $this->billOnDemandFor($valueOverQuota, $subscription);
+});
+```
+
+### Metered billing when overflowing
+
+When exceeding the allocated quota for a specific feature, [Metered Billing for Stripe](#metered-features) can come in and bill for metered usage, but only if it's a Metered Feature and the quota is exceeded and the feature is defined as [Metered Feature](#metered-features).
+
+```php
+Saas::plan('Gold Plan', 'gold-plan')->features([
+    Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
+        ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
+]);
+
+$subscription->recordFeatureUsage('build.minutes', 4000, true, function ($feature, $valueOverQuota, $subscription) {
+    // From the used 4000 minutes, 3000 were included already by the plan feature.
+    // Extra 1000 (to reach a total usage of 4000) is over the quota, so because
+    // the feature is metered and we defined a ->meteredPrice(), the package
+    // wil automatically record the usage to Stripe via Cashier.
+
+    // Here you can run custom logic to handle overflow.
+});
 ```
 
 ### Resetting tracked values
