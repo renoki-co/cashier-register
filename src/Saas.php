@@ -57,10 +57,10 @@ class Saas
      *
      * @param  string  $name
      * @param  string|int  $id
-     * @param  int  $value
+     * @param  int|float  $value
      * @return \RenokiCo\CashierRegister\Feature
      */
-    public static function feature(string $name, $id, int $value = 0)
+    public static function feature(string $name, $id, $value = 0)
     {
         return new Feature($name, $id, $value);
     }
@@ -70,10 +70,10 @@ class Saas
      *
      * @param  string  $name
      * @param  string|int  $id
-     * @param  int  $value
+     * @param  int|float  $value
      * @return \RenokiCo\CashierRegister\MeteredFeature
      */
-    public static function meteredFeature(string $name, $id, int $value = 0)
+    public static function meteredFeature(string $name, $id, $value = 0)
     {
         return new MeteredFeature($name, $id, $value);
     }

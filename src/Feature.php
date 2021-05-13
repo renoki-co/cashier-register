@@ -10,12 +10,11 @@ class Feature implements Arrayable
     use Concerns\IsIdentifiable;
 
     /**
-     * The value of this feature. Used
-     * to track down the usability
-     * of this specific feature
-     * at the subscription level.
+     * The value of this feature.
+     * Used to track down the usability
+     * of this specific feature at the subscription level.
      *
-     * @var int
+     * @var int|float
      */
     protected $value = 0;
 
@@ -31,10 +30,10 @@ class Feature implements Arrayable
      *
      * @param  string  $name
      * @param  string|int  $id
-     * @param  int  $value
+     * @param  int|float  $value
      * @return void
      */
-    public function __construct(string $name, $id, int $value = 0)
+    public function __construct(string $name, $id, $value = 0)
     {
         $this->name($name);
         $this->id($id);
@@ -44,10 +43,10 @@ class Feature implements Arrayable
     /**
      * Set a new value for the usability.
      *
-     * @param  int  $value
+     * @param  int|float  $value
      * @return self
      */
-    public function value(int $value)
+    public function value($value)
     {
         $this->value = $value;
 
@@ -57,7 +56,6 @@ class Feature implements Arrayable
     /**
      * Set the feature as unlimited value.
      *
-     * @param  int  $value
      * @return self
      */
     public function unlimited()
@@ -82,9 +80,9 @@ class Feature implements Arrayable
     /**
      * Get the feature value.
      *
-     * @return int
+     * @return int|float
      */
-    public function getValue(): int
+    public function getValue()
     {
         return $this->value;
     }

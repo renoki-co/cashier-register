@@ -33,6 +33,7 @@ It helps you define static, project-level plans, and attach them features that c
     - [Preventing Feature Usage Sync Failures](#preventing-feature-usage-sync-failures)
     - [Resetting tracked values](#resetting-tracked-values)
     - [Unlimited amounts](#unlimited-amounts)
+    - [Float amounts](#float-amounts)
     - [Inherit features from other plans](#inherit-features-from-other-plans)
     - [Additional data](#additional-data)
   - [Stripe-specific Features](#stripe-specific-features)
@@ -476,6 +477,17 @@ use RenokiCo\CashierRegister\Saas;
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::feature('Seats', 'seats')->unlimited(),
 ]);
+```
+
+### Float amounts
+
+The package comes with migrations that allow only unsigned small integers for `used` and `used_total`. Optionally, if you wish to have float values, you might just change the field type after publishing the migrations:
+
+```php diff
+Schema::create('subscription_usages', function (Blueprint $table) {
+    $table->float('used', 8, 2);
+    $table->float('used_total', 8, 2);
+});
 ```
 
 ### Inherit features from other plans
