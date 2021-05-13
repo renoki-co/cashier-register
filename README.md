@@ -102,10 +102,11 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
+        Saas::currency('EUR');
+
         Saas::plan('Gold Plan', 'price_from_stripe_mo...', 'yearly_price_id')
             ->monthly(30)
             ->yearly(300)
-            ->currency('EUR')
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes', 3000),
             ]);
@@ -172,9 +173,10 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
+        Saas::currency('EUR');
+
         Saas::plan('Gold Plan', 'price_...')
             ->monthly(30)
-            ->currency('EUR')
             ->features([
                 Saas::feature('Seats', 'seats', 5)->notResettable(),
             ]);

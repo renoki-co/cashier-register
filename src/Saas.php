@@ -2,6 +2,9 @@
 
 namespace RenokiCo\CashierRegister;
 
+use Closure;
+use Illuminate\Database\Eloquent\Model;
+
 class Saas
 {
     /**
@@ -17,6 +20,20 @@ class Saas
      * @var array
      */
     protected static $items = [];
+
+    /**
+     * The callback to call when syncing the current usage.
+     *
+     * @var array[Closure]
+     */
+    protected static $syncUsageCallbacks = [];
+
+    /**
+     * Specify the global currency.
+     *
+     * @var string|null
+     */
+    public static $currency;
 
     /**
      * Start creating a new plan.
@@ -72,11 +89,60 @@ class Saas
      */
     public static function item($id, string $name, float $price = 0.00, string $currency = 'EUR')
     {
-        $item = new Item($id, $name, $price, $currency);
+        $item = new Item($id, $name, $price, Saas::getCurrency($currency));
 
         static::$items[] = $item;
 
         return $item;
+    }
+
+    /**
+     * Add a callback to sync the feature usage.
+     *
+     * @param  string|int  $id
+     * @param  Closure  $callback
+     * @return void
+     */
+    public static function syncFeatureUsage($id, Closure $callback)
+    {
+        static::$syncUsageCallbacks[$id] = $callback;
+    }
+
+    /**
+     * Apply the feature usage sync via callback.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $subscription
+     * @param  \RenokiCo\CashierRegister\Feature  $feature
+     * @return int|float|null
+     */
+    public static function applyFeatureUsageSync(Model $subscription, Feature $feature)
+    {
+        if ($callback = static::$syncUsageCallbacks[$feature->getId()] ?? null) {
+            return call_user_func($callback, $subscription, $feature);
+        }
+    }
+
+    /**
+     * Set the global currency.
+     *
+     * @param  string  $currency
+     * @return void
+     */
+    public static function currency(string $currency)
+    {
+        static::$currency = $currency;
+    }
+
+    /**
+     * Get the global currency if set.
+     * Returns a default value if currency is not set.
+     *
+     * @param  string|null  $default
+     * @return string|null
+     */
+    public static function getCurrency(string $default = null)
+    {
+        return static::$currency ?: $default;
     }
 
     /**

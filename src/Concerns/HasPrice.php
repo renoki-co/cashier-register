@@ -2,6 +2,8 @@
 
 namespace RenokiCo\CashierRegister\Concerns;
 
+use RenokiCo\CashierRegister\Saas;
+
 trait HasPrice
 {
     /**
@@ -41,7 +43,7 @@ trait HasPrice
      */
     public function currency(string $currency = null)
     {
-        $this->currency = $currency ?: $this->currency;
+        $this->currency = $currency ?: Saas::getCurrency($this->currency);
 
         return $this;
     }

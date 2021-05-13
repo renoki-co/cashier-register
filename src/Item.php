@@ -32,7 +32,7 @@ class Item implements Arrayable
         $this->id($id);
         $this->price($price);
 
-        $this->currency = $currency;
+        $this->currency = Saas::getCurrency($currency);
         $this->subitems = collect([]);
     }
 

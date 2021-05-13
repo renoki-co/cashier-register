@@ -57,7 +57,7 @@ class Plan implements Arrayable
      */
     public function monthly(float $price, $currency = null)
     {
-        return $this->price($price, $currency);
+        return $this->price($price, Saas::getCurrency($currency));
     }
 
     /**

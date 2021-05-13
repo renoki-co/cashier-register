@@ -16,9 +16,11 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
     {
         parent::boot();
 
+        Saas::currency('EUR');
+
         Saas::plan('Gold Plan', 'gold-plan')
             ->description('The gold plan is 10 EUR.')
-            ->monthly(10, 'EUR')
+            ->monthly(10)
             ->features([
                 Saas::feature('Build Minutes', 'build.minutes')->value(3000),
                 Saas::feature('Seats', 'seats')->unlimited(),
