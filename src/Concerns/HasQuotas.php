@@ -106,7 +106,6 @@ trait HasQuotas
     public function reduceFeatureUsage($id, int $uses = 1, bool $incremental = true)
     {
         /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
-
         $feature = $this->getPlan()->getFeature($id);
 
         $usage = $this->usage()
@@ -163,7 +162,6 @@ trait HasQuotas
     public function getUsedQuota($id): int
     {
         /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
-
         $usage = $this->usage()
             ->whereFeatureId($id)
             ->first();

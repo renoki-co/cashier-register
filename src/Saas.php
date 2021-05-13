@@ -93,7 +93,7 @@ class Saas
      * Add a callback to sync the feature usage.
      *
      * @param  string|int  $id
-     * @param  Callback  $callback
+     * @param  callback  $callback
      * @return void
      */
     public static function syncFeatureUsage($id, Closure $callback)
@@ -114,7 +114,6 @@ class Saas
             return call_user_func($callback, $subscription, $feature);
         }
 
-        return;
     }
 
     /**
