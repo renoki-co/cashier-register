@@ -413,6 +413,8 @@ class StripeController extends WebhookController
 To avoid resetting, you may call `notResettable()` on the feature. This way, the quota reset won't occur on the `seats` feature.
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::feature('Seats', 'seats', 5)->notResettable(),
 ]);
@@ -423,6 +425,8 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 To set an infinite amount of usage, use the `unlimited()` method. You can consume as much as you want from the feature, and it will never exceed the quota:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::feature('Seats', 'seats')->unlimited(),
 ]);
@@ -435,6 +439,8 @@ You may copy the base features from a given plan and overwrite same-ID features 
 In the following example, the `Paid Plan` has unlimited seats (compared with the 10 seats per Free Plan) and a new feature called `beta.access` that is exclusively for the paid plan.
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 $freePlan = Saas::plan('Free Plan', 'free-plan')->features([
     Saas::feature('Seats', 'seats')->value(10),
 ]);
@@ -452,6 +458,8 @@ $paidPlan = Saas::plan('Paid Plan', 'paid-plan')->inheritFeaturesFromPlan($freeP
 Items, plans and features implement a `->data()` method that allows you to attach custom data for each item:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold-plan')
     ->data(['golden' => true])
     ->features([
@@ -474,6 +482,8 @@ $featureData = $feature->getData(); // ['digital' => true]
 When exceeding the allocated quota for a specific feature when recording, [Metered Billing for Stripe](#metered-features) comes in and bills for extra metered usage, but only if the feature is defined as [Metered Feature](#metered-features).
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold_price')->features([
     Saas::meteredFeature('Seats', 'seats', 5), // included: 5
         ->meteredPrice('price_metered_identifier', 3, 'seat'), // on-demand: $0.01/minute
@@ -496,6 +506,8 @@ Metered features are opened for Stripe only and this will open up custom meterin
 You might want to give your customers a specific amount of a feature, let's say `Build Minutes`, but for exceeding amount of minutes you might invoice at the end of the month a price of `$0.01` per minute:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::meteredFeature('Build Minutes', 'build.minutes', 3000), // included: 3000
         ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
@@ -505,6 +517,8 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 If you simply want just the on-demand price of the metered feature, just omit the amount:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold-plan')->features([
     Saas::meteredFeature('Build Minutes', 'build.minutes'), // included: 0
         ->meteredPrice('price_identifier', 0.01, 'minute'), // on-demand: $0.01/minute
@@ -518,6 +532,8 @@ Saas::plan('Gold Plan', 'gold-plan')->features([
 In case you are not using plans, you can describe items once in Cashier Register's service provider and then leverage it for some neat usage:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::item('Elephant Sticker', 'elephant-sticker')
     ->price(5, 'EUR');
 ```
@@ -525,6 +541,8 @@ Saas::item('Elephant Sticker', 'elephant-sticker')
 Then later be able to retrieve it:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 $item = Saas::getItem('elephant-sticker');
 
 $item->getPrice(); // 5
@@ -534,6 +552,8 @@ $item->getCurrency(); // 'EUR'
 Each item can have sub-items too:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::item('Sticker Pack', 'sticker-pack')
     ->price(20, 'EUR')
     ->subitems([
