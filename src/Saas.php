@@ -113,7 +113,6 @@ class Saas
         if ($callback = static::$syncUsageCallbacks[$feature->getId()] ?? null) {
             return call_user_func($callback, $subscription, $feature);
         }
-
     }
 
     /**
