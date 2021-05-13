@@ -2,6 +2,9 @@
 
 namespace RenokiCo\CashierRegister;
 
+use Closure;
+use Illuminate\Database\Eloquent\Model;
+
 class Saas
 {
     /**
@@ -17,6 +20,13 @@ class Saas
      * @var array
      */
     protected static $items = [];
+
+    /**
+     * The callback to call when syncing the current usage.
+     *
+     * @var array[Closure]
+     */
+    protected static $syncUsageCallbacks = [];
 
     /**
      * Start creating a new plan.
@@ -77,6 +87,34 @@ class Saas
         static::$items[] = $item;
 
         return $item;
+    }
+
+    /**
+     * Add a callback to sync the feature usage.
+     *
+     * @param  string|int  $id
+     * @param  Callback  $callback
+     * @return void
+     */
+    public static function syncFeatureUsage($id, Closure $callback)
+    {
+        static::$syncUsageCallbacks[$id] = $callback;
+    }
+
+    /**
+     * Apply the feature usage sync via callback.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $subscription
+     * @param  \RenokiCo\CashierRegister\Feature  $feature
+     * @return int|float|null
+     */
+    public static function applyFeatureUsageSync(Model $subscription, Feature $feature)
+    {
+        if ($callback = static::$syncUsageCallbacks[$feature->getId()] ?? null) {
+            return call_user_func($callback, $subscription, $feature);
+        }
+
+        return;
     }
 
     /**

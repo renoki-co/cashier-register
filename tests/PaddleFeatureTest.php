@@ -3,6 +3,8 @@
 namespace RenokiCo\CashierRegister\Test;
 
 use Carbon\Carbon;
+use Laravel\Paddle\Subscription;
+use RenokiCo\CashierRegister\Feature as SaasFeature;
 use RenokiCo\CashierRegister\Saas;
 use RenokiCo\CashierRegister\Test\Models\Paddle\User;
 
@@ -51,7 +53,7 @@ class PaddleFeatureTest extends TestCase
      *
      * @param  \Illuminate\Database\Eloquent\Model  $user
      * @param  \RenokiCo\CashierRegister\Plan  $plan
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \RenokiCo\CashierRegister\Models\Paddle\Subscription
      */
     protected function createSubscription($user, $plan)
     {
@@ -324,5 +326,28 @@ class PaddleFeatureTest extends TestCase
         $this->assertEquals(
             'teams', $overQuotaFeatures->first()->getId()
         );
+    }
+
+    public function test_sync_manually_the_feature_values()
+    {
+        Saas::syncFeatureUsage('teams', function ($subscription, SaasFeature $feature) {
+            $this->assertInstanceOf(Subscription::class, $subscription);
+            $this->assertInstanceOf(SaasFeature::class, $feature);
+
+            return 5;
+        });
+
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$paddleMonthlyPlanId)
+            ->features([
+                Saas::feature('Seats', 'teams', 100)->notResettable(),
+            ]);
+
+        $subscription = $this->createSubscription($user, $plan);
+
+        $subscription->recordFeatureUsage('teams', 5);
+
+        $this->assertEquals(10, $subscription->getUsedQuota('teams'));
     }
 }

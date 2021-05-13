@@ -3,6 +3,8 @@
 namespace RenokiCo\CashierRegister\Test;
 
 use Carbon\Carbon;
+use Laravel\Cashier\Subscription;
+use RenokiCo\CashierRegister\Feature as SaasFeature;
 use RenokiCo\CashierRegister\Saas;
 use RenokiCo\CashierRegister\Test\Models\Stripe\User;
 use Stripe\ApiResource;
@@ -135,7 +137,7 @@ class StripeFeatureTest extends TestCase
      *
      * @param  \Illuminate\Database\Eloquent\Model  $user
      * @param  \RenokiCo\CashierRegister\Plan  $plan
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \RenokiCo\CashierRegister\Models\Stripe\Subscription
      */
     protected function createSubscription($user, $plan)
     {
@@ -434,7 +436,7 @@ class StripeFeatureTest extends TestCase
 
         $paidPlan = Saas::getPlan(static::$stripeMonthlyPlanId);
 
-        $subscription = $user->newSubscription('main', static::$stripeMonthlyPlanId)->create('pm_card_visa');
+        $subscription = $this->createSubscription($user, $paidPlan);
 
         $subscription->recordFeatureUsage('teams', 10);
 
@@ -453,5 +455,28 @@ class StripeFeatureTest extends TestCase
         $subscription->swap($freePlan->getId());
 
         $this->assertTrue($subscription->featureOverQuota('teams'));
+    }
+
+    public function test_sync_manually_the_feature_values()
+    {
+        Saas::syncFeatureUsage('teams', function ($subscription, SaasFeature $feature) {
+            $this->assertInstanceOf(Subscription::class, $subscription);
+            $this->assertInstanceOf(SaasFeature::class, $feature);
+
+            return 5;
+        });
+
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId)
+            ->features([
+                Saas::feature('Seats', 'teams', 100)->notResettable(),
+            ]);
+
+        $subscription = $this->createSubscription($user, $plan);
+
+        $subscription->recordFeatureUsage('teams', 5);
+
+        $this->assertEquals(10, $subscription->getUsedQuota('teams'));
     }
 }
