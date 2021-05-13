@@ -73,13 +73,17 @@ trait HasFeatures
     /**
      * Get a specific feature by id.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @return \RenokiCo\CashierRegister\Feature|null
      */
-    public function getFeature($id)
+    public function getFeature($feature)
     {
-        return $this->getFeatures()->first(function (Feature $feature) use ($id) {
-            return $feature->getId() == $id;
+        if ($feature instanceof Feature) {
+            return $feature;
+        }
+
+        return $this->getFeatures()->first(function (Feature $f) use ($feature) {
+            return $f->getId() == $feature;
         });
     }
 }

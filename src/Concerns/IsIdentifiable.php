@@ -93,4 +93,14 @@ trait IsIdentifiable
     {
         return $this->description;
     }
+
+    /**
+     * Convert the identifiable to string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getId();
+    }
 }

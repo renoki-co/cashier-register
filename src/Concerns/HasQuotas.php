@@ -25,15 +25,16 @@ trait HasQuotas
     /**
      * Increment the feature usage.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @param  int|float  $value
      * @param  bool  $incremental
      * @param  Closure|null  $exceedHandler
      * @return \RenokiCo\CashierRegister\Models\Usage|null
      */
-    public function recordFeatureUsage($id, $value = 1, bool $incremental = true, Closure $exceedHandler = null)
+    public function recordFeatureUsage($feature, $value = 1, bool $incremental = true, Closure $exceedHandler = null)
     {
-        $feature = $this->getPlan()->getFeature($id);
+        $plan = $this->getPlan();
+        $feature = $plan->getFeature($feature);
 
         if (! $feature) {
             return;
@@ -42,7 +43,7 @@ trait HasQuotas
         /** @var \RenokiCo\CashierRegister\Models\Usage $usage */
         $usage = $this->usage()->firstOrNew([
             'subscription_id' => $this->getKey(),
-            'feature_id' => $feature->getId(),
+            'feature_id' => $feature,
         ]);
 
         // Try to recalculate the usage based on user-defined callbacks.
@@ -53,11 +54,10 @@ trait HasQuotas
             'used_total' => $incremental ? $usage->used_total + $value : $value,
         ]);
 
-        $planId = $this->getPlanIdentifier();
-        $featureOverQuota = $this->featureOverQuotaFor($id, $usage, $planId);
+        $featureOverQuota = $this->featureOverQuotaFor($feature, $usage, $plan);
 
         if (! $feature->isUnlimited() && $featureOverQuota) {
-            $remainingQuota = $this->getRemainingQuotaFor($id, $usage, $planId);
+            $remainingQuota = $this->getRemainingQuotaFor($feature, $usage, $plan);
 
             $valueOverQuota = value(function () use ($value, $remainingQuota) {
                 return $remainingQuota < 0
@@ -84,7 +84,7 @@ trait HasQuotas
             // This way, the next time the customer uses again the feature, it will jump straight up
             // to billing using metering instead of calculating the difference.
             $usage->fill([
-                'used' => $this->getFeatureQuota($id, $planId),
+                'used' => $this->getFeatureQuota($feature, $plan),
                 'used_total' => $incremental ? $usage->used_total + $value : $value,
             ]);
 
@@ -99,17 +99,17 @@ trait HasQuotas
     /**
      * Reduce the usage amount.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $id
      * @param  int|float  $uses
      * @return null|\RenokiCo\CashierRegister\Models\Usage
      */
-    public function reduceFeatureUsage($id, $uses = 1, bool $incremental = true)
+    public function reduceFeatureUsage($feature, $uses = 1, bool $incremental = true)
     {
         /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
-        $feature = $this->getPlan()->getFeature($id);
+        $feature = $this->getPlan()->getFeature($feature);
 
         $usage = $this->usage()
-            ->whereFeatureId($id)
+            ->whereFeatureId($feature)
             ->first();
 
         if (is_null($usage)) {
@@ -132,38 +132,38 @@ trait HasQuotas
     /**
      * Reduce the usage amount.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @param  int|float  $uses
      * @return null|\RenokiCo\CashierRegister\Models\Usage
      */
-    public function decrementFeatureUsage($id, $uses = 1, bool $incremental = true)
+    public function decrementFeatureUsage($feature, $uses = 1, bool $incremental = true)
     {
-        return $this->reduceFeatureUsage($id, $uses, $incremental);
+        return $this->reduceFeatureUsage($feature, $uses, $incremental);
     }
 
     /**
      * Set the feature usage to a specific value.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @param  int|float  $value
      * @return \RenokiCo\CashierRegister\Models\Usage|null
      */
-    public function setFeatureUsage($id, $value)
+    public function setFeatureUsage($feature, $value)
     {
-        return $this->recordFeatureUsage($id, $value, false);
+        return $this->recordFeatureUsage($feature, $value, false);
     }
 
     /**
      * Get the feature used quota.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @return int|float
      */
-    public function getUsedQuota($id)
+    public function getUsedQuota($feature)
     {
         /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
         $usage = $this->usage()
-            ->whereFeatureId($id)
+            ->whereFeatureId($feature)
             ->first();
 
         return $usage ? $usage->used : 0;
@@ -172,32 +172,32 @@ trait HasQuotas
     /**
      * Get the feature quota remaining.
      *
-     * @param  string|int  $id
-     * @param  string|null  $planId
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return int|float
      */
-    public function getRemainingQuota($id, $planId = null)
+    public function getRemainingQuota($feature, $plan = null)
     {
-        $featureValue = $this->getFeatureQuota($id, $planId);
+        $featureValue = $this->getFeatureQuota($feature, $plan);
 
         if ($featureValue < 0) {
             return -1;
         }
 
-        return $featureValue - $this->getUsedQuota($id);
+        return $featureValue - $this->getUsedQuota($feature);
     }
 
     /**
      * Get the feature quota remaining.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @param  \RenokiCo\CashierRegister\Models\Usage  $usage
-     * @param  string|null  $planId
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return int|float
      */
-    public function getRemainingQuotaFor($id, $usage, $planId = null)
+    public function getRemainingQuotaFor($feature, $usage, $plan = null)
     {
-        $featureValue = $this->getFeatureQuota($id, $planId);
+        $featureValue = $this->getFeatureQuota($feature, $plan);
 
         if ($featureValue < 0) {
             return -1;
@@ -209,15 +209,15 @@ trait HasQuotas
     /**
      * Get the feature quota.
      *
-     * @param  string|int  $id
-     * @param  string|null  $planId
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return int|float
      */
-    public function getFeatureQuota($id, $planId = null)
+    public function getFeatureQuota($feature, $plan = null)
     {
-        $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
+        $plan = $plan ? Saas::getPlan($plan) : $this->getPlan();
 
-        $feature = $plan->getFeature($id);
+        $feature = $plan->getFeature($feature);
 
         if (! $feature) {
             return 0;
@@ -229,42 +229,42 @@ trait HasQuotas
     /**
      * Check if the feature is over the assigned quota.
      *
-     * @param  string|int  $id
-     * @param  string|null  $planId
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return bool
      */
-    public function featureOverQuota($id, $planId = null): bool
+    public function featureOverQuota($feature, $plan = null): bool
     {
-        $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
+        $plan = $plan ? Saas::getPlan($plan) : $this->getPlan();
 
-        $feature = $plan->getFeature($id);
+        $feature = $plan->getFeature($feature);
 
         if ($feature->isUnlimited()) {
             return false;
         }
 
-        return $this->getRemainingQuota($id, $planId) < 0;
+        return $this->getRemainingQuota($feature, $plan) < 0;
     }
 
     /**
      * Check if the feature is over the assigned quota.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
      * @param  \RenokiCo\CashierRegister\Models\Usage  $usage
-     * @param  string|null  $planId
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return bool
      */
-    public function featureOverQuotaFor($id, $usage, $planId = null): bool
+    public function featureOverQuotaFor($feature, $usage, $plan = null): bool
     {
-        $plan = $planId ? Saas::getPlan($planId) : $this->getPlan();
+        $plan = $plan ? Saas::getPlan($plan) : $this->getPlan();
 
-        $feature = $plan->getFeature($id);
+        $feature = $plan->getFeature($feature);
 
         if ($feature->isUnlimited()) {
             return false;
         }
 
-        return $this->getRemainingQuotaFor($id, $usage, $planId) < 0;
+        return $this->getRemainingQuotaFor($feature, $usage, $plan) < 0;
     }
 
     /**
@@ -272,20 +272,18 @@ trait HasQuotas
      * if the current subscription would be swapped
      * to a new one.
      *
-     * @param  string  $planId
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return \Illuminate\Support\Collection
      */
-    public function featuresOverQuotaWhenSwapping(string $planId)
+    public function featuresOverQuotaWhenSwapping($plan)
     {
-        $plan = Saas::getPlan($planId);
+        $plan = Saas::getPlan($plan);
 
         return $plan->getFeatures()
             ->reject->isResettable()
             ->reject->isUnlimited()
             ->filter(function (Feature $feature) use ($plan) {
-                $remainingQuota = $this->getRemainingQuota(
-                    $feature->getId(), $plan->getId()
-                );
+                $remainingQuota = $this->getRemainingQuota($feature, $plan);
 
                 return $remainingQuota < 0;
             });

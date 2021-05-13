@@ -170,13 +170,17 @@ class Saas
     /**
      * Get a specific plan by id or by yearly ID.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return \RenokiCo\CashierRegister\Plan|null
      */
-    public static function getPlan($id)
+    public static function getPlan($plan)
     {
-        return collect(static::$plans)->filter(function (Plan $plan) use ($id) {
-            return $plan->getId() == $id || $plan->getYearlyId() == $id;
+        if ($plan instanceof Plan) {
+            return $plan;
+        }
+
+        return collect(static::$plans)->filter(function (Plan $p) use ($plan) {
+            return $p->getId() == $plan || $p->getYearlyId() == $plan;
         })->first();
     }
 
@@ -193,13 +197,17 @@ class Saas
     /**
      * Get a specific item by id.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Item|string|int  $item
      * @return \RenokiCo\CashierRegister\Item|null
      */
-    public static function getItem($id)
+    public static function getItem($item)
     {
-        return collect(static::$items)->filter(function (Item $item) use ($id) {
-            return $item->getId() == $id;
+        if ($item instanceof Item) {
+            return $item;
+        }
+
+        return collect(static::$items)->filter(function (Item $i) use ($item) {
+            return $i->getId() == $item;
         })->first();
     }
 
