@@ -141,7 +141,7 @@ class StripeFeatureTest extends TestCase
      */
     protected function createSubscription($user, $plan)
     {
-        $subscription = $user->newSubscription('main', $plan->getId());
+        $subscription = $user->newSubscription('main', $plan);
         $meteredFeatures = $plan->getMeteredFeatures();
 
         if (! $meteredFeatures->isEmpty()) {
@@ -452,7 +452,7 @@ class StripeFeatureTest extends TestCase
             'teams', $overQuotaFeatures->first()->getId()
         );
 
-        $subscription->swap($freePlan->getId());
+        $subscription->swap($freePlan);
 
         $this->assertTrue($subscription->featureOverQuota('teams'));
     }

@@ -60,7 +60,7 @@ class PaddleFeatureTest extends TestCase
         return $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => $plan->getId(),
+            'paddle_plan' => $plan,
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
@@ -315,9 +315,7 @@ class PaddleFeatureTest extends TestCase
 
         $subscription->recordFeatureUsage('teams', 10);
 
-        $overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping(
-            $freePlan->getId()
-        );
+        $overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping($freePlan);
 
         $this->assertCount(
             1, $overQuotaFeatures

@@ -170,13 +170,17 @@ class Saas
     /**
      * Get a specific plan by id or by yearly ID.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return \RenokiCo\CashierRegister\Plan|null
      */
-    public static function getPlan($id)
+    public static function getPlan($plan)
     {
-        return collect(static::$plans)->filter(function (Plan $plan) use ($id) {
-            return $plan->getId() == $id || $plan->getYearlyId() == $id;
+        if ($plan instanceof Plan) {
+            return $plan;
+        }
+
+        return collect(static::$plans)->filter(function (Plan $p) use ($plan) {
+            return $p->getId() == $plan || $p->getYearlyId() == $plan;
         })->first();
     }
 

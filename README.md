@@ -349,7 +349,7 @@ use RenokiCo\CashierRegister\Saas;
 $freePlan = Saas::plan('Free Plan', 'price_free'); // already subscribed to this plan
 $paidPlan = Saas::plan('Paid Plan', 'price_paid');
 
-$overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping($paidPlan->getId());
+$overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping($paidPlan);
 
 // If no features are over quotas before swapping, apply the plan swap.
 if ($overQuotaFeatures->count() === 0) {
