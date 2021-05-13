@@ -222,4 +222,14 @@ class Saas
     {
         static::$items = [];
     }
+
+    /**
+     * Clear the sync usage callbacks.
+     *
+     * @return void
+     */
+    public static function cleanSyncUsageCallbacks(): void
+    {
+        static::$syncUsageCallbacks = [];
+    }
 }

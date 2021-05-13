@@ -30,6 +30,7 @@ It helps you define static, project-level plans, and attach them features that c
   - [Plan Features](#plan-features)
     - [Checking Exceeded Quotas](#checking-exceeded-quotas)
     - [Catching Mid-Exceed Quotas](#catching-mid-exceed-quotas)
+    - [Preventing Feature Usage Sync Failures](#preventing-feature-usage-sync-failures)
     - [Resetting tracked values](#resetting-tracked-values)
     - [Unlimited amounts](#unlimited-amounts)
     - [Inherit features from other plans](#inherit-features-from-other-plans)
@@ -296,6 +297,8 @@ $plans = Saas::getAvailablePlans();
 Some plans are popular among others, and you can simply mark them:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 Saas::plan('Gold Plan', 'gold-plan')
     ->popular();
 ```
@@ -340,6 +343,8 @@ Checking exceeded quotas can be useful when users fallback from a bigger plan to
 Before swapping, you might check the features from the lower plan and get the list of features that need to be handled:
 
 ```php
+use RenokiCo\CashierRegister\Saas;
+
 $freePlan = Saas::plan('Free Plan', 'price_free'); // already subscribed to this plan
 $paidPlan = Saas::plan('Paid Plan', 'price_paid');
 
@@ -368,6 +373,45 @@ $subscription->recordFeatureUsage('seats', 3, true, function ($feature, $valueOv
     $this->billUserForExtraSeats($subscription->model, $valueOverQuota);
 });
 ```
+
+### Preventing Feature Usage Sync Failures
+
+Usually, the most fearful thing is that at some point, your `->recordUsage()` call will throw an error and you will not bill appropriately the amount of usage a customer has.
+
+You can prevent this from happening by defining custom callbacks that will sync the current usage before any record transaction:
+
+```php
+use RenokiCo\CashierRegister\CashierRegisterServiceProvider as BaseServiceProvider;
+use RenokiCo\CashierRegister\Saas;
+
+class CashierRegisterServiceProvider extends BaseServiceProvider
+{
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        parent::boot();
+
+        Saas::plan('Gold Plan', 'price_gold')->features([
+            Saas::feature('Seats', 'seats', 5)->notResettable(),
+        ]);
+
+        Saas::syncFeatureUsage('seats', function ($subscription, Feature $feature) {
+            // Make sure to calculate the total seats each time for the given Team subscription.
+            return $subscription->billable->users()->count();
+        });
+    }
+}
+
+$subscription->recordFeatureUsage('seats', 3);
+```
+
+This can be a good use if you add Cashier Register to a new project where your users are already registered up, making it easier for you to sync the features.
+
+It's highly recommended to avoid letting users consume amounts from features if they don't have enough left. For example, you should not let new users to be added to a team if the team has occupied all the seats.
 
 ### Resetting tracked values
 

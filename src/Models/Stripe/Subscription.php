@@ -10,4 +10,14 @@ class Subscription extends CashierSubscription
 {
     use HasPlans;
     use HasQuotas;
+
+    /**
+     * Get the service plan identifier for the resource.
+     *
+     * @return void
+     */
+    public function getPlanIdentifier()
+    {
+        return $this->stripe_plan;
+    }
 }
