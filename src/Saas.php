@@ -197,13 +197,17 @@ class Saas
     /**
      * Get a specific item by id.
      *
-     * @param  string|int  $id
+     * @param  \RenokiCo\CashierRegister\Item|string|int  $item
      * @return \RenokiCo\CashierRegister\Item|null
      */
-    public static function getItem($id)
+    public static function getItem($item)
     {
-        return collect(static::$items)->filter(function (Item $item) use ($id) {
-            return $item->getId() == $id;
+        if ($item instanceof Item) {
+            return $item;
+        }
+
+        return collect(static::$items)->filter(function (Item $i) use ($item) {
+            return $i->getId() == $item;
         })->first();
     }
 
