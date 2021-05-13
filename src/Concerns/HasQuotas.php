@@ -6,7 +6,6 @@ use Closure;
 use RenokiCo\CashierRegister\Feature;
 use RenokiCo\CashierRegister\MeteredFeature;
 use RenokiCo\CashierRegister\Models\Usage;
-use RenokiCo\CashierRegister\Plan;
 use RenokiCo\CashierRegister\Saas;
 
 trait HasQuotas
