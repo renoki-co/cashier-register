@@ -141,7 +141,7 @@ class StripeFeatureTest extends TestCase
      */
     protected function createSubscription($user, $plan)
     {
-        $subscription = $user->newSubscription('main', $plan);
+        $subscription = $user->newSubscription('main', $plan->getId());
         $meteredFeatures = $plan->getMeteredFeatures();
 
         if (! $meteredFeatures->isEmpty()) {
