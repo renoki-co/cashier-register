@@ -339,7 +339,7 @@ $subscription->getRemainingQuota('seats') // 2
 
 ### Checking Exceeded Quotas
 
-Checking exceeded quotas can be useful when users fallback from a bigger plan to an older plan. In this case, you may end up with an exceeded quota case where the users will have feature tracking values greater than the smaller plan values.
+Checking exceeded quotas can be useful when users fallback from a bigger plan to a smaller one. In this case, you may end up with an exceeded quota case where the users will have feature tracking values greater than the smaller plan values.
 
 Before swapping, you might check the features from the lower plan and get the list of features that need to be handled:
 
