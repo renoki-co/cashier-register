@@ -177,7 +177,7 @@ trait HasQuotas
      * @param  \RenokiCo\CashierRegister\Plan|string|int|null  $plan
      * @return int|float
      */
-    public function getRemainingQuota($feature, $plan)
+    public function getRemainingQuota($feature, $plan = null)
     {
         $featureValue = $this->getFeatureQuota($feature, $plan);
 

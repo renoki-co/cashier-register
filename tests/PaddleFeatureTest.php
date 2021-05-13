@@ -60,7 +60,7 @@ class PaddleFeatureTest extends TestCase
         return $user->subscriptions()->create([
             'name' => 'main',
             'paddle_id' => 1,
-            'paddle_plan' => $plan,
+            'paddle_plan' => $plan->getId(),
             'paddle_status' => 'active',
             'quantity' => 1,
         ]);
