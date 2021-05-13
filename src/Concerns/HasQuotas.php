@@ -5,6 +5,7 @@ namespace RenokiCo\CashierRegister\Concerns;
 use Closure;
 use RenokiCo\CashierRegister\Feature;
 use RenokiCo\CashierRegister\MeteredFeature;
+use RenokiCo\CashierRegister\Models\Usage;
 use RenokiCo\CashierRegister\Saas;
 
 trait HasQuotas
@@ -14,7 +15,7 @@ trait HasQuotas
     /**
      * Get the feature usages.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function usage()
     {
@@ -38,13 +39,18 @@ trait HasQuotas
             return;
         }
 
+        /** @var \RenokiCo\CashierRegister\Models\Usage $usage */
         $usage = $this->usage()->firstOrNew([
             'subscription_id' => $this->getKey(),
             'feature_id' => $feature->getId(),
         ]);
 
+        // Try to recalculate the usage based on user-defined callbacks.
+        $usage->recalculate($this, $feature);
+
         $usage->fill([
             'used' => $incremental ? $usage->used + $value : $value,
+            'used_total' => $incremental ? $usage->used_total + $value : $value,
         ]);
 
         $planId = $this->getPlanIdentifier();
@@ -61,6 +67,7 @@ trait HasQuotas
 
             if ($feature instanceof MeteredFeature && method_exists($this, 'reportUsageFor')) {
                 /** @var MeteredFeature $feature */
+                /** @var \Laravel\Cashier\Subscription $this */
 
                 // If the user has for example 5 minutes left and the pipeline
                 // ended and 10 minutes were consumed, update the feature usage to
@@ -72,12 +79,13 @@ trait HasQuotas
 
             /** @var Feature $feature */
 
-            // Fill the usage later since the getRemaininQuotaFor() uses the $usage
+            // Fill the usage later since the getRemainingQuotaFor() uses the $usage
             // object that was updated with the current requested feature usage recording.
             // This way, the next time the customer uses again the feature, it will jump straight up
             // to billing using metering instead of calculating the difference.
             $usage->fill([
                 'used' => $this->getFeatureQuota($id, $planId),
+                'used_total' => $incremental ? $usage->used_total + $value : $value,
             ]);
 
             if ($exceedHandler) {
@@ -97,6 +105,9 @@ trait HasQuotas
      */
     public function reduceFeatureUsage($id, int $uses = 1, bool $incremental = true)
     {
+        /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
+        $feature = $this->getPlan()->getFeature($id);
+
         $usage = $this->usage()
             ->whereFeatureId($id)
             ->first();
@@ -105,11 +116,14 @@ trait HasQuotas
             return;
         }
 
+        // Try to recalculate the usage based on user-defined callbacks.
+        $usage->recalculate($this, $feature);
+
+        $used = max($incremental ? $usage->used - $uses : $uses, 0);
+
         $usage->fill([
-            'used' => max(
-                $incremental ? $usage->used - $uses : $uses,
-                0
-            ),
+            'used' => $used,
+            'used_total' => $used,
         ]);
 
         return tap($usage)->save();
@@ -147,6 +161,7 @@ trait HasQuotas
      */
     public function getUsedQuota($id): int
     {
+        /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
         $usage = $this->usage()
             ->whereFeatureId($id)
             ->first();
@@ -176,7 +191,7 @@ trait HasQuotas
      * Get the feature quota remaining.
      *
      * @param  string|int  $id
-     * @param  \Illuminate\Database\Eloquent\Model  $usage
+     * @param  \RenokiCo\CashierRegister\Models\Usage  $usage
      * @param  string|null  $planId
      * @return int
      */
@@ -235,7 +250,7 @@ trait HasQuotas
      * Check if the feature is over the assigned quota.
      *
      * @param  string|int  $id
-     * @param  \Illuminate\Database\Eloquent\Model  $usage
+     * @param  \RenokiCo\CashierRegister\Models\Usage  $usage
      * @param  string|null  $planId
      * @return bool
      */
@@ -287,7 +302,7 @@ trait HasQuotas
 
         $this->usage()
             ->get()
-            ->each(function ($usage) use ($plan) {
+            ->each(function (Usage $usage) use ($plan) {
                 $feature = $plan->getFeature($usage->feature_id);
 
                 if ($feature->isResettable()) {
