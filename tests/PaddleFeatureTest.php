@@ -51,7 +51,7 @@ class PaddleFeatureTest extends TestCase
     /**
      * Create a new subscription.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $user
+     * @param  \RenokiCo\CashierRegister\Test\Models\Paddle\User  $user
      * @param  \RenokiCo\CashierRegister\Plan  $plan
      * @return \RenokiCo\CashierRegister\Models\Paddle\Subscription
      */

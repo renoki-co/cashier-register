@@ -15,6 +15,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         Saas::clearPlans();
+        Saas::cleanSyncUsageCallbacks();
 
         $this->resetDatabase();
 

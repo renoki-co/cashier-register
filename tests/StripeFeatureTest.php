@@ -135,7 +135,7 @@ class StripeFeatureTest extends TestCase
     /**
      * Create a new subscription.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $user
+     * @param  \RenokiCo\CashierRegister\Test\Models\Stripe\User  $user
      * @param  \RenokiCo\CashierRegister\Plan  $plan
      * @return \RenokiCo\CashierRegister\Models\Stripe\Subscription
      */
