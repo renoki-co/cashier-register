@@ -353,7 +353,7 @@ $overQuotaFeatures = $subscription->featuresOverQuotaWhenSwapping($paidPlan);
 
 // If no features are over quotas before swapping, apply the plan swap.
 if ($overQuotaFeatures->count() === 0) {
-    $subscription->swap($freePlan);
+    $subscription->swap($freePlan->getId());
 }
 
 foreach ($overQuotaFeatures as $feature) {
