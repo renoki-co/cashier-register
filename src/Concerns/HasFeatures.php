@@ -79,7 +79,7 @@ trait HasFeatures
     public function getFeature($feature)
     {
         if ($feature instanceof Feature) {
-            return $feature;
+            $feature = $feature->getId();
         }
 
         return $this->getFeatures()->first(function (Feature $f) use ($feature) {

@@ -176,7 +176,7 @@ class Saas
     public static function getPlan($plan)
     {
         if ($plan instanceof Plan) {
-            return $plan;
+            $plan = $plan->getId();
         }
 
         return collect(static::$plans)->filter(function (Plan $p) use ($plan) {
@@ -203,7 +203,7 @@ class Saas
     public static function getItem($item)
     {
         if ($item instanceof Item) {
-            return $item;
+            $item = $item->getId();
         }
 
         return collect(static::$items)->filter(function (Item $i) use ($item) {
