@@ -18,12 +18,27 @@ class CashierRegisterServiceProvider extends BaseServiceProvider
 
         Saas::currency('EUR');
 
-        Saas::plan('Gold Plan', 'gold-plan')
-            ->description('The gold plan is 10 EUR.')
+        $free = Saas::plan('Free Plan', 'price_free')
+            ->monthly(0)
+            ->features([
+                Saas::feature('5 Seats', 'seats', 5)->notResettable(),
+                Saas::feature('10,000 mails', 'mails', 10000),
+            ]);
+
+        Saas::plan('Tier One', 'price_1')
             ->monthly(10)
             ->features([
-                Saas::feature('Build Minutes', 'build.minutes')->value(3000),
-                Saas::feature('Seats', 'seats')->unlimited(),
+                Saas::feature('Unlimited Seats', 'seats')->unlimited()->notResettable(),
+                Saas::feature('20,000 mails', 'mails', 20000),
+                Saas::feature('Beta Access', 'beta.access')->unlimited(),
+            ]);
+
+        Saas::plan('Tier Two', 'price_2')
+            ->monthly(20)
+            ->features([
+                Saas::feature('Unlimited Seats', 'seats')->unlimited()->notResettable(),
+                Saas::feature('30,000 mails', 'mails', 30000),
+                Saas::feature('Beta Access', 'beta.access')->unlimited(),
             ]);
     }
 
