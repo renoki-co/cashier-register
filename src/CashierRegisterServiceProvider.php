@@ -25,7 +25,7 @@ class CashierRegisterServiceProvider extends ServiceProvider
             ], 'migrations');
 
             $this->publishes([
-                __DIR__.'/../stubs/CashierRegisterServiceProvider.stub' => app_path('Providers/CashierRegisterServiceProvider.php'),
+                __DIR__.'/../stubs/CashierRegisterServiceProvider.php' => app_path('Providers/CashierRegisterServiceProvider.php'),
             ], 'provider');
         }
 
