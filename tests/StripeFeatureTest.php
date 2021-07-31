@@ -146,7 +146,7 @@ class StripeFeatureTest extends TestCase
 
         if (! $meteredFeatures->isEmpty()) {
             foreach ($meteredFeatures as $feature) {
-                $subscription->meteredPlan($feature->getMeteredId());
+                $subscription->meteredPrice($feature->getMeteredId());
             }
         }
 

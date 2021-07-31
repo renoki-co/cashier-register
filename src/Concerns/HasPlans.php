@@ -23,6 +23,6 @@ trait HasPlans
      */
     public function getPlanIdentifier()
     {
-        return $this->stripe_plan;
+        return $this->stripe_price;
     }
 }

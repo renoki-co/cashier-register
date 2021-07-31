@@ -2,6 +2,7 @@
 
 namespace RenokiCo\CashierRegister\Test;
 
+use Laravel\Cashier\Cashier as StripeCashier;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RenokiCo\CashierRegister\Saas;
 
@@ -28,6 +29,10 @@ abstract class TestCase extends Orchestra
         $this->withFactories(__DIR__.'/database/factories');
 
         Saas::currency('EUR');
+
+        if (class_exists(StripeCashier::class)) {
+            StripeCashier::useCustomerModel(Models\Stripe\User::class);
+        }
     }
 
     /**
