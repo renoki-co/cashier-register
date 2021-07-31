@@ -11,7 +11,7 @@ Cashier Register - Track the plan quotas
 
 Cashier Register is a simple quota feature usage tracker for Laravel Cashier subscriptions.
 
-It helps you define static, project-level plans, and attach features that can be tracked and limited throughout the app. For example, you might want to set a limit of 5 seats per team and make it so internally. Cashier Register comes with a nice wrapper for Laravel Cashier that does that out-of-the-box.
+It helps you define static, project-level plans, and attach features that can be tracked and limited throughout the app. For example, you might want to set a limit of 5 seats per team and make it so you can check it later. Cashier Register comes with a nice wrapper for Laravel Cashier that does that out-of-the-box.
 
 ## 🤝 Supporting
 
