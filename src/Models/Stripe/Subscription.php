@@ -18,6 +18,6 @@ class Subscription extends CashierSubscription
      */
     public function getPlanIdentifier()
     {
-        return $this->stripe_plan;
+        return $this->stripe_price;
     }
 }

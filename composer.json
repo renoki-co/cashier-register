@@ -29,7 +29,9 @@
         "test": "vendor/bin/phpunit"
     },
     "suggest": {
-        "doctrine/dbal": "Required by Cashier to modify tables in the database."
+        "doctrine/dbal": "Required by Cashier to modify tables in the database.",
+        "laravel/cashier": "Required in case you are using Stripe.",
+        "laravel/cashier-paddle": "Required in case you are using Paddle."
     },
     "require-dev": {
         "laravel/legacy-factories": "^1.1",

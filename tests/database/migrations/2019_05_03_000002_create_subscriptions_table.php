@@ -24,7 +24,7 @@ class CreateSubscriptionsTable extends Migration
             $table->integer('paddle_plan')->nullable();
             $table->string('stripe_id')->nullable();
             $table->string('stripe_status')->nullable();
-            $table->string('stripe_plan')->nullable();
+            $table->string('stripe_price')->nullable();
             $table->integer('quantity')->nullable();
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('paused_from')->nullable();
