@@ -66,7 +66,7 @@ jobs:
         PADDLE_TEST_FREE_PLAN: ${{ secrets.PADDLE_TEST_FREE_PLAN }}
         PADDLE_YEARLY_TEST_PLAN: ${{ secrets.PADDLE_YEARLY_TEST_PLAN }}
 
-    - uses: codecov/codecov-action@v2.0.3
+    - uses: codecov/codecov-action@v2.1.0
       with:
         fail_ci_if_error: false
         token: ${{ secrets.CODECOV_TOKEN }}
