@@ -95,6 +95,7 @@ class StripeFeatureTest extends TestCase
                 Saas::meteredFeature('Metered Build Minutes', 'metered.build.minutes', 3000)
                     ->meteredPrice(static::$stripeMeteredPriceId, 0.1, 'minute'),
                 Saas::feature('Seats', 'teams', 10)->notResettable(),
+                Saas::feature('Mails', 'mails', 300),
             ]);
 
         Saas::plan('Yearly $100', static::$stripeYearlyPlanId)
@@ -352,6 +353,27 @@ class StripeFeatureTest extends TestCase
         });
 
         $this->assertEquals(1, $overQuota);
+    }
+
+    public function test_feature_usage_over_the_amount_increments_total_usage_correctly()
+    {
+        $user = factory(User::class)->create();
+
+        $plan = Saas::getPlan(static::$stripeMonthlyPlanId);
+
+        $subscription = $this->createSubscription($user, $plan);
+
+        $subscription->recordFeatureUsage('mails', 100);
+        $subscription->recordFeatureUsage('mails', 100);
+        $subscription->recordFeatureUsage('mails', 100);
+
+        $this->assertEquals(300, $subscription->getUsedQuota('mails'));
+        $this->assertEquals(300, $subscription->getTotalUsedQuota('mails'));
+
+        $subscription->recordFeatureUsage('mails', 100);
+
+        $this->assertEquals(300, $subscription->getUsedQuota('mails'));
+        $this->assertEquals(400, $subscription->getTotalUsedQuota('mails'));
     }
 
     public function test_feature_usage_over_the_amount_with_metering()

@@ -85,7 +85,6 @@ trait HasQuotas
             // to billing using metering instead of calculating the difference.
             $usage->fill([
                 'used' => $this->getFeatureQuota($feature, $plan),
-                'used_total' => $incremental ? $usage->used_total + $value : $value,
             ]);
 
             if ($exceedHandler) {
@@ -93,7 +92,9 @@ trait HasQuotas
             }
         }
 
-        return tap($usage)->save();
+        $usage->save();
+
+        return $usage;
     }
 
     /**
@@ -126,7 +127,9 @@ trait HasQuotas
             'used_total' => $used,
         ]);
 
-        return tap($usage)->save();
+        $usage->save();
+
+        return $usage;
     }
 
     /**
@@ -167,6 +170,22 @@ trait HasQuotas
             ->first();
 
         return $usage ? $usage->used : 0;
+    }
+
+    /**
+     * Get the feature used total quota.
+     *
+     * @param  \RenokiCo\CashierRegister\Feature|string|int  $feature
+     * @return int|float
+     */
+    public function getTotalUsedQuota($feature)
+    {
+        /** @var \RenokiCo\CashierRegister\Models\Usage|null $usage */
+        $usage = $this->usage()
+            ->whereFeatureId($feature)
+            ->first();
+
+        return $usage ? $usage->used_total : 0;
     }
 
     /**

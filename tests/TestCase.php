@@ -45,7 +45,7 @@ abstract class TestCase extends Orchestra
     {
         return [
             \Laravel\Cashier\CashierServiceProvider::class,
-            \Laravel\Paddle\CashierServiceProvider ::class,
+            \Laravel\Paddle\CashierServiceProvider::class,
             \RenokiCo\CashierRegister\CashierRegisterServiceProvider::class,
         ];
     }
